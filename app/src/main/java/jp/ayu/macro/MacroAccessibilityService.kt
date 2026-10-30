@@ -85,7 +85,9 @@ class MacroAccessibilityService : AccessibilityService() {
         wm = getSystemService(WINDOW_SERVICE) as WindowManager
         store = MacroStore(this)
         instance = this
-        showPanel()
+        // フローティングは自動で出さない（アプリの更新・再起動・サービスの再接続のときも）。
+        // アプリの「フローティングボタン > 表示」を押したときだけ showPanel() で出す。
+        // 表示中かどうかは保存せず、サービスが接続し直したら常に非表示から始まる。
         notifyChanged()
     }
 
