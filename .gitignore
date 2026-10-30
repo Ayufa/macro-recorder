@@ -26,3 +26,6 @@ keystore.properties
 dist/
 *.apk
 *.aab
+
+# 収益化の本番 ID（never commit）
+monetization.properties

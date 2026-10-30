@@ -19,14 +19,16 @@ Android 用の画面操作マクロアプリです。タップ・長押し・ス
 ## ビルド
 
 ```sh
-./gradlew assembleDebug        # app/build/outputs/apk/debug/app-debug.apk
-./gradlew testDebugUnitTest lintDebug
+./gradlew assembleStandardDebug   # 配布版: app/build/outputs/apk/standard/debug/app-standard-debug.apk
+./gradlew testStandardDebugUnitTest lintStandardDebug
+# 収益化版（既定は無効・配布しない）: ./gradlew assembleMonetizedDebug  → docs/MONETIZATION_ja.md
 ```
 
 JDK 17、Android SDK Platform 37（compileSdk / targetSdk 37、minSdk 26）、AGP 9.5、Gradle 9.8。
 
 ## 更新履歴
 
+- v0.4: 収益化の下準備を追加（既定では無効。配布版 `standard` には広告・課金 SDK もインターネット権限も含まれません）。詳しくは [docs/MONETIZATION_ja.md](docs/MONETIZATION_ja.md)
 - v0.3: フローティングの開閉アニメーション（丸いアイコンから右へ広がる／左へ縮んで丸に戻る。約0.2〜0.25秒、Material のイージング）。画面右端では左へ広がる。小さくするボタンを左向き矢印に変更。「アニメーションを削除」設定に対応
 - v0.2: フローティングの折りたたみ（丸いバブル）、設定ボタン、デザイン刷新（Material 3）、新しいアイコン、狭い画面でパネルがはみ出す問題を修正
 - v0.1: 初版

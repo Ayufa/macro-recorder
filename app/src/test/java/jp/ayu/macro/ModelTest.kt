@@ -67,3 +67,14 @@ class PanelMathTest {
         org.junit.Assert.assertEquals(1000, PanelMath.collapsedX(ex, 64, 500, true))
     }
 }
+
+class FreeTierTest {
+    @org.junit.Test fun freeTierLimitsSavedMacros() {
+        val lim = jp.ayu.macro.monetization.FreeTier.FREE_MACRO_LIMIT
+        org.junit.Assert.assertEquals(3, lim)
+        org.junit.Assert.assertTrue(jp.ayu.macro.monetization.FreeTier.canSaveNew(2, lim))
+        org.junit.Assert.assertFalse(jp.ayu.macro.monetization.FreeTier.canSaveNew(3, lim))
+        // 上限なし（standard / 購入済み）
+        org.junit.Assert.assertTrue(jp.ayu.macro.monetization.FreeTier.canSaveNew(1000, null))
+    }
+}

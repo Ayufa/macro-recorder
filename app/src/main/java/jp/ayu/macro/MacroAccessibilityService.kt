@@ -502,6 +502,12 @@ class MacroAccessibilityService : AccessibilityService() {
     // ---------------- 記録 ----------------
     fun startRecording() {
         if (state != State.IDLE) return
+        // 無料枠（monetized フレーバーのみ。standard は無制限）
+        val limit = jp.ayu.macro.monetization.Monetization.entitlements(this).maxSavedMacros
+        if (!jp.ayu.macro.monetization.FreeTier.canSaveNew(store.list().size, limit)) {
+            toast("無料版で保存できるマクロは ${limit} 件までです。不要なマクロを削除するか、アプリの「プラン」から無制限にできます")
+            return
+        }
         removeView(nameDialog); nameDialog = null
         recordedSteps.clear()
         recScreen = screenSize()

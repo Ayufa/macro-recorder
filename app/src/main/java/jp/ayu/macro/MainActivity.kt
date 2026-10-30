@@ -25,6 +25,8 @@ import android.widget.ScrollView
 import android.widget.SeekBar
 import android.widget.TextView
 import android.widget.Toast
+import jp.ayu.macro.monetization.Monetization
+import jp.ayu.macro.monetization.Products
 
 class MainActivity : Activity() {
 
@@ -33,6 +35,11 @@ class MainActivity : Activity() {
     private lateinit var statusContainer: LinearLayout
     private lateinit var listContainer: LinearLayout
     private lateinit var countView: TextView
+    private lateinit var adContainer: android.widget.FrameLayout
+    private var planContainer: LinearLayout? = null
+    private val entitlements by lazy { Monetization.entitlements(this) }
+    private val ads by lazy { Monetization.ads(this) }
+    private val onEntitlementsChanged: () -> Unit = { refresh() }
 
     private fun dp(v: Int) = ui.dp(v)
 
@@ -42,13 +49,18 @@ class MainActivity : Activity() {
         ui = Ui(this)
         if (Build.VERSION.SDK_INT >= 29) window.isNavigationBarContrastEnforced = false
         val scroll = ScrollView(this).apply { isFillViewport = true; setBackgroundColor(ui.surface) }
+        // 画面全体: 上にスクロール、下に広告枠（standard では常に非表示）
+        val outer = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL; setBackgroundColor(ui.surface) }
+        outer.addView(scroll, LinearLayout.LayoutParams(MATCH, 0, 1f))
+        adContainer = android.widget.FrameLayout(this).apply { visibility = View.GONE }
+        outer.addView(adContainer, LinearLayout.LayoutParams(MATCH, WRAP))
         val root = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             setPadding(dp(16), dp(24), dp(16), dp(24))
         }
         scroll.addView(root)
         // edge-to-edge (targetSdk 35+ では強制) に対応: システムバー分の余白を付ける
-        scroll.setOnApplyWindowInsetsListener { v, insets ->
+        outer.setOnApplyWindowInsetsListener { v, insets ->
             if (Build.VERSION.SDK_INT >= 30) {
                 val b = insets.getInsets(WindowInsets.Type.systemBars() or WindowInsets.Type.displayCutout())
                 v.setPadding(b.left, b.top, b.right, b.bottom)
@@ -59,7 +71,7 @@ class MainActivity : Activity() {
             }
             insets
         }
-        setContentView(scroll)
+        setContentView(outer)
 
         // ヘッダー
         val header = LinearLayout(this).apply {
@@ -101,15 +113,27 @@ class MainActivity : Activity() {
         listContainer = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
         root.addView(listContainer)
 
+        // プラン（monetized フレーバーだけ。standard では表示しない）
+        if (entitlements.purchasesAvailable) {
+            root.addView(ui.text("プラン", 14f, ui.primary, medium = true).apply { setPadding(dp(4), dp(24), 0, dp(8)) })
+            planContainer = LinearLayout(this).apply {
+                orientation = LinearLayout.VERTICAL
+                background = ui.rounded(ui.surfaceContainer, 24)
+                setPadding(dp(16), dp(12), dp(16), dp(12))
+            }
+            root.addView(planContainer, LinearLayout.LayoutParams(MATCH, WRAP))
+        }
+
         // プライバシー
         val privacy = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL; setPadding(dp(4), dp(24), dp(4), 0)
         }
         privacy.addView(ImageView(this).apply { setImageDrawable(ui.icon(R.drawable.ic_shield, ui.onSurfaceVariant)) },
             LinearLayout.LayoutParams(dp(18), dp(18)).apply { marginEnd = dp(8); topMargin = dp(1) })
-        privacy.addView(ui.text("記録するのは指の位置と時間だけで、他のアプリの画面内容は読み取りません。データはこの端末内にのみ保存され、インターネット権限はありません。",
+        privacy.addView(ui.text(getString(R.string.privacy_note),
             12f, ui.onSurfaceVariant), LinearLayout.LayoutParams(0, WRAP, 1f))
         root.addView(privacy)
+        ads.initialize(this)
         root.addView(ui.text("v" + appVersion(), 11f, ui.outlineVariant).apply { setPadding(dp(30), dp(8), 0, 0) })
     }
 
@@ -148,12 +172,43 @@ class MainActivity : Activity() {
     override fun onResume() {
         super.onResume()
         MacroAccessibilityService.onChanged = { refresh() }
+        entitlements.addListener(onEntitlementsChanged)
         refresh()
     }
 
     override fun onPause() {
         MacroAccessibilityService.onChanged = null
+        entitlements.removeListener(onEntitlementsChanged)
         super.onPause()
+    }
+
+    override fun onDestroy() {
+        ads.destroy()
+        super.onDestroy()
+    }
+
+    /** monetized フレーバーのみ: 購入ボタンと広告の表示を更新 */
+    private fun refreshMonetization() {
+        ads.attachBanner(this, adContainer)
+        val box = planContainer ?: return
+        box.removeAllViews()
+        val limit = entitlements.maxSavedMacros
+        box.addView(ui.text(
+            if (limit == null) "マクロの保存数: 無制限" else "無料版: マクロは ${limit} 件まで保存できます",
+            13f, ui.onSurface))
+        fun item(id: String, label: String, owned: Boolean) {
+            val price = entitlements.priceOf(id)
+            val b = ui.button(if (owned) "$label（購入済み）" else label + (price?.let { "  $it" } ?: ""),
+                if (owned) Ui.BtnStyle.TEXT else Ui.BtnStyle.TONAL) { entitlements.launchPurchase(this, id) }
+            b.isEnabled = !owned
+            box.addView(b, LinearLayout.LayoutParams(MATCH, WRAP).apply { topMargin = dp(8) })
+        }
+        item(Products.REMOVE_ADS, "広告を非表示にする", entitlements.isAdFree)
+        item(Products.UNLIMITED_MACROS, "マクロを無制限に保存", limit == null)
+        if (ads.privacyOptionsAvailable) {
+            val b = ui.button("広告のプライバシー設定", Ui.BtnStyle.TEXT) { ads.showPrivacyOptions(this) }
+            box.addView(b, LinearLayout.LayoutParams(MATCH, WRAP).apply { topMargin = dp(4) })
+        }
     }
 
     private fun toast(s: String) = Toast.makeText(this, s, Toast.LENGTH_SHORT).show()
@@ -232,7 +287,8 @@ class MainActivity : Activity() {
 
         listContainer.removeAllViews()
         val macros = store.list()
-        countView.text = macros.size.toString()
+        countView.text = entitlements.maxSavedMacros?.let { "${macros.size} / $it" } ?: macros.size.toString()
+        refreshMonetization()
         if (macros.isEmpty()) {
             listContainer.addView(LinearLayout(this).apply {
                 orientation = LinearLayout.VERTICAL; gravity = Gravity.CENTER_HORIZONTAL

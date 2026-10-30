@@ -1,0 +1,6 @@
+# 収益化（monetized フレーバー）の本番 ID。
+# このファイルを monetization.properties という名前でコピーして値を入れてください。
+# monetization.properties は .gitignore 済みです。本番 ID は絶対にコミットしないでください。
+# 未設定の項目は Google 公式のテスト用 ID になります。
+#admobAppId=ca-app-pub-XXXXXXXXXXXXXXXX~YYYYYYYYYY
+#admobBannerId=ca-app-pub-XXXXXXXXXXXXXXXX/ZZZZZZZZZZ
