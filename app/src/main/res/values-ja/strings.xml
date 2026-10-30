@@ -139,4 +139,20 @@
     <plurals name="saved_title">
         <item quantity="other">保存しました（%d操作）</item>
     </plurals>
+    <string name="setup_title">セットアップ</string>
+    <string name="setup_progress">%2$d 件中 %1$d 件完了</string>
+    <string name="setup_recommended">推奨</string>
+    <string name="setup_service_body">ユーザー補助で「%1$s」をオンにすると、タップの記録と再生ができるようになります。</string>
+    <string name="setup_service_galaxy">Galaxy: 設定 → ユーザー補助 → インストール済みアプリ → %1$s</string>
+    <string name="setup_restricted_hint">スイッチが押せないときは、アプリ情報 → ︙ →「制限付き設定を許可」のあと、もう一度オンにしてください。</string>
+    <string name="setup_battery_body">長い再生の途中で、バックグラウンドで止められないようにします。</string>
+    <string name="setup_battery_galaxy">Galaxy: 設定 → バッテリー → バックグラウンドでの使用制限 →「スリープしないアプリ」にこのアプリを追加</string>
+    <string name="setup_done_title">準備ができました</string>
+    <string name="setup_done_body">フローティングボタンを表示して、最初のマクロを記録しましょう。</string>
+    <string name="empty_cta">記録を始める</string>
+    <string name="empty_cta_setup">セットアップを完了</string>
+    <string name="list_hint">タップで選択・長押しでその他の操作</string>
+    <string name="settings_group_basic">基本</string>
+    <string name="settings_group_playback">再生</string>
+    <string name="settings_group_manage">管理</string>
 </resources>

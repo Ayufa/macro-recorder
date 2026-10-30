@@ -310,48 +310,160 @@ class MainActivity : Activity() {
         return row
     }
 
+    // 進み具合のバーは「進んだとき」だけ伸ばす（画面に戻るたびには動かさない）
+    private var lastSetupDone = -1
+    private val isGalaxy = Build.MANUFACTURER.equals("samsung", ignoreCase = true)
+
+    /**
+     * v0.8: 状態カードを「セットアップ」のステップ表示に。
+     * 参考にしたパターン: appshots / screensdesign / pageflows / mobbin のオンボーディング・フロー
+     * （進み具合のバー + 番号つきステップ + いまのステップだけ開いて CTA を1つ）。画像や素材は使っていない。
+     */
+    private fun buildSetup(svc: MacroAccessibilityService?, running: Boolean, enabled: Boolean) {
+        statusContainer.removeAllViews()
+        val ignoring = isIgnoringBattery()
+        val doneFlags = listOf(running, ignoring)
+        val done = doneFlags.count { it }
+        val total = doneFlags.size
+        if (done < total) {
+            // 見出し + 進み具合
+            val head = LinearLayout(this).apply {
+                orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL
+                setPadding(dp(16), dp(16), dp(16), dp(4))
+            }
+            head.addView(ui.text(getString(R.string.setup_title), Ui.Type.TITLE, ui.onSurface, weight = Ui.Weight.SEMIBOLD),
+                LinearLayout.LayoutParams(0, WRAP, 1f))
+            head.addView(ui.monoText("$done/$total", Ui.Type.CAPTION, ui.onSurfaceVariant).apply {
+                contentDescription = getString(R.string.setup_progress, done, total)
+            })
+            statusContainer.addView(head)
+            val bar = LinearLayout(this).apply {
+                orientation = LinearLayout.HORIZONTAL; setPadding(dp(16), dp(8), dp(16), dp(8))
+                importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
+            }
+            for (n in 0 until total) {
+                val seg = View(this).apply {
+                    background = ui.rounded(if (n < done) ui.primary else ui.outlineVariant, 999)
+                }
+                bar.addView(seg, LinearLayout.LayoutParams(0, dp(4), 1f).apply { if (n > 0) marginStart = dp(6) })
+                if (n == done - 1 && done > lastSetupDone && Motion.enabled(this)) {
+                    seg.pivotX = 0f; seg.scaleX = 0f
+                    seg.animate().scaleX(1f).setStartDelay(120).setDuration(500).setInterpolator(Motion.easeOut).start()
+                }
+            }
+            statusContainer.addView(bar)
+            lastSetupDone = done
+
+            val appInfo = { startActivity(Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:$packageName"))) }
+            val svcName = getString(R.string.service_label)
+            statusContainer.addView(setupStep(
+                number = 1, done = running, current = !running, last = false,
+                title = getString(R.string.status_service),
+                doneText = getString(R.string.status_service_running),
+                body = if (enabled) getString(R.string.status_service_stuck) else getString(R.string.setup_service_body, svcName),
+                hints = listOfNotNull(
+                    if (isGalaxy) getString(R.string.setup_service_galaxy, svcName) else null,
+                    if (Build.VERSION.SDK_INT >= 33) getString(R.string.setup_restricted_hint) else null,
+                ),
+                cta = getString(R.string.action_open) to { startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)) },
+                secondary = getString(R.string.action_app_info) to appInfo,
+            ))
+            statusContainer.addView(setupStep(
+                number = 2, done = ignoring, current = running && !ignoring, last = true,
+                title = getString(R.string.status_battery), recommended = true,
+                doneText = getString(R.string.status_battery_ok),
+                body = getString(R.string.setup_battery_body),
+                hints = listOfNotNull(if (isGalaxy) getString(R.string.setup_battery_galaxy) else null),
+                cta = getString(R.string.action_exclude) to { requestIgnoreBattery() },
+                // 1 がまだでも、電池の除外は先にできる
+                forceCta = !running && !ignoring,
+            ))
+        }
+        if (running) {
+            val shown = svc?.isPanelShown == true
+            if (done < total) statusContainer.addView(ui.divider(), LinearLayout.LayoutParams(MATCH, dp(1)).apply {
+                topMargin = dp(4); marginStart = dp(16); marginEnd = dp(16)
+            })
+            statusContainer.addView(statusRow(
+                shown,
+                getString(if (done == total) R.string.setup_done_title else R.string.status_panel),
+                getString(when {
+                    shown -> R.string.status_panel_shown
+                    done == total -> R.string.setup_done_body
+                    else -> R.string.status_panel_hidden
+                }),
+                if (shown) null else ui.button(getString(R.string.action_show), Ui.BtnStyle.FILLED) {
+                    Motion.haptic(statusContainer, Motion.Haptic.CONFIRM); svc?.showPanel(); refresh()
+                },
+                live = shown,
+            ))
+        }
+        if (statusContainer.childCount == 0) statusContainer.visibility = View.GONE else statusContainer.visibility = View.VISIBLE
+    }
+
+    /** セットアップの1ステップ（番号ノード + 縦の線 + 内容）。いまのステップだけ説明と CTA を出す */
+    private fun setupStep(
+        number: Int, done: Boolean, current: Boolean, last: Boolean,
+        title: String, doneText: String, body: String, hints: List<String>,
+        cta: Pair<String, () -> Unit>, secondary: Pair<String, () -> Unit>? = null,
+        recommended: Boolean = false, forceCta: Boolean = false,
+    ): View {
+        val row = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            setPadding(dp(16), dp(8), dp(16), if (last) dp(14) else 0)
+        }
+        // 左: ノードと線
+        val rail = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL; gravity = Gravity.CENTER_HORIZONTAL }
+        val node: View = if (done) ImageView(this).apply {
+            setImageDrawable(ui.icon(R.drawable.ic_check, ui.success)); setPadding(dp(5), dp(5), dp(5), dp(5))
+            background = ui.rounded(ui.successContainer, 999, ui.withAlpha(ui.success, 0.3f))
+        } else ui.monoText(number.toString(), Ui.Type.CAPTION, if (current) ui.onPrimary else ui.onSurfaceVariant, Ui.Weight.SEMIBOLD).apply {
+            gravity = Gravity.CENTER
+            background = if (current) ui.rounded(ui.primary, 999) else ui.rounded(ui.surfaceContainer, 999, ui.outlineVariant)
+        }
+        node.importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
+        rail.addView(node, LinearLayout.LayoutParams(dp(26), dp(26)))
+        if (!last) rail.addView(View(this).apply { setBackgroundColor(if (done) ui.withAlpha(ui.success, 0.5f) else ui.outlineVariant) },
+            LinearLayout.LayoutParams(dp(2), 0, 1f).apply { topMargin = dp(4) })
+        row.addView(rail, LinearLayout.LayoutParams(dp(26), MATCH).apply { marginEnd = dp(14) })
+
+        // 右: 内容
+        val col = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL; setPadding(0, dp(2), 0, dp(12)) }
+        val titleRow = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL }
+        titleRow.addView(ui.text(title, Ui.Type.BODY_LARGE, if (done) ui.onSurfaceVariant else ui.onSurface, medium = true),
+            LinearLayout.LayoutParams(0, WRAP, 1f))
+        if (recommended && !done) titleRow.addView(ui.badge(getString(R.string.setup_recommended)))
+        col.addView(titleRow)
+        if (done) {
+            col.addView(ui.text(doneText, Ui.Type.CAPTION, ui.success))
+        } else if (current || forceCta) {
+            col.addView(ui.text(body, Ui.Type.BODY, ui.onSurfaceVariant).apply { setPadding(0, dp(4), 0, 0) })
+            if (current) for (h in hints) {
+                col.addView(ui.text(h, Ui.Type.CAPTION, ui.onSurfaceVariant).apply {
+                    background = ui.rounded(ui.surfaceContainerHigh, 10); setPadding(dp(10), dp(8), dp(10), dp(8))
+                }, LinearLayout.LayoutParams(MATCH, WRAP).apply { topMargin = dp(8) })
+            }
+            val actions = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL }
+            actions.addView(ui.button(cta.first, if (current) Ui.BtnStyle.FILLED else Ui.BtnStyle.TONAL) {
+                Motion.haptic(row, Motion.Haptic.CONFIRM); cta.second()
+            })
+            if (secondary != null && current) actions.addView(ui.button(secondary.first, Ui.BtnStyle.TEXT, R.drawable.ic_open) { secondary.second() },
+                LinearLayout.LayoutParams(WRAP, WRAP).apply { marginStart = dp(4) })
+            col.addView(actions, LinearLayout.LayoutParams(WRAP, WRAP).apply { topMargin = dp(10) })
+        } else {
+            col.addView(ui.text(body, Ui.Type.CAPTION, ui.onSurfaceVariant).apply { maxLines = 1; ellipsize = android.text.TextUtils.TruncateAt.END })
+            row.alpha = 0.6f
+        }
+        row.addView(col, LinearLayout.LayoutParams(0, WRAP, 1f))
+        return row
+    }
+
     @SuppressLint("SetTextI18n")
     private fun refresh() {
         val svc = MacroAccessibilityService.instance
         val running = svc != null
         val enabled = isServiceEnabled()
-        statusContainer.removeAllViews()
-        fun sep() = statusContainer.addView(ui.divider(), LinearLayout.LayoutParams(MATCH, dp(1).coerceAtLeast(1)).apply {
-            marginStart = dp(56); marginEnd = dp(12)
-        })
-        statusContainer.addView(statusRow(
-            running, getString(R.string.status_service),
-            when {
-                running -> getString(R.string.status_service_running)
-                enabled -> getString(R.string.status_service_stuck)
-                else -> getString(R.string.status_service_off, getString(R.string.app_name))
-            },
-            if (running) null else ui.button(getString(R.string.action_open), Ui.BtnStyle.TONAL) {
-                startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
-            },
-        ))
-        val ignoring = isIgnoringBattery()
-        sep()
-        statusContainer.addView(statusRow(
-            ignoring, getString(R.string.status_battery),
-            getString(if (ignoring) R.string.status_battery_ok else R.string.status_battery_on),
-            if (ignoring) null else ui.button(getString(R.string.action_exclude), Ui.BtnStyle.TONAL) { requestIgnoreBattery() },
-        ))
-        if (running) {
-            val shown = svc?.isPanelShown == true
-            sep()
-            statusContainer.addView(statusRow(
-                shown, getString(R.string.status_panel), getString(if (shown) R.string.status_panel_shown else R.string.status_panel_hidden),
-                if (shown) null else ui.button(getString(R.string.action_show), Ui.BtnStyle.FILLED) { svc?.showPanel(); refresh() },
-                live = shown,
-            ))
-        }
-        sep()
-        val links = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL; setPadding(dp(4), dp(4), dp(4), 0) }
-        links.addView(ui.button(getString(R.string.action_app_info), Ui.BtnStyle.TEXT, R.drawable.ic_open) {
-            startActivity(Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:$packageName")))
-        })
-        statusContainer.addView(links)
+        buildSetup(svc, running, enabled)
 
         listContainer.removeAllViews()
         val macros = store.list()
@@ -363,11 +475,26 @@ class MainActivity : Activity() {
             listContainer.addView(LinearLayout(this).apply {
                 orientation = LinearLayout.VERTICAL; gravity = Gravity.CENTER_HORIZONTAL
                 setPadding(dp(16), dp(32), dp(16), dp(32))
+                // v0.8: sv-matrix の path-wave（蛇行の波）を移植した SNAKE パターン
                 addView(DotMatrixView(this@MainActivity, 5, 5, dp(5).toFloat(), dp(3).toFloat()).apply {
-                    color = ui.onSurfaceVariant; pattern = DotMatrixView.Pattern.PULSE
+                    color = ui.onSurfaceVariant; pattern = DotMatrixView.Pattern.SNAKE
                 }, LinearLayout.LayoutParams(WRAP, WRAP))
-                addView(ui.text(getString(R.string.empty_title), 15f, ui.onSurface, medium = true).apply { setPadding(0, dp(14), 0, dp(2)) })
-                addView(ui.text(getString(R.string.empty_body), 12f, ui.onSurfaceVariant).apply { gravity = Gravity.CENTER })
+                addView(ui.text(getString(R.string.empty_title), Ui.Type.BODY_LARGE, ui.onSurface, medium = true).apply { setPadding(0, dp(16), 0, dp(4)) })
+                addView(ui.text(getString(R.string.empty_body), Ui.Type.BODY, ui.onSurfaceVariant).apply { gravity = Gravity.CENTER })
+                // v0.8: 空の状態に「次にやること」を1つだけ（pttrns / collectui の empty state パターン）
+                val svc = MacroAccessibilityService.instance
+                val cta = if (svc != null)
+                    ui.button(getString(R.string.empty_cta), Ui.BtnStyle.FILLED, R.drawable.ic_record) {
+                        Motion.haptic(this, Motion.Haptic.CONFIRM)
+                        if (!svc.isPanelShown) svc.showPanel()
+                        // 記録したいアプリへ移れるよう、このアプリは後ろへ
+                        moveTaskToBack(true)
+                    }
+                else ui.button(getString(R.string.empty_cta_setup), Ui.BtnStyle.TONAL, R.drawable.ic_open) {
+                    Motion.haptic(this, Motion.Haptic.CONFIRM)
+                    startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
+                }
+                addView(cta, LinearLayout.LayoutParams(WRAP, WRAP).apply { topMargin = dp(16) })
             }, LinearLayout.LayoutParams(MATCH, WRAP))
             return
         }
@@ -380,6 +507,69 @@ class MainActivity : Activity() {
             listContainer.addView(v)
             if (seenRows.add(m.id)) Motion.enter(v, fresh++)
         }
+        // v0.8: 操作のヒント（長押しメニューは見えないので、一行だけ案内）
+        listContainer.addView(ui.divider(), LinearLayout.LayoutParams(MATCH, dp(1).coerceAtLeast(1)))
+        listContainer.addView(ui.text(getString(R.string.list_hint), Ui.Type.MICRO, ui.ink3).apply {
+            gravity = Gravity.CENTER; setPadding(dp(16), dp(10), dp(16), dp(10))
+        }, LinearLayout.LayoutParams(MATCH, WRAP))
+    }
+
+    /** v0.8: 選択（触覚 + 星のポン）。行のタップ・星ボタン・長押しメニューから共通で使う */
+    private var popSelectedId: String? = null
+    private fun select(m: Macro, from: View) {
+        if (store.selectedId == m.id) { Motion.haptic(from, Motion.Haptic.TICK); return }
+        Motion.haptic(from, Motion.Haptic.CONFIRM)
+        store.selectedId = m.id; popSelectedId = m.id
+        refresh(); toast(getString(R.string.toast_selected))
+    }
+
+    /**
+     * v0.8: 行の長押しメニュー（下から出るアクションシート）。
+     * mobbin / 60fps の Bottom Sheet・Action sheet のパターンを、既存の BottomSheet で作り直したもの。
+     */
+    private fun actionSheet(m: Macro) {
+        val sheet = BottomSheet(this)
+        val root = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL; background = ui.sheetBackground() }
+        val handle = View(this).apply { background = ui.rounded(ui.outline, 999) }
+        root.addView(handle, LinearLayout.LayoutParams(dp(36), dp(4)).apply { gravity = Gravity.CENTER_HORIZONTAL; topMargin = dp(10) })
+        val head = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL; setPadding(dp(24), dp(14), dp(24), dp(8)) }
+        head.addView(ui.text(m.name, Ui.Type.TITLE, ui.onSurface, weight = Ui.Weight.SEMIBOLD).apply { maxLines = 2 })
+        head.addView(ui.text(getString(R.string.macro_summary, Texts.steps(this, m.steps.size), Texts.kinds(this, m.steps)),
+            Ui.Type.BODY, ui.onSurfaceVariant).apply { setPadding(0, dp(2), 0, 0) })
+        root.addView(head)
+        val list = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL; setPadding(dp(12), dp(4), dp(12), dp(12)) }
+        fun item(icon: Int, label: String, danger: Boolean = false, action: () -> Unit) {
+            val color = if (danger) ui.error else ui.onSurface
+            val r = LinearLayout(this).apply {
+                orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL
+                minimumHeight = dp(52); setPadding(dp(12), 0, dp(12), 0)
+                background = ui.ripple(null, ui.rounded(android.graphics.Color.WHITE, 14))
+                isClickable = true; isFocusable = true
+                setOnClickListener { sheet.dismiss(); action() }
+            }
+            r.addView(ImageView(this).apply {
+                setImageDrawable(ui.icon(icon, if (danger) ui.error else ui.onSurfaceVariant)); setPadding(dp(6), dp(6), dp(6), dp(6))
+                background = ui.rounded(if (danger) ui.errorContainer else ui.surfaceContainerHigh, 10)
+                importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
+            }, LinearLayout.LayoutParams(dp(32), dp(32)).apply { marginEnd = dp(14) })
+            r.addView(ui.text(label, Ui.Type.BODY_LARGE, color, medium = true), LinearLayout.LayoutParams(0, WRAP, 1f))
+            list.addView(r, LinearLayout.LayoutParams(MATCH, WRAP))
+        }
+        item(R.drawable.ic_play, getString(R.string.action_run)) { runMacro(m) }
+        if (store.selectedId != m.id) item(R.drawable.ic_star, getString(R.string.desc_select)) { select(m, listContainer) }
+        item(R.drawable.ic_tune, getString(R.string.desc_settings)) { editSettings(m) }
+        item(R.drawable.ic_edit, getString(R.string.desc_rename)) { rename(m) }
+        list.addView(ui.divider(), LinearLayout.LayoutParams(MATCH, dp(1)).apply { topMargin = dp(4); bottomMargin = dp(4); marginStart = dp(12); marginEnd = dp(12) })
+        item(R.drawable.ic_delete, getString(R.string.delete), danger = true) { confirmDelete(m) }
+        root.addView(list)
+        root.setOnApplyWindowInsetsListener { v, insets ->
+            @Suppress("DEPRECATION") v.setPadding(0, 0, 0, insets.systemWindowInsetBottom.coerceAtMost(dp(48)))
+            insets
+        }
+        sheet.attach(root)
+        sheet.dragToDismiss(handle, head)
+        sheet.show()
+        for (i in 0 until list.childCount) Motion.enter(list.getChildAt(i), i + 1)
     }
 
     /**
@@ -397,6 +587,11 @@ class MainActivity : Activity() {
             )).apply {
                 setLayerWidth(1, dp(3)); setLayerGravity(1, Gravity.START or Gravity.FILL_VERTICAL)
             } else null
+            // v0.8: 行全体を押せるように（押したときのリップル + タップで選択 + 長押しでメニュー）
+            foreground = ui.ripple(null, android.graphics.drawable.ColorDrawable(android.graphics.Color.WHITE))
+            isClickable = true; isLongClickable = true; isFocusable = true
+            setOnClickListener { v -> select(m, v) }
+            setOnLongClickListener { v -> Motion.haptic(v, Motion.Haptic.LONG_PRESS); actionSheet(m); true }
         }
         val fg = if (isSelected) ui.onPrimaryContainer else ui.onSurface
         val fgVar = if (isSelected) ui.onPrimaryContainer else ui.onSurfaceVariant
@@ -436,8 +631,11 @@ class MainActivity : Activity() {
             setImageDrawable(ui.icon(icon, fgVar))
         }
         actions.addView(ib(if (isSelected) R.drawable.ic_star else R.drawable.ic_star_border, getString(R.string.desc_select)) {
-            store.selectedId = m.id; refresh(); toast(getString(R.string.toast_selected))
-        }.apply { if (isSelected) setImageDrawable(ui.icon(R.drawable.ic_star, ui.primary)) }, LinearLayout.LayoutParams(dp(40), dp(40)))
+            select(m, card)
+        }.apply {
+            if (isSelected) setImageDrawable(ui.icon(R.drawable.ic_star, ui.primary))
+            if (isSelected && popSelectedId == m.id) { popSelectedId = null; post { Motion.pop(this) } }
+        }, LinearLayout.LayoutParams(dp(40), dp(40)))
         actions.addView(ib(R.drawable.ic_tune, getString(R.string.desc_settings)) { editSettings(m) }, LinearLayout.LayoutParams(dp(40), dp(40)))
         actions.addView(ib(R.drawable.ic_edit, getString(R.string.desc_rename)) { rename(m) }, LinearLayout.LayoutParams(dp(40), dp(40)))
         actions.addView(ib(R.drawable.ic_delete, getString(R.string.delete)) { confirmDelete(m) }, LinearLayout.LayoutParams(dp(40), dp(40)))

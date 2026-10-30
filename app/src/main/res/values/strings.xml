@@ -159,4 +159,20 @@
         <item quantity="one">Saved (%d action)</item>
         <item quantity="other">Saved (%d actions)</item>
     </plurals>
+    <string name="setup_title">Setup</string>
+    <string name="setup_progress">%1$d of %2$d done</string>
+    <string name="setup_recommended">Recommended</string>
+    <string name="setup_service_body">Turn on “%1$s” in Accessibility so the app can record and replay taps.</string>
+    <string name="setup_service_galaxy">Galaxy: Settings → Accessibility → Installed apps → %1$s</string>
+    <string name="setup_restricted_hint">Toggle greyed out? Open App info → ⋮ → Allow restricted settings, then try again.</string>
+    <string name="setup_battery_body">Keeps Android from stopping long replays in the background.</string>
+    <string name="setup_battery_galaxy">Galaxy: Settings → Battery → Background usage limits → Never sleeping apps → add this app</string>
+    <string name="setup_done_title">All set</string>
+    <string name="setup_done_body">Show the floating buttons to record your first macro.</string>
+    <string name="empty_cta">Start recording</string>
+    <string name="empty_cta_setup">Finish setup</string>
+    <string name="list_hint">Tap a row to select · long-press for more</string>
+    <string name="settings_group_basic">General</string>
+    <string name="settings_group_playback">Playback</string>
+    <string name="settings_group_manage">Manage</string>
 </resources>

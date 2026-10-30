@@ -163,4 +163,20 @@
         <item quantity="many">Guardada (%d acciones)</item>
         <item quantity="other">Guardada (%d acciones)</item>
     </plurals>
+    <string name="setup_title">Configuración</string>
+    <string name="setup_progress">%1$d de %2$d completados</string>
+    <string name="setup_recommended">Recomendado</string>
+    <string name="setup_service_body">Activa «%1$s» en Accesibilidad para grabar y reproducir toques.</string>
+    <string name="setup_service_galaxy">Galaxy: Ajustes → Accesibilidad → Aplicaciones instaladas → %1$s</string>
+    <string name="setup_restricted_hint">¿El interruptor está desactivado? Abre Información de la app → ⋮ → Permitir ajustes restringidos y vuelve a intentarlo.</string>
+    <string name="setup_battery_body">Evita que Android detenga las reproducciones largas en segundo plano.</string>
+    <string name="setup_battery_galaxy">Galaxy: Ajustes → Batería → Límites de uso en segundo plano → Aplicaciones que nunca entran en suspensión → añade esta app</string>
+    <string name="setup_done_title">Todo listo</string>
+    <string name="setup_done_body">Muestra los botones flotantes para grabar tu primera macro.</string>
+    <string name="empty_cta">Empezar a grabar</string>
+    <string name="empty_cta_setup">Completar la configuración</string>
+    <string name="list_hint">Toca una fila para seleccionarla · mantén pulsado para más</string>
+    <string name="settings_group_basic">General</string>
+    <string name="settings_group_playback">Reproducción</string>
+    <string name="settings_group_manage">Gestionar</string>
 </resources>

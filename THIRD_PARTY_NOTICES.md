@@ -44,3 +44,62 @@ data were copied from them.
 | sv-matrix.vercel.app | github.com/SikandarJODD/sv-matrix | MIT |
 | sv-particles.vercel.app | (no license file found) | — inspiration only |
 | sv-agentation.com | github.com/SikandarJODD/sv-agentation | MIT |
+
+## Values ported in v0.8 (MIT)
+
+v0.8 ports a few numeric values (timings, easing curves, opacity levels and the dot ordering rule) from the following
+MIT-licensed projects and re-implements them in Kotlin. No Svelte/TypeScript/CSS source files were copied.
+
+- **SikandarJODD/animations** (sv-animations.vercel.app), `BlurFade`: duration 0.4 s, delay 0.04 s + n, offset 6, blur 6px,
+  ease "easeOut" (cubic-bezier(0, 0, 0.58, 1)) → `Motion.enter` in `Motion.kt`.
+- **SikandarJODD/sv-matrix** (sv-matrix.vercel.app), dot-matrix "path-wave": 1500 ms cycle, opacity base 0.16 / peak 1,
+  `dmx-ripple` keyframes with cubic-bezier(0.42, 0, 0.58, 1), per-dot delay = path × 0.2333 × cycle, snake path order on
+  the grid, reduced-motion static opacity 0.12 + path × 0.72 → `DotMatrixView.Pattern.SNAKE` in `DotMatrixView.kt`.
+
+Both projects are distributed under the following license:
+
+```
+MIT License
+
+Copyright (c) 2026 Sikandar Bhide
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+```
+
+sv-particles has no license file, so nothing was taken from it (inspiration only).
+
+## Design references for v0.8 (patterns only; no images or assets)
+
+v0.8's UX changes were informed by browsing the public pages of these design galleries. The screenshots they show are
+the copyright of their respective apps; none of them were copied into this app or repository. Only general interaction
+patterns were re-created natively with Android Views.
+
+| Gallery | Patterns taken |
+| --- | --- |
+| mobbin.com | onboarding flows, bottom sheet / action sheet |
+| refero.design | onboarding / workflow sequences, quiet list styling |
+| appshots.design | onboarding & settings flows |
+| 60fps.design | bottom-sheet drag, pop / bounce micro-interactions |
+| screensdesign.com | onboarding broken into numbered steps |
+| chamjo.design | small count badges, polished spacing |
+| pageflows.com | step-by-step recorded flows with progress |
+| appllama.io, asoinspo.com | (store-listing galleries; no in-app pattern used) |
+| collectui.com | empty state, settings page |
+| spottedinprod.com | grouped settings with section headers |
+| pttrns.com | empty state with one primary action, grouped settings |

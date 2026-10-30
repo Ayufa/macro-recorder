@@ -59,7 +59,8 @@ class SettingsSheet(
             background = ui.sheetBackground()
         }
         // つまみ
-        root.addView(View(activity).apply { background = ui.rounded(ui.outline, 999) },
+        val handle = View(activity).apply { background = ui.rounded(ui.outline, 999) }
+        root.addView(handle,
             LinearLayout.LayoutParams(dp(36), dp(4)).apply { gravity = Gravity.CENTER_HORIZONTAL; topMargin = dp(10) })
         // 見出し
         val head = LinearLayout(activity).apply { orientation = LinearLayout.VERTICAL; setPadding(dp(24), dp(14), dp(24), dp(10)) }
@@ -72,10 +73,14 @@ class SettingsSheet(
         root.addView(head)
 
         val content = LinearLayout(activity).apply { orientation = LinearLayout.VERTICAL; setPadding(dp(16), dp(4), dp(16), dp(16)) }
+        // v0.8: グループ見出しで階層をはっきり（spottedinprod / pttrns のグループ化された設定画面のパターン）
+        content.addView(groupLabel(s(R.string.settings_group_basic), first = true))
         content.addView(nameCard())
+        content.addView(groupLabel(s(R.string.settings_group_playback)))
         content.addView(repeatCard())
         content.addView(intervalCard())
         content.addView(speedCard())
+        content.addView(groupLabel(s(R.string.settings_group_manage)))
         content.addView(dangerCard())
         val scroll = ScrollView(activity).apply { isFillViewport = false; addView(content) }
         root.addView(scroll, LinearLayout.LayoutParams(MATCH, 0, 1f))
@@ -99,6 +104,7 @@ class SettingsSheet(
         }
 
         sheet.attach(root)
+        sheet.dragToDismiss(handle, head)
         applyRepeat(); applyInterval(fromField = false); applySpeed(fromBar = false)
         sheet.show()
         // v0.7: シートが上がるのに合わせて、カードを順番に表示
@@ -107,12 +113,18 @@ class SettingsSheet(
 
     // ---- カード ----
 
+    private fun groupLabel(t: String, first: Boolean = false) = ui.sectionLabel(t).apply {
+        setPadding(dp(8), if (first) dp(8) else dp(20), dp(8), 0)
+        isFocusable = true
+        if (android.os.Build.VERSION.SDK_INT >= 28) isAccessibilityHeading = true
+    }
+
     private fun card(iconId: Int, title: String, value: TextView? = null): LinearLayout {
         val c = LinearLayout(activity).apply {
             orientation = LinearLayout.VERTICAL
             background = ui.card()
             setPadding(dp(16), dp(14), dp(16), dp(16))
-            layoutParams = LinearLayout.LayoutParams(MATCH, WRAP).apply { topMargin = dp(12) }
+            layoutParams = LinearLayout.LayoutParams(MATCH, WRAP).apply { topMargin = dp(8) }
         }
         val row = LinearLayout(activity).apply { orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL }
         row.addView(ImageView(activity).apply {
@@ -191,7 +203,10 @@ class SettingsSheet(
                 contentDescription = s(R.string.settings_speed)
                 setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
                     override fun onProgressChanged(sb: SeekBar, p: Int, fromUser: Boolean) {
-                        if (fromUser) { speed = Macro.MIN_SPEED + p * 0.25f; applySpeed(fromBar = true) }
+                        if (fromUser) {
+                            speed = Macro.MIN_SPEED + p * 0.25f; applySpeed(fromBar = true)
+                            Motion.haptic(sb, Motion.Haptic.TICK) // v0.8: 目盛りごとに軽いクリック
+                        }
                     }
                     override fun onStartTrackingTouch(sb: SeekBar) {}
                     override fun onStopTrackingTouch(sb: SeekBar) {}
@@ -214,7 +229,7 @@ class SettingsSheet(
         // v0.7: 「危険な操作」は赤みの細い線で区別
         background = ui.rounded(ui.surfaceContainer, 20, ui.withAlpha(ui.error, 0.3f))
         setPadding(dp(8), dp(6), dp(8), dp(6))
-        layoutParams = LinearLayout.LayoutParams(MATCH, WRAP).apply { topMargin = dp(12) }
+        layoutParams = LinearLayout.LayoutParams(MATCH, WRAP).apply { topMargin = dp(8) }
         addView(ui.button(s(R.string.delete_macro), Ui.BtnStyle.DANGER_TEXT, R.drawable.ic_delete) { confirmDelete() }.apply {
             gravity = Gravity.CENTER_VERTICAL or Gravity.START; minHeight = dp(44)
         }, LinearLayout.LayoutParams(MATCH, WRAP))

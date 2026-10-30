@@ -65,6 +65,19 @@ class Ui(val ctx: Context) {
     // ---------- 書体 ----------
     enum class Weight(val w: Int) { REGULAR(400), MEDIUM(500), SEMIBOLD(600) }
 
+    /**
+     * v0.8: 文字サイズの段階（sp）。画面ごとにばらばらだった値をこの5段＋見出しにそろえる。
+     * 間隔は 4dp の倍数（4 / 8 / 12 / 16 / 24）を使う。
+     */
+    object Type {
+        const val DISPLAY = 26f
+        const val TITLE = 18f
+        const val BODY_LARGE = 15f
+        const val BODY = 13f
+        const val CAPTION = 12f
+        const val MICRO = 11f
+    }
+
     fun font(weight: Weight): Typeface = fonts.getOrPut(weight) {
         runCatching {
             Typeface.Builder(ctx.assets, "fonts/FunnelSans-wght.ttf")
@@ -233,7 +246,7 @@ class Ui(val ctx: Context) {
         val view: TextView = text(label, 13f, onSurface, weight = Weight.MEDIUM).apply {
             gravity = Gravity.CENTER; minHeight = dp(34); minWidth = dp(48)
             setPadding(dp(14), 0, dp(14), 0); isClickable = true; isFocusable = true
-            setOnClickListener { onClick() }
+            setOnClickListener { Motion.haptic(this, Motion.Haptic.TICK); onClick() }
             Motion.pressable(this)
         }
         var selected = false
@@ -262,7 +275,7 @@ class Ui(val ctx: Context) {
             text(l, 14f, onSurfaceVariant, weight = Weight.MEDIUM).apply {
                 gravity = Gravity.CENTER; minHeight = dp(38); isClickable = true; isFocusable = true
                 descs?.getOrNull(i)?.let { contentDescription = it }
-                setOnClickListener { select(i); onSelect(i) }
+                setOnClickListener { Motion.haptic(this, Motion.Haptic.TICK); select(i); onSelect(i) }
             }.also { view.addView(it, LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)) }
         }
         var index = -1

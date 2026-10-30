@@ -139,4 +139,20 @@
     <plurals name="saved_title">
         <item quantity="other">已儲存（%d 個操作）</item>
     </plurals>
+    <string name="setup_title">初始設定</string>
+    <string name="setup_progress">已完成 %1$d/%2$d</string>
+    <string name="setup_recommended">建議</string>
+    <string name="setup_service_body">在無障礙設定中開啟「%1$s」，即可錄製和重播點按操作。</string>
+    <string name="setup_service_galaxy">Galaxy：設定 → 協助工具 → 已安裝的應用程式 → %1$s</string>
+    <string name="setup_restricted_hint">開關無法開啟？請到應用程式資訊 → ⋮ → 允許受限制的設定，然後再試一次。</string>
+    <string name="setup_battery_body">避免系統在背景中斷較長的重播。</string>
+    <string name="setup_battery_galaxy">Galaxy：設定 → 電池 → 背景使用限制 → 永不休眠的應用程式 → 加入本應用程式</string>
+    <string name="setup_done_title">準備就緒</string>
+    <string name="setup_done_body">顯示浮動按鈕，錄製你的第一個巨集吧。</string>
+    <string name="empty_cta">開始錄製</string>
+    <string name="empty_cta_setup">完成設定</string>
+    <string name="list_hint">點按選取 · 長按查看更多操作</string>
+    <string name="settings_group_basic">一般</string>
+    <string name="settings_group_playback">重播</string>
+    <string name="settings_group_manage">管理</string>
 </resources>

@@ -160,6 +160,48 @@ class BottomSheet(private val activity: Activity) : Dialog(activity, R.style.App
         }
     }
 
+    /**
+     * v0.8: つまみ・見出しを下へドラッグして閉じる（60fps.design の Bottom Sheet で見た操作感）。
+     * 高さの 25% を越えるか、速く下へはじいたら閉じる。足りなければ元の位置へ戻す。
+     */
+    @android.annotation.SuppressLint("ClickableViewAccessibility")
+    fun dragToDismiss(vararg handles: View) {
+        var downY = 0f; var lastY = 0f; var lastT = 0L; var vel = 0f; var dragging = false
+        val slop = android.view.ViewConfiguration.get(activity).scaledTouchSlop
+        val listener = View.OnTouchListener { _, e ->
+            when (e.actionMasked) {
+                android.view.MotionEvent.ACTION_DOWN -> {
+                    downY = e.rawY; lastY = e.rawY; lastT = e.eventTime; vel = 0f; dragging = false
+                    sheet.animate().cancel(); true
+                }
+                android.view.MotionEvent.ACTION_MOVE -> {
+                    val dy = e.rawY - downY
+                    if (!dragging && dy > slop) dragging = true
+                    if (dragging) {
+                        // 上へは少しだけ（ゴムのような抵抗）
+                        sheet.translationY = if (dy >= 0) dy else dy / 6f
+                        val dt = (e.eventTime - lastT).coerceAtLeast(1)
+                        vel = (e.rawY - lastY) / dt * 1000f
+                        lastY = e.rawY; lastT = e.eventTime
+                    }
+                    true
+                }
+                android.view.MotionEvent.ACTION_UP, android.view.MotionEvent.ACTION_CANCEL -> {
+                    if (dragging) {
+                        val far = sheet.translationY > sheet.height * 0.25f
+                        val fling = vel > 1200f * activity.resources.displayMetrics.density / 2.625f
+                        if (far || fling) dismiss()
+                        else if (animated()) sheet.animate().translationY(0f).setDuration(260).setInterpolator(ease).start()
+                        else sheet.translationY = 0f
+                    }
+                    dragging = false; true
+                }
+                else -> false
+            }
+        }
+        handles.forEach { it.setOnTouchListener(listener) }
+    }
+
     override fun dismiss() {
         if (closing) return
         if (!animated() || !isShowing) { super.dismiss(); return }
