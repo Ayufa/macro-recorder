@@ -1,0 +1,46 @@
+package jp.ayu.macro
+
+import org.junit.Assert.assertEquals
+import org.junit.Test
+
+class ModelTest {
+    private fun sample() = Macro(
+        id = "abc", name = "テスト", createdAt = 1L, screenWidth = 1080, screenHeight = 2340,
+        steps = listOf(
+            Step(300, listOf(Stroke(0, listOf(TouchPoint(10f, 20f, 0), TouchPoint(11f, 20f, 80))))),
+            Step(1200, listOf(Stroke(0, listOf(TouchPoint(500f, 1500f, 0), TouchPoint(500f, 500f, 300))))),
+            Step(500, listOf(Stroke(0, listOf(TouchPoint(100f, 100f, 0), TouchPoint(100f, 100f, 900))))),
+        ),
+        repeatCount = 0, loopIntervalMs = 2500, speed = 2f,
+    )
+
+    @Test fun jsonRoundTrip() {
+        val m = sample()
+        assertEquals(m, Macro.fromJson(org.json.JSONObject(m.toJson().toString())))
+    }
+
+    @Test fun kinds() {
+        val m = sample()
+        assertEquals("タップ", m.steps[0].kindLabel())
+        assertEquals("スワイプ", m.steps[1].kindLabel())
+        assertEquals("長押し", m.steps[2].kindLabel())
+    }
+
+    @Test fun speedScaling() {
+        assertEquals(500L, ReplayMath.scaleTime(1000, 2f))
+        assertEquals(2000L, ReplayMath.scaleTime(1000, 0.5f))
+        assertEquals(250L, ReplayMath.scaleTime(1000, 10f)) // 4倍に制限
+    }
+
+    @Test fun pointScaling() {
+        assertEquals(540f to 1170f, ReplayMath.scalePoint(540f, 1170f, 1080, 2340, 1080, 2340))
+        assertEquals(720f to 1560f, ReplayMath.scalePoint(540f, 1170f, 1080, 2340, 1440, 3120))
+    }
+
+    @Test fun simplifyKeepsEnds() {
+        val pts = (0..100).map { TouchPoint(it * 0.5f, 0f, it.toLong()) }
+        val s = ReplayMath.simplify(pts)
+        assertEquals(pts.first(), s.first()); assertEquals(pts.last(), s.last())
+        assert(s.size < pts.size)
+    }
+}

@@ -1,0 +1,28 @@
+# Gradle / build
+.gradle/
+build/
+**/build/
+.kotlin/
+captures/
+.externalNativeBuild/
+.cxx/
+
+# Local config (SDK path etc.)
+local.properties
+
+# IDE
+*.iml
+.idea/
+.DS_Store
+
+# Signing keys / secrets (never commit)
+*.jks
+*.keystore
+keystore.properties
+*.pem
+*.p12
+
+# Built artifacts (APKs are attached to GitHub Releases instead)
+dist/
+*.apk
+*.aab

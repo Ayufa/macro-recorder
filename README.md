@@ -1,0 +1,34 @@
+# 操作マクロ（macro-recorder）
+
+Android 用の画面操作マクロアプリです。タップ・長押し・スワイプを記録して、あとで自動で再生できます。root 不要。
+
+- ユーザー補助サービス（AccessibilityService）の `dispatchGesture` で操作を再生
+- 記録中は透明なオーバーレイで指の動き（座標と時間）を受け取り、その操作をすぐ下のアプリに届けます
+- 繰り返し回数（無限も可）・ループ間隔・速度（0.5〜4倍）を設定可能
+- マクロに名前を付けて保存／名前変更／削除／実行
+- ドラッグで動かせるフローティングボタン（記録・再生・停止）
+- **プライバシー**: 他のアプリの画面内容は読み取りません（`canRetrieveWindowContent=false`、イベント購読なし）。データは端末内のアプリ専用領域にのみ保存。`INTERNET` 権限なし。
+
+## インストール
+
+[INSTALL_ja.md](INSTALL_ja.md) を参照してください（Galaxy 向けの手順）。APK は Releases にあります。
+
+## ビルド
+
+```sh
+./gradlew assembleDebug        # app/build/outputs/apk/debug/app-debug.apk
+./gradlew testDebugUnitTest lintDebug
+```
+
+JDK 17、Android SDK Platform 37（compileSdk / targetSdk 37、minSdk 26）、AGP 9.5、Gradle 9.8。
+
+## v0.1 の制限
+
+- テキスト入力の記録は未対応
+- スワイプは記録した軌跡を一定速度でなぞります（途中で止まる・速さが変わる動きは再現されません）
+- 記録中、1つの操作を下のアプリに届けている短い間（画面のふちがオレンジ）のタッチは記録されません
+- 画面の向きや解像度が記録時と違う場合は座標を比例変換するだけなので、レイアウトが変わる画面ではずれることがあります
+
+## ライセンス
+
+MIT
