@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- v0.9: Android 14+ は Material 3 の色の役割そのもの（system_*_light）を使う -->
+<resources>
+    <color name="md_primary">@android:color/system_primary_light</color>
+    <color name="md_on_primary">@android:color/system_on_primary_light</color>
+    <color name="md_primary_container">@android:color/system_primary_container_light</color>
+    <color name="md_on_primary_container">@android:color/system_on_primary_container_light</color>
+    <color name="md_secondary_container">@android:color/system_secondary_container_light</color>
+    <color name="md_on_secondary_container">@android:color/system_on_secondary_container_light</color>
+    <color name="md_surface">@android:color/system_surface_container_low_light</color>
+    <color name="md_surface_container">@android:color/system_surface_container_lowest_light</color>
+    <color name="md_surface_container_high">@android:color/system_surface_container_lowest_light</color>
+    <color name="md_on_surface">@android:color/system_on_surface_light</color>
+    <color name="md_on_surface_variant">@android:color/system_on_surface_variant_light</color>
+    <color name="md_outline">@android:color/system_outline_light</color>
+    <color name="md_outline_variant">@android:color/system_outline_variant_light</color>
+</resources>

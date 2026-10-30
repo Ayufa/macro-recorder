@@ -155,4 +155,25 @@
     <string name="settings_group_basic">一般</string>
     <string name="settings_group_playback">重播</string>
     <string name="settings_group_manage">管理</string>
+
+    <!-- v0.9 -->
+    <string name="desc_more">更多操作</string>
+    <string name="desc_drag_handle">拖曳控點。輕觸兩下即可關閉</string>
+    <string name="snack_deleted">已刪除「%1$s」</string>
+    <string name="undo">復原</string>
+    <string name="state_selected">已選為浮動播放按鈕的巨集</string>
+    <string name="state_progress">播放中，%1$d%%</string>
+    <string name="disclosure_title">本應用程式如何使用無障礙功能</string>
+    <string name="disclosure_message">操作巨集僅將 Android 無障礙服務用於重播您錄製的輕觸、長按和滑動操作，以及顯示浮動的錄製/播放按鈕。\n\n• 僅在您按下錄製後，記錄手指位置和時間。\n• 不會讀取螢幕內容、文字、密碼或其他應用程式中的個人資訊。\n• 巨集僅儲存在這部裝置上。本應用程式沒有網路權限，不會傳送任何資料。\n\n請在下一個畫面中開啟「操作巨集」並將其啟用。</string>
+    <string name="disclosure_continue">前往設定</string>
+    <string name="not_now">以後再說</string>
+    <string name="theme">主題</string>
+    <string name="theme_system">系統預設</string>
+    <string name="theme_light">淺色</string>
+    <string name="theme_dark">深色</string>
+    <string name="shortcut_show_short">顯示按鈕</string>
+    <string name="shortcut_show_long">顯示浮動按鈕</string>
+    <string name="shortcut_play_short">播放</string>
+    <string name="shortcut_play_long">播放所選巨集</string>
+    <string name="shortcut_disabled">無法使用</string>
 </resources>

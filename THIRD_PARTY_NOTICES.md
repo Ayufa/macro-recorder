@@ -103,3 +103,15 @@ patterns were re-created natively with Android Views.
 | collectui.com | empty state, settings page |
 | spottedinprod.com | grouped settings with section headers |
 | pttrns.com | empty state with one primary action, grouped settings |
+
+## v0.9: design guideline (MIT) and new icons
+
+- **ehmo/platform-design-skills** — `android-design-guidelines` (commit `dc2be825`), MIT License,
+  <https://github.com/ehmo/platform-design-skills>. Used as the checklist for the v0.9 audit
+  ([docs/DESIGN_AUDIT_v0.9.md](docs/DESIGN_AUDIT_v0.9.md)). Rule IDs (R1.1–R10.x) are cited in code comments; no code was copied.
+  Copyright (c) the platform-design-skills authors. Permission is hereby granted, free of charge, under the terms of the MIT
+  License (same text as above).
+- **Material Icons** (Google, Apache License 2.0, <https://www.apache.org/licenses/LICENSE-2.0>) — new in v0.9:
+  `ic_more_vert.xml` (more_vert), `ic_contrast.xml` (contrast), and the launcher-shortcut icons `shortcut_play.xml` /
+  `shortcut_show.xml`, which draw the existing Material `ic_play` / `ic_touch` glyph paths on a circle.
+

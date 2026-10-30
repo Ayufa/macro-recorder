@@ -1,21 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- v0.7: ほぼ黒の背景 + 一段明るいカード + 細い線（sv-matrix / sv-efferd のダーク面を参考） -->
+<!-- v0.9: 真っ黒に近い #09090B をやめ、少し明るいトーンの面に（R1.8）。カードは一段明るく。 -->
 <resources>
     <color name="md_primary">#4D94FF</color>
     <color name="md_on_primary">#001A40</color>
     <color name="md_primary_container">#0E2A57</color>
     <color name="md_on_primary_container">#D6E6FF</color>
-    <color name="md_secondary_container">#1F1F23</color>
+    <color name="md_secondary_container">#27272A</color>
     <color name="md_on_secondary_container">#FAFAFA</color>
-    <color name="md_surface">#09090B</color>
-    <color name="md_surface_container">#111113</color>
-    <color name="md_surface_container_high">#18181B</color>
+    <color name="md_surface">#111113</color>
+    <color name="md_surface_container">#18181B</color>
+    <color name="md_surface_container_high">#1F1F23</color>
     <color name="md_on_surface">#FAFAFA</color>
     <color name="md_on_surface_variant">#A1A1AA</color>
-    <color name="md_ink_3">#8B8B94</color>
-    <color name="md_outline_variant">#232327</color>
-    <color name="md_outline">#323238</color>
-    <color name="md_inverse_surface">#FAFAFA</color>
+    <color name="md_ink_3">#96969F</color>
+    <color name="md_outline_variant">#2A2A2F</color>
+    <color name="md_outline">#6B6B74</color>
+    <color name="md_inverse_surface">#E4E4E7</color>
     <color name="md_inverse_on_surface">#18181B</color>
     <color name="md_error">#F87171</color>
     <color name="md_on_error">#3D0006</color>
@@ -24,5 +25,7 @@
     <color name="md_record">#FF5A5F</color>
     <color name="md_success">#22C55E</color>
     <color name="md_success_container">#0B2A17</color>
-    <color name="md_grid">#1C1C20</color>
+    <color name="md_grid">#1F1F23</color>
+    <!-- v0.9: スナックバーの操作ボタン（inverseSurface 上の色） -->
+    <color name="md_inverse_primary">#0058D0</color>
 </resources>

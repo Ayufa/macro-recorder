@@ -175,4 +175,25 @@
     <string name="settings_group_basic">General</string>
     <string name="settings_group_playback">Playback</string>
     <string name="settings_group_manage">Manage</string>
+
+    <!-- v0.9 -->
+    <string name="desc_more">More actions</string>
+    <string name="desc_drag_handle">Drag handle. Double-tap to close</string>
+    <string name="snack_deleted">Deleted \"%1$s\"</string>
+    <string name="undo">Undo</string>
+    <string name="state_selected">Selected for the floating Play button</string>
+    <string name="state_progress">Playing, %1$d%%</string>
+    <string name="disclosure_title">How this app uses Accessibility</string>
+    <string name="disclosure_message">Macro Recorder uses the Android Accessibility service only to replay the taps, long presses and swipes you record, and to show the floating Record/Play buttons.\n\n• It records only finger positions and timing, and only while you have pressed Record.\n• It does not read screen content, text, passwords or personal information from other apps.\n• Macros stay on this device. The app has no internet permission, so nothing is sent.\n\nOn the next screen, open \"Macro Recorder\" and turn it on.</string>
+    <string name="disclosure_continue">Go to settings</string>
+    <string name="not_now">Not now</string>
+    <string name="theme">Theme</string>
+    <string name="theme_system">System default</string>
+    <string name="theme_light">Light</string>
+    <string name="theme_dark">Dark</string>
+    <string name="shortcut_show_short">Show buttons</string>
+    <string name="shortcut_show_long">Show floating buttons</string>
+    <string name="shortcut_play_short">Play</string>
+    <string name="shortcut_play_long">Play selected macro</string>
+    <string name="shortcut_disabled">Unavailable</string>
 </resources>

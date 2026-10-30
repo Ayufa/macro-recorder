@@ -147,7 +147,10 @@ class MacroAccessibilityService : AccessibilityService() {
 
     // ---------------- フローティングパネル ----------------
     private val prefs by lazy { getSharedPreferences("panel", MODE_PRIVATE) }
-    private val ui by lazy { Ui(this) }
+    private val uiDefault by lazy { Ui(this) }
+    /** v0.9: Android 11 以下でアプリ内のテーマを切り替えたとき、パネルの色を作り直すための差し替え */
+    private var uiOverride: Ui? = null
+    private val ui: Ui get() = uiOverride ?: uiDefault
 
     @SuppressLint("SetTextI18n")
     fun showPanel() {
@@ -191,6 +194,7 @@ class MacroAccessibilityService : AccessibilityService() {
     /** 展開/折りたたみに合わせて中身を作り直す（アニメーションなし） */
     private fun buildPanelContent() {
         val frame = panel ?: return
+        if (Build.VERSION.SDK_INT < 31) uiOverride = Ui(AppLocales.wrap(applicationContext))
         anim?.cancel(); anim = null
         frame.removeAllViews()
         clearPanelRefs()
@@ -360,27 +364,30 @@ class MacroAccessibilityService : AccessibilityService() {
             gravity = Gravity.CENTER_VERTICAL
             setPadding(dp(4), 0, dp(4), 0)
         }
-        fun add(v: View, w: Int = dp(size), hh: Int = dp(size)) =
-            row.addView(v, LinearLayout.LayoutParams(w, hh).apply { marginStart = dp(1); marginEnd = dp(1) })
+        // v0.9: ボタンは縦 48dp（パネルの高さいっぱい）を押せる。丸の見た目は size のまま（R6.5 / R6.6）
+        val m = if (size >= 48) 0 else 1
+        fun add(v: View, w: Int = dp(size), hh: Int = h) =
+            row.addView(v, LinearLayout.LayoutParams(w, hh).apply { marginStart = dp(m); marginEnd = dp(m) })
+        fun btn(icon: Int, desc: Int, onClick: () -> Unit) = ui.iconButton(icon, getString(desc), size, 48, onClick)
 
-        add(ui.iconButton(R.drawable.ic_record, getString(R.string.desc_record), size) {
+        add(btn(R.drawable.ic_record, R.string.desc_record) {
             if (state == State.RECORDING) stopRecording() else startRecording()
         }.apply { tag = "rec" })
-        add(ui.iconButton(R.drawable.ic_play, getString(R.string.desc_play), size) { playSelected() }.apply {
+        add(btn(R.drawable.ic_play, R.string.desc_play) { playSelected() }.apply {
             tag = "play"
             setOnLongClickListener {
                 val n = store.selectedId?.let { store.get(it)?.name } ?: store.list().firstOrNull()?.name
                 toast(n?.let { getString(R.string.toast_play_target, it) } ?: getString(R.string.toast_no_macros_short)); true
             }
         })
-        add(ui.iconButton(R.drawable.ic_stop, getString(R.string.desc_stop), size) { stopAll() }.apply { tag = "stop" })
+        add(btn(R.drawable.ic_stop, R.string.desc_stop) { stopAll() }.apply { tag = "stop" })
         // v0.7: 状態の横に小さなドットマトリクス（記録=赤の脈動、再生=アクセントの波）
         row.addView(DotMatrixView(this, 3, 3, dp(3).toFloat(), ui.dp(1.5f).toFloat()).apply {
             tag = "dots"; visibility = View.GONE
         }, LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply {
             marginStart = dp(4)
         })
-        val st = ui.monoText("", 12f, ui.onSurfaceVariant, Ui.Weight.MEDIUM).apply {
+        val st = ui.monoText("", Ui.Type.LABEL_MEDIUM, ui.onSurfaceVariant, Ui.Weight.MEDIUM).apply {
             tag = "status"
             maxWidth = dp(64); maxLines = 1; ellipsize = android.text.TextUtils.TruncateAt.END
             setPadding(dp(4), 0, dp(6), 0)
@@ -388,12 +395,12 @@ class MacroAccessibilityService : AccessibilityService() {
         row.addView(st, LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT))
         // 区切り線
         add(View(this).apply { setBackgroundColor(ui.outline) }, dp(1), dp(size - 16))
-        add(ui.iconButton(R.drawable.ic_settings, getString(R.string.desc_open_app), size) { openApp() })
-        add(ui.iconButton(R.drawable.ic_collapse, getString(R.string.desc_collapse), size) { setCollapsed(true) }.apply {
+        add(btn(R.drawable.ic_settings, R.string.desc_open_app) { openApp() })
+        add(btn(R.drawable.ic_collapse, R.string.desc_collapse) { setCollapsed(true) }.apply {
             // 左へ広がったときは、縮む向き（右）に矢印を向ける
             if (leftward) scaleX = -1f
         })
-        add(ui.iconButton(R.drawable.ic_close, getString(R.string.desc_hide_panel), size) { hidePanel() })
+        add(btn(R.drawable.ic_close, R.string.desc_hide_panel) { hidePanel() })
 
         val box = android.widget.FrameLayout(this).apply {
             background = ui.rounded(ui.surfaceContainerHigh, 24, ui.outlineVariant)

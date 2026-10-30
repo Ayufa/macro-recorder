@@ -3,11 +3,13 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <!-- INTERNET 権限は意図的に宣言していません（データを外部へ送信しないため）。 -->
+    <!-- v0.9: 予測型「戻る」（Android 13+）に対応（R2.5） -->
     <!-- 電池の最適化の除外画面を開くためだけに使用 -->
     <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
 
     <application
         android:allowBackup="false"
+        android:enableOnBackInvokedCallback="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="false"
         android:icon="@mipmap/ic_launcher"
@@ -25,6 +27,10 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <!-- v0.9: アイコン長押しのショートカット（R10） -->
+            <meta-data
+                android:name="android.app.shortcuts"
+                android:resource="@xml/shortcuts" />
         </activity>
 
         <service

@@ -155,4 +155,25 @@
     <string name="settings_group_basic">基本</string>
     <string name="settings_group_playback">再生</string>
     <string name="settings_group_manage">管理</string>
+
+    <!-- v0.9 -->
+    <string name="desc_more">その他の操作</string>
+    <string name="desc_drag_handle">ドラッグハンドル。ダブルタップで閉じます</string>
+    <string name="snack_deleted">「%1$s」を削除しました</string>
+    <string name="undo">元に戻す</string>
+    <string name="state_selected">フローティングの再生ボタンで再生</string>
+    <string name="state_progress">再生中、%1$d%%</string>
+    <string name="disclosure_title">アクセシビリティの使い方について</string>
+    <string name="disclosure_message">操作マクロは Android のユーザー補助（アクセシビリティ）サービスを、記録したタップ・長押し・スワイプを再生することと、フローティングの記録/再生ボタンを表示することだけに使います。\n\n• 記録するのは指の位置とタイミングだけで、記録ボタンを押している間だけです。\n• 画面の内容、文字、パスワード、他のアプリの個人情報は読み取りません。\n• マクロはこの端末の中だけに保存されます。インターネット権限がないので、何も送信されません。\n\n次の画面で「操作マクロ」を開いてオンにしてください。</string>
+    <string name="disclosure_continue">設定に進む</string>
+    <string name="not_now">今はしない</string>
+    <string name="theme">テーマ</string>
+    <string name="theme_system">システムのデフォルト</string>
+    <string name="theme_light">ライト</string>
+    <string name="theme_dark">ダーク</string>
+    <string name="shortcut_show_short">ボタンを表示</string>
+    <string name="shortcut_show_long">フローティングボタンを表示</string>
+    <string name="shortcut_play_short">再生</string>
+    <string name="shortcut_play_long">選択中のマクロを再生</string>
+    <string name="shortcut_disabled">利用できません</string>
 </resources>

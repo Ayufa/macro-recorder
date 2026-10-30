@@ -8,6 +8,7 @@ import android.graphics.Paint
 import android.graphics.RectF
 import android.graphics.drawable.Drawable
 import android.view.MotionEvent
+import android.os.Build
 import android.view.View
 import android.view.ViewConfiguration
 import android.widget.FrameLayout
@@ -65,7 +66,12 @@ class BubbleView(context: Context, private val ui: Ui) : View(context) {
 
     /** 0..1。再生中の進み具合 */
     var progress = 0f
-        set(v) { field = v.coerceIn(0f, 1f); invalidate() }
+        set(v) {
+            val pct = (v.coerceIn(0f, 1f) * 100).toInt()
+            val changed = (field * 100).toInt() != pct
+            field = v.coerceIn(0f, 1f); invalidate()
+            if (changed) stateUpdate()
+        }
 
     private var pulse = 0f
     private var anim: ValueAnimator? = null
@@ -92,7 +98,18 @@ class BubbleView(context: Context, private val ui: Ui) : View(context) {
             Mode.RECORDING -> context.getString(R.string.desc_bubble_recording)
             Mode.PLAYING -> context.getString(R.string.desc_bubble_playing)
         }
+        stateUpdate()
     }
+
+    /** v0.9: 再生中は進み具合を状態として読み上げる（R6.1 / R6.3） */
+    private fun stateUpdate() {
+        if (Build.VERSION.SDK_INT >= 30) {
+            stateDescription = if (mode == Mode.PLAYING) context.getString(R.string.state_progress, (progress * 100).toInt()) else null
+        }
+    }
+
+    /** v0.9: TalkBack に「ボタン」として伝える（R6.1） */
+    override fun getAccessibilityClassName(): CharSequence = android.widget.Button::class.java.name
 
     private fun refreshIcon() {
         val id = if (mode == Mode.PLAYING) R.drawable.ic_play else R.drawable.ic_touch

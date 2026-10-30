@@ -59,17 +59,19 @@ class SettingsSheet(
             background = ui.sheetBackground()
         }
         // つまみ
-        val handle = View(activity).apply { background = ui.rounded(ui.outline, 999) }
-        root.addView(handle,
-            LinearLayout.LayoutParams(dp(36), dp(4)).apply { gravity = Gravity.CENTER_HORIZONTAL; topMargin = dp(10) })
+        // v0.9: 押せる範囲 48dp・TalkBack で閉じられるつまみ（R6.5）
+        val handle = sheet.handle()
+        root.addView(handle, LinearLayout.LayoutParams(dp(96), dp(48)).apply { gravity = Gravity.CENTER_HORIZONTAL })
         // 見出し
-        val head = LinearLayout(activity).apply { orientation = LinearLayout.VERTICAL; setPadding(dp(24), dp(14), dp(24), dp(10)) }
-        head.addView(ui.text(s(R.string.settings_title), 22f, ui.onSurface, weight = Ui.Weight.SEMIBOLD))
+        val head = LinearLayout(activity).apply { orientation = LinearLayout.VERTICAL; setPadding(dp(24), 0, dp(24), dp(10)) }
+        head.addView(ui.text(s(R.string.settings_title), Ui.Type.TITLE_LARGE, ui.onSurface, weight = Ui.Weight.SEMIBOLD).apply {
+            if (android.os.Build.VERSION.SDK_INT >= 28) isAccessibilityHeading = true
+        })
         head.addView(ui.badge(Texts.steps(activity, macro.steps.size)).apply {
             importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
         }, LinearLayout.LayoutParams(WRAP, WRAP).apply { topMargin = dp(6); bottomMargin = dp(2) })
         head.addView(ui.text(activity.getString(R.string.settings_subtitle, macro.name, Texts.steps(activity, macro.steps.size)),
-            14f, ui.onSurfaceVariant).apply { setPadding(0, dp(2), 0, 0); maxLines = 2 })
+            Ui.Type.BODY_MEDIUM, ui.onSurfaceVariant).apply { setPadding(0, dp(2), 0, 0); maxLines = 2 })
         root.addView(head)
 
         val content = LinearLayout(activity).apply { orientation = LinearLayout.VERTICAL; setPadding(dp(16), dp(4), dp(16), dp(16)) }
@@ -89,19 +91,17 @@ class SettingsSheet(
         root.addView(ui.divider(), LinearLayout.LayoutParams(MATCH, dp(1)))
         val bar = LinearLayout(activity).apply {
             orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL
-            setPadding(dp(16), dp(12), dp(16), dp(12))
+            setPadding(dp(16), dp(8), dp(16), dp(8))
         }
-        bar.addView(ui.button(s(R.string.cancel), Ui.BtnStyle.TONAL) { sheet.dismiss() }.apply { minHeight = dp(48) },
+        // 見た目 48dp（上下 4dp の余白込みで 56dp）
+        bar.addView(ui.button(s(R.string.cancel), Ui.BtnStyle.TONAL) { sheet.dismiss() }.apply { minHeight = dp(56) },
             LinearLayout.LayoutParams(0, WRAP, 1f))
-        bar.addView(ui.button(s(R.string.save), Ui.BtnStyle.FILLED) { save() }.apply { minHeight = dp(48) },
+        bar.addView(ui.button(s(R.string.save), Ui.BtnStyle.FILLED) { save() }.apply { minHeight = dp(56) },
             LinearLayout.LayoutParams(0, WRAP, 2f).apply { marginStart = dp(10) })
         root.addView(bar)
 
         // ナビゲーションバー分の余白
-        root.setOnApplyWindowInsetsListener { v, insets ->
-            @Suppress("DEPRECATION") v.setPadding(0, 0, 0, insets.systemWindowInsetBottom.coerceAtMost(dp(48)))
-            insets
-        }
+        sheet.padForNavigationBar(root)
 
         sheet.attach(root)
         sheet.dragToDismiss(handle, head)
@@ -131,7 +131,10 @@ class SettingsSheet(
             setImageDrawable(ui.icon(iconId, ui.onSurfaceVariant)); importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
             setPadding(dp(6), dp(6), dp(6), dp(6)); background = ui.rounded(ui.secondaryContainer, 9, ui.outlineVariant)
         }, LinearLayout.LayoutParams(dp(30), dp(30)).apply { marginEnd = dp(12) })
-        row.addView(ui.text(title, 15f, ui.onSurface, weight = Ui.Weight.SEMIBOLD).apply { isFocusable = true },
+        row.addView(ui.text(title, Ui.Type.TITLE_MEDIUM, ui.onSurface, weight = Ui.Weight.SEMIBOLD).apply {
+            isFocusable = true
+            if (android.os.Build.VERSION.SDK_INT >= 28) isAccessibilityHeading = true
+        },
             LinearLayout.LayoutParams(0, WRAP, 1f))
         if (value != null) row.addView(value)
         c.addView(row, LinearLayout.LayoutParams(MATCH, WRAP).apply { bottomMargin = dp(12) })
@@ -143,7 +146,7 @@ class SettingsSheet(
         accessibilityLiveRegion = View.ACCESSIBILITY_LIVE_REGION_POLITE
     }
 
-    private fun hint(t: String = "") = ui.text(t, 13f, ui.onSurfaceVariant).apply { setPadding(dp(2), dp(10), 0, 0) }
+    private fun hint(t: String = "") = ui.text(t, Ui.Type.BODY_MEDIUM, ui.onSurfaceVariant).apply { setPadding(dp(2), dp(10), 0, 0) }
 
     private fun nameCard() = card(R.drawable.ic_edit, s(R.string.settings_name)).apply {
         nameField = ui.field(macro.name, s(R.string.name_hint))
@@ -214,8 +217,8 @@ class SettingsSheet(
             }
             addView(speedBar, LinearLayout.LayoutParams(MATCH, dp(40)))
             val ends = LinearLayout(activity).apply { orientation = LinearLayout.HORIZONTAL; setPadding(dp(4), 0, dp(4), dp(10)) }
-            ends.addView(ui.monoText(Texts.speed(activity, Macro.MIN_SPEED), 11f, ui.ink3), LinearLayout.LayoutParams(0, WRAP, 1f))
-            ends.addView(ui.monoText(Texts.speed(activity, Macro.MAX_SPEED), 11f, ui.ink3))
+            ends.addView(ui.monoText(Texts.speed(activity, Macro.MIN_SPEED), Ui.Type.LABEL_SMALL, ui.ink3), LinearLayout.LayoutParams(0, WRAP, 1f))
+            ends.addView(ui.monoText(Texts.speed(activity, Macro.MAX_SPEED), Ui.Type.LABEL_SMALL, ui.ink3))
             addView(ends)
             addView(chipRow(speedPresets.map { v ->
                 ui.FilterChip(Texts.speed(activity, v)) { speed = v; applySpeed(fromBar = false) }.also { speedChips += it }
@@ -230,8 +233,8 @@ class SettingsSheet(
         background = ui.rounded(ui.surfaceContainer, 20, ui.withAlpha(ui.error, 0.3f))
         setPadding(dp(8), dp(6), dp(8), dp(6))
         layoutParams = LinearLayout.LayoutParams(MATCH, WRAP).apply { topMargin = dp(8) }
-        addView(ui.button(s(R.string.delete_macro), Ui.BtnStyle.DANGER_TEXT, R.drawable.ic_delete) { confirmDelete() }.apply {
-            gravity = Gravity.CENTER_VERTICAL or Gravity.START; minHeight = dp(44)
+        addView(ui.button(s(R.string.delete_macro), Ui.BtnStyle.DANGER_TEXT, R.drawable.ic_delete) { deleteNow() }.apply {
+            gravity = Gravity.CENTER_VERTICAL or Gravity.START
         }, LinearLayout.LayoutParams(MATCH, WRAP))
     }
 
@@ -247,20 +250,20 @@ class SettingsSheet(
     }
 
     private fun numberField(initial: String, type: Int) = ui.field(initial, null, type).apply {
-        gravity = Gravity.CENTER; textSize = 18f; typeface = ui.mono(Ui.Weight.SEMIBOLD)
+        gravity = Gravity.CENTER; textSize = Ui.Type.TITLE_MEDIUM; typeface = ui.mono(Ui.Weight.SEMIBOLD)
         setSelectAllOnFocus(true)
     }
 
     /** − [値] 単位 + */
     private fun stepper(field: EditText, unit: String, minusDesc: String, plusDesc: String, onStep: (Int) -> Unit): View {
         val row = LinearLayout(activity).apply { orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL }
-        fun round(icon: Int, desc: String, d: Int) = ui.iconButton(icon, desc, 44) { onStep(d) }.apply {
+        fun round(icon: Int, desc: String, d: Int) = ui.iconButton(icon, desc, 48) { onStep(d) }.apply {
             ui.styleIconButton(this, icon, ui.onSurface, ui.secondaryContainer)
         }
-        row.addView(round(R.drawable.ic_remove, minusDesc, -1), LinearLayout.LayoutParams(dp(44), dp(44)))
+        row.addView(round(R.drawable.ic_remove, minusDesc, -1), LinearLayout.LayoutParams(dp(48), dp(48)))
         row.addView(field, LinearLayout.LayoutParams(0, WRAP, 1f).apply { marginStart = dp(10); marginEnd = dp(8) })
-        row.addView(ui.text(unit, 14f, ui.onSurfaceVariant), LinearLayout.LayoutParams(WRAP, WRAP).apply { marginEnd = dp(10) })
-        row.addView(round(R.drawable.ic_add, plusDesc, +1), LinearLayout.LayoutParams(dp(44), dp(44)))
+        row.addView(ui.text(unit, Ui.Type.BODY_MEDIUM, ui.onSurfaceVariant), LinearLayout.LayoutParams(WRAP, WRAP).apply { marginEnd = dp(10) })
+        row.addView(round(R.drawable.ic_add, plusDesc, +1), LinearLayout.LayoutParams(dp(48), dp(48)))
         return row
     }
 
@@ -314,12 +317,13 @@ class SettingsSheet(
         sheet.dismiss()
     }
 
-    private fun confirmDelete() {
-        Dialogs.show(activity, s(R.string.delete_title), activity.getString(R.string.delete_message, macro.name),
-            iconId = R.drawable.ic_delete, destructive = true, confirmLabel = s(R.string.delete)) {
-            onDelete(macro); sheet.dismiss(); true
-        }
+    /** v0.9: 確認ダイアログの代わりに、すぐ削除して「元に戻す」付きのスナックバーを出す（R5.16）。スナックバーは呼び出し側 */
+    private fun deleteNow() {
+        sheet.dismiss(); onDelete(macro)
     }
+
+    /** v0.9: シートが閉じたあとの処理（フォーカスを元の行へ戻すなど。R6.11） */
+    fun setOnDismiss(f: () -> Unit) { sheet.setOnDismissListener { f() } }
 
     companion object {
         const val MAX_REPEAT = 100000

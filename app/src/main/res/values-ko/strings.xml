@@ -155,4 +155,25 @@
     <string name="settings_group_basic">기본</string>
     <string name="settings_group_playback">재생</string>
     <string name="settings_group_manage">관리</string>
+
+    <!-- v0.9 -->
+    <string name="desc_more">더보기</string>
+    <string name="desc_drag_handle">드래그 핸들. 두 번 탭하면 닫힙니다</string>
+    <string name="snack_deleted">\"%1$s\" 삭제됨</string>
+    <string name="undo">실행취소</string>
+    <string name="state_selected">플로팅 재생 버튼으로 재생할 매크로</string>
+    <string name="state_progress">재생 중, %1$d%%</string>
+    <string name="disclosure_title">이 앱의 접근성 기능 사용 방법</string>
+    <string name="disclosure_message">조작 매크로는 Android 접근성 서비스를 녹화한 탭·길게 누르기·스와이프를 재생하고, 플로팅 녹화/재생 버튼을 표시하는 데에만 사용합니다.\n\n• 녹화 버튼을 누른 동안에만 손가락 위치와 타이밍만 기록합니다.\n• 화면 내용, 텍스트, 비밀번호, 다른 앱의 개인정보는 읽지 않습니다.\n• 매크로는 이 기기에만 저장됩니다. 인터넷 권한이 없으므로 아무것도 전송되지 않습니다.\n\n다음 화면에서 \"조작 매크로\"를 열고 사용 설정하세요.</string>
+    <string name="disclosure_continue">설정으로 이동</string>
+    <string name="not_now">나중에</string>
+    <string name="theme">테마</string>
+    <string name="theme_system">시스템 기본값</string>
+    <string name="theme_light">밝게</string>
+    <string name="theme_dark">어둡게</string>
+    <string name="shortcut_show_short">버튼 표시</string>
+    <string name="shortcut_show_long">플로팅 버튼 표시</string>
+    <string name="shortcut_play_short">재생</string>
+    <string name="shortcut_play_long">선택한 매크로 재생</string>
+    <string name="shortcut_disabled">사용할 수 없음</string>
 </resources>

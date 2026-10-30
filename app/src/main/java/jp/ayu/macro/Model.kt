@@ -170,8 +170,13 @@ object ReplayMath {
 
 /** フローティングパネルの寸法計算（テスト可能な純粋関数） */
 object PanelMath {
-    /** 画面幅 (dp) に応じたボタンサイズ (dp)。狭い画面ではボタンを小さくしてはみ出しを防ぐ */
+    /**
+     * 画面幅 (dp) に応じたボタンの幅 (dp)。狭い画面ではボタンを小さくしてはみ出しを防ぐ。
+     * v0.9: 縦のタッチ領域は常に 48dp（パネルの高さ）。幅 412dp 以上の画面では横も 48dp（R6.5）。
+     * それより狭い画面では、記録中に 6 個のボタン＋状態表示が 1 行に収まらなくなるので 40dp 以下のまま。
+     */
     fun buttonSizeDp(screenWidthDp: Int): Int = when {
+        screenWidthDp >= 412 -> 48
         screenWidthDp >= 360 -> 40
         screenWidthDp >= 320 -> 36
         else -> 32

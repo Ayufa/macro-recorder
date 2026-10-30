@@ -3,6 +3,7 @@
 <accessibility-service xmlns:android="http://schemas.android.com/apk/res/android"
     android:accessibilityFeedbackType="feedbackGeneric"
     android:accessibilityFlags="flagDefault"
+    android:settingsActivity="jp.ayu.macro.MainActivity"
     android:canPerformGestures="true"
     android:canRetrieveWindowContent="false"
     android:notificationTimeout="1000"

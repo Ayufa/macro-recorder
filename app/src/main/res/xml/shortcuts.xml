@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- v0.9: アイコン長押しのショートカット（R10.x）。押すとアプリが開き、その操作だけを行う。 -->
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <shortcut
+        android:shortcutId="show_panel"
+        android:enabled="true"
+        android:icon="@drawable/shortcut_show"
+        android:shortcutShortLabel="@string/shortcut_show_short"
+        android:shortcutLongLabel="@string/shortcut_show_long"
+        android:shortcutDisabledMessage="@string/shortcut_disabled">
+        <intent
+            android:action="jp.ayu.macro.action.SHOW_PANEL"
+            android:targetPackage="jp.ayu.macro"
+            android:targetClass="jp.ayu.macro.MainActivity" />
+    </shortcut>
+    <shortcut
+        android:shortcutId="play_selected"
+        android:enabled="true"
+        android:icon="@drawable/shortcut_play"
+        android:shortcutShortLabel="@string/shortcut_play_short"
+        android:shortcutLongLabel="@string/shortcut_play_long"
+        android:shortcutDisabledMessage="@string/shortcut_disabled">
+        <intent
+            android:action="jp.ayu.macro.action.PLAY_SELECTED"
+            android:targetPackage="jp.ayu.macro"
+            android:targetClass="jp.ayu.macro.MainActivity" />
+    </shortcut>
+</shortcuts>

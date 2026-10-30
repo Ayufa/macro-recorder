@@ -179,4 +179,25 @@
     <string name="settings_group_basic">General</string>
     <string name="settings_group_playback">Reproducción</string>
     <string name="settings_group_manage">Gestionar</string>
+
+    <!-- v0.9 -->
+    <string name="desc_more">Más acciones</string>
+    <string name="desc_drag_handle">Controlador de arrastre. Toca dos veces para cerrar</string>
+    <string name="snack_deleted">Se eliminó \"%1$s\"</string>
+    <string name="undo">Deshacer</string>
+    <string name="state_selected">Seleccionada para el botón flotante Reproducir</string>
+    <string name="state_progress">Reproduciendo, %1$d %%</string>
+    <string name="disclosure_title">Cómo usa esta app la accesibilidad</string>
+    <string name="disclosure_message">Grabador de macros usa el servicio de accesibilidad de Android solo para reproducir los toques, pulsaciones largas y deslizamientos que grabas, y para mostrar los botones flotantes Grabar/Reproducir.\n\n• Solo registra la posición y el tiempo de los dedos, y solo mientras has pulsado Grabar.\n• No lee el contenido de la pantalla, textos, contraseñas ni datos personales de otras apps.\n• Las macros se guardan solo en este dispositivo. La app no tiene permiso de Internet, así que no se envía nada.\n\nEn la siguiente pantalla, abre \"Grabador de macros\" y actívalo.</string>
+    <string name="disclosure_continue">Ir a Ajustes</string>
+    <string name="not_now">Ahora no</string>
+    <string name="theme">Tema</string>
+    <string name="theme_system">Predeterminado del sistema</string>
+    <string name="theme_light">Claro</string>
+    <string name="theme_dark">Oscuro</string>
+    <string name="shortcut_show_short">Mostrar botones</string>
+    <string name="shortcut_show_long">Mostrar botones flotantes</string>
+    <string name="shortcut_play_short">Reproducir</string>
+    <string name="shortcut_play_long">Reproducir la macro seleccionada</string>
+    <string name="shortcut_disabled">No disponible</string>
 </resources>

@@ -155,4 +155,25 @@
     <string name="settings_group_basic">常规</string>
     <string name="settings_group_playback">回放</string>
     <string name="settings_group_manage">管理</string>
+
+    <!-- v0.9 -->
+    <string name="desc_more">更多操作</string>
+    <string name="desc_drag_handle">拖动手柄。点按两下即可关闭</string>
+    <string name="snack_deleted">已删除“%1$s”</string>
+    <string name="undo">撤消</string>
+    <string name="state_selected">已选为悬浮播放按钮的宏</string>
+    <string name="state_progress">正在播放，%1$d%%</string>
+    <string name="disclosure_title">本应用如何使用无障碍功能</string>
+    <string name="disclosure_message">操作宏仅将 Android 无障碍服务用于回放您录制的点按、长按和滑动操作，以及显示悬浮的录制/播放按钮。\n\n• 仅在您按下录制后，记录手指位置和时间。\n• 不读取屏幕内容、文字、密码或其他应用中的个人信息。\n• 宏仅保存在此设备上。本应用没有网络权限，不会发送任何数据。\n\n请在下一个屏幕中打开“操作宏”并将其开启。</string>
+    <string name="disclosure_continue">前往设置</string>
+    <string name="not_now">以后再说</string>
+    <string name="theme">主题</string>
+    <string name="theme_system">跟随系统</string>
+    <string name="theme_light">浅色</string>
+    <string name="theme_dark">深色</string>
+    <string name="shortcut_show_short">显示按钮</string>
+    <string name="shortcut_show_long">显示悬浮按钮</string>
+    <string name="shortcut_play_short">播放</string>
+    <string name="shortcut_play_long">播放所选宏</string>
+    <string name="shortcut_disabled">无法使用</string>
 </resources>

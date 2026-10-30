@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="tag_icon_inset" type="id"/>
+    <item name="a11y_action_run" type="id"/>
+    <item name="a11y_action_settings" type="id"/>
+    <item name="a11y_action_rename" type="id"/>
+    <item name="a11y_action_delete" type="id"/>
+    <item name="snackbar_host" type="id"/>
+</resources>
