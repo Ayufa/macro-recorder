@@ -73,10 +73,11 @@ class MainActivity : Activity() {
         }
         setContentView(outer)
 
-        // ヘッダー
+        // ヘッダー（v0.7: 端に向かって消える方眼の背景 + バージョンの等幅バッジ）
         val header = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL
-            setPadding(dp(4), dp(8), dp(4), dp(20))
+            setPadding(dp(20), dp(32), dp(20), dp(28))
+            background = GridDrawable(ui.grid, dp(22).toFloat(), dp(1).coerceAtLeast(1).toFloat())
         }
         header.addView(ImageView(this).apply {
             setImageResource(R.mipmap.ic_launcher)
@@ -84,39 +85,45 @@ class MainActivity : Activity() {
         }, LinearLayout.LayoutParams(dp(48), dp(48)).apply { marginEnd = dp(14) })
         header.addView(LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
-            addView(ui.text(getString(R.string.app_name), 26f, ui.onSurface, weight = Ui.Weight.SEMIBOLD))
-            addView(ui.text(getString(R.string.tagline), 13f, ui.onSurfaceVariant))
+            val titleRow = LinearLayout(this@MainActivity).apply { orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL }
+            titleRow.addView(ui.text(getString(R.string.app_name), 26f, ui.onSurface, weight = Ui.Weight.SEMIBOLD).apply { maxLines = 2 },
+                LinearLayout.LayoutParams(WRAP, WRAP))
+            titleRow.addView(ui.badge("v" + appVersion(), Ui.Tone.NEUTRAL).apply {
+                importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
+            }, LinearLayout.LayoutParams(WRAP, WRAP).apply { marginStart = dp(10) })
+            addView(titleRow)
+            addView(ui.text(getString(R.string.tagline), 13f, ui.onSurfaceVariant).apply { setPadding(0, dp(4), 0, 0) })
         }, LinearLayout.LayoutParams(0, WRAP, 1f))
-        root.addView(header)
+        // 方眼を画面の端まで広げる（root の余白を打ち消す）
+        root.addView(header, LinearLayout.LayoutParams(MATCH, WRAP).apply {
+            marginStart = -dp(16); marginEnd = -dp(16); topMargin = -dp(24); bottomMargin = dp(4)
+        })
 
         statusContainer = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             background = ui.card()
-            setPadding(dp(4), dp(8), dp(4), dp(8))
+            setPadding(dp(4), dp(4), dp(4), dp(6))
         }
         root.addView(statusContainer, LinearLayout.LayoutParams(MATCH, WRAP))
 
         // 使い方
-        root.addView(ui.sectionLabel(getString(R.string.section_how_to)))
+        root.addView(ui.sectionHeader(getString(R.string.section_how_to)))
         root.addView(howTo())
 
         // 一覧
-        val listHeader = LinearLayout(this).apply {
-            // 見出しと件数バッジは文字のベースラインでそろえる
-            orientation = LinearLayout.HORIZONTAL; isBaselineAligned = true
+        countView = ui.badge("0")
+        root.addView(ui.sectionHeader(getString(R.string.section_macros), countView))
+        // v0.7: 一覧は1枚の枠の中に、区切り線で行を並べる（sv-table のデータ表を参考）
+        listContainer = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            background = ui.card()
+            clipToOutline = true
         }
-        listHeader.addView(ui.sectionLabel(getString(R.string.section_macros)))
-        countView = ui.text("", 12f, ui.onSecondaryContainer, medium = true).apply {
-            setPadding(dp(8), dp(1), dp(8), dp(1)); background = ui.rounded(ui.secondaryContainer, 999)
-        }
-        listHeader.addView(countView, LinearLayout.LayoutParams(WRAP, WRAP).apply { marginStart = dp(2) })
-        root.addView(listHeader)
-        listContainer = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
-        root.addView(listContainer)
+        root.addView(listContainer, LinearLayout.LayoutParams(MATCH, WRAP))
 
         // プラン（monetized フレーバーだけ。standard では表示しない）
         if (entitlements.purchasesAvailable) {
-            root.addView(ui.sectionLabel(getString(R.string.section_plan)))
+            root.addView(ui.sectionHeader(getString(R.string.section_plan)))
             planContainer = LinearLayout(this).apply {
                 orientation = LinearLayout.VERTICAL
                 background = ui.card()
@@ -126,7 +133,7 @@ class MainActivity : Activity() {
         }
 
         // アプリの設定（言語）
-        root.addView(ui.sectionLabel(getString(R.string.section_app_settings)))
+        root.addView(ui.sectionHeader(getString(R.string.section_app_settings)))
         root.addView(languageRow(), LinearLayout.LayoutParams(MATCH, WRAP))
 
         // プライバシー
@@ -139,8 +146,14 @@ class MainActivity : Activity() {
             12f, ui.onSurfaceVariant), LinearLayout.LayoutParams(0, WRAP, 1f))
         root.addView(privacy)
         ads.initialize(this)
-        root.addView(ui.text(getString(R.string.version_label, appVersion()), 11f, ui.ink3).apply { setPadding(dp(30), dp(8), 0, 0) })
+        root.addView(ui.monoText(getString(R.string.version_label, appVersion()), 11f, ui.ink3).apply { setPadding(dp(30), dp(10), 0, 0) })
+
+        // 最初の表示だけ、上から順にふわっと出す
+        for (i in 0 until root.childCount) Motion.enter(root.getChildAt(i), i)
     }
+
+    /** 一度表示した行は、再描画のたびにアニメーションしない */
+    private val seenRows = HashSet<String>()
 
     private fun appVersion(): String = runCatching {
         packageManager.getPackageInfo(packageName, 0).versionName ?: ""
@@ -155,6 +168,7 @@ class MainActivity : Activity() {
             background = ui.ripple(ui.card(), ui.rounded(Color.WHITE, 20))
             isClickable = true; isFocusable = true
             setOnClickListener { pickLanguage() }
+            Motion.pressable(this, 0.98f)
         }
         row.addView(ImageView(this).apply {
             setImageDrawable(ui.icon(R.drawable.ic_language, ui.onSecondaryContainer)); setPadding(dp(7), dp(7), dp(7), dp(7))
@@ -196,9 +210,12 @@ class MainActivity : Activity() {
                 orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL
                 setPadding(0, if (i == 0) 0 else dp(10), 0, 0)
             }
+            row.addView(ui.monoText("%02d".format(i + 1), 11f, ui.ink3, Ui.Weight.MEDIUM).apply {
+                importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
+            }, LinearLayout.LayoutParams(dp(24), WRAP))
             row.addView(ImageView(this).apply {
                 setImageDrawable(ui.icon(pair.first, ui.onSecondaryContainer)); setPadding(dp(6), dp(6), dp(6), dp(6))
-                background = ui.oval(ui.secondaryContainer)
+                background = ui.rounded(ui.secondaryContainer, 9, ui.outlineVariant)
             }, LinearLayout.LayoutParams(dp(30), dp(30)).apply { marginEnd = dp(12) })
             row.addView(ui.text(getString(pair.second), 13f, ui.onSurface), LinearLayout.LayoutParams(0, WRAP, 1f))
             box.addView(row)
@@ -269,14 +286,21 @@ class MainActivity : Activity() {
     }
 
     /** 状態カードの1行（アイコン + タイトル + 説明 + 任意のボタン） */
-    private fun statusRow(ok: Boolean, title: String, sub: String, action: View?): View {
+    private fun statusRow(ok: Boolean, title: String, sub: String, action: View?, live: Boolean = false): View {
         val row = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL
-            setPadding(dp(12), dp(10), dp(12), dp(10))
+            setPadding(dp(12), dp(12), dp(12), dp(12))
         }
-        row.addView(ImageView(this).apply {
-            setImageDrawable(ui.icon(if (ok) R.drawable.ic_check_circle else R.drawable.ic_error, if (ok) ui.primary else ui.error))
-        }, LinearLayout.LayoutParams(dp(24), dp(24)).apply { marginEnd = dp(14) })
+        // v0.7: 状態は角丸の小さなタイルで。表示中のフローティングはドットマトリクスが動く（sv-matrix 風）
+        val lead: View = if (live) DotMatrixView(this, 3, 3, dp(4).toFloat(), dp(2).toFloat()).apply {
+            color = ui.success; pattern = DotMatrixView.Pattern.WAVE
+        } else ImageView(this).apply {
+            setImageDrawable(ui.icon(if (ok) R.drawable.ic_check_circle else R.drawable.ic_error, if (ok) ui.success else ui.error))
+            setPadding(dp(5), dp(5), dp(5), dp(5))
+        }
+        lead.background = ui.rounded(if (ok) ui.successContainer else ui.errorContainer, 9,
+            ui.withAlpha(if (ok) ui.success else ui.error, 0.25f))
+        row.addView(lead, LinearLayout.LayoutParams(dp(30), dp(30)).apply { marginEnd = dp(14) })
         row.addView(LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             addView(ui.text(title, 15f, ui.onSurface, medium = true))
@@ -292,6 +316,9 @@ class MainActivity : Activity() {
         val running = svc != null
         val enabled = isServiceEnabled()
         statusContainer.removeAllViews()
+        fun sep() = statusContainer.addView(ui.divider(), LinearLayout.LayoutParams(MATCH, dp(1).coerceAtLeast(1)).apply {
+            marginStart = dp(56); marginEnd = dp(12)
+        })
         statusContainer.addView(statusRow(
             running, getString(R.string.status_service),
             when {
@@ -304,6 +331,7 @@ class MainActivity : Activity() {
             },
         ))
         val ignoring = isIgnoringBattery()
+        sep()
         statusContainer.addView(statusRow(
             ignoring, getString(R.string.status_battery),
             getString(if (ignoring) R.string.status_battery_ok else R.string.status_battery_on),
@@ -311,12 +339,15 @@ class MainActivity : Activity() {
         ))
         if (running) {
             val shown = svc?.isPanelShown == true
+            sep()
             statusContainer.addView(statusRow(
                 shown, getString(R.string.status_panel), getString(if (shown) R.string.status_panel_shown else R.string.status_panel_hidden),
                 if (shown) null else ui.button(getString(R.string.action_show), Ui.BtnStyle.FILLED) { svc?.showPanel(); refresh() },
+                live = shown,
             ))
         }
-        val links = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL; setPadding(dp(4), 0, dp(4), 0) }
+        sep()
+        val links = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL; setPadding(dp(4), dp(4), dp(4), 0) }
         links.addView(ui.button(getString(R.string.action_app_info), Ui.BtnStyle.TEXT, R.drawable.ic_open) {
             startActivity(Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:$packageName")))
         })
@@ -324,41 +355,64 @@ class MainActivity : Activity() {
 
         listContainer.removeAllViews()
         val macros = store.list()
-        countView.text = entitlements.maxSavedMacros?.let { "${macros.size} / $it" } ?: macros.size.toString()
+        countView.text = entitlements.maxSavedMacros?.let { "%02d / %d".format(macros.size, it) } ?: "%02d".format(macros.size)
         refreshMonetization()
         if (macros.isEmpty()) {
+            // v0.7: 空のときは枠を点線にして、ドットマトリクスを表示
+            listContainer.background = ui.dashed(ui.surfaceContainer, 20)
             listContainer.addView(LinearLayout(this).apply {
                 orientation = LinearLayout.VERTICAL; gravity = Gravity.CENTER_HORIZONTAL
-                setPadding(dp(16), dp(28), dp(16), dp(28))
-                background = ui.card()
-                addView(ImageView(this@MainActivity).apply { setImageDrawable(ui.icon(R.drawable.ic_touch, ui.onSurfaceVariant)) },
-                    LinearLayout.LayoutParams(dp(36), dp(36)))
-                addView(ui.text(getString(R.string.empty_title), 15f, ui.onSurface, medium = true).apply { setPadding(0, dp(10), 0, dp(2)) })
-                addView(ui.text(getString(R.string.empty_body), 12f, ui.onSurfaceVariant))
+                setPadding(dp(16), dp(32), dp(16), dp(32))
+                addView(DotMatrixView(this@MainActivity, 5, 5, dp(5).toFloat(), dp(3).toFloat()).apply {
+                    color = ui.onSurfaceVariant; pattern = DotMatrixView.Pattern.PULSE
+                }, LinearLayout.LayoutParams(WRAP, WRAP))
+                addView(ui.text(getString(R.string.empty_title), 15f, ui.onSurface, medium = true).apply { setPadding(0, dp(14), 0, dp(2)) })
+                addView(ui.text(getString(R.string.empty_body), 12f, ui.onSurfaceVariant).apply { gravity = Gravity.CENTER })
             }, LinearLayout.LayoutParams(MATCH, WRAP))
+            return
         }
+        listContainer.background = ui.card()
         val selected = store.selectedId
-        for (m in macros) listContainer.addView(row(m, m.id == selected))
+        var fresh = 0
+        for ((i, m) in macros.withIndex()) {
+            if (i > 0) listContainer.addView(ui.divider(), LinearLayout.LayoutParams(MATCH, dp(1).coerceAtLeast(1)))
+            val v = row(m, i, m.id == selected)
+            listContainer.addView(v)
+            if (seenRows.add(m.id)) Motion.enter(v, fresh++)
+        }
     }
 
+    /**
+     * v0.7: マクロの1行（表の行のような見た目）。
+     * 番号（等幅）・名前・内訳、設定値は等幅のセル風タグ、操作ボタンは右寄せ。選択中は左端にアクセントの線。
+     */
     @SuppressLint("SetTextI18n")
-    private fun row(m: Macro, isSelected: Boolean): View {
+    private fun row(m: Macro, index: Int, isSelected: Boolean): View {
         val card = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
-            setPadding(dp(18), dp(14), dp(10), dp(10))
-            background = ui.card(isSelected)
-            layoutParams = LinearLayout.LayoutParams(MATCH, WRAP).apply { bottomMargin = dp(10) }
+            setPadding(dp(14), dp(14), dp(8), dp(8))
+            background = if (isSelected) android.graphics.drawable.LayerDrawable(arrayOf(
+                android.graphics.drawable.ColorDrawable(ui.withAlpha(ui.primaryContainer, 0.7f)),
+                android.graphics.drawable.ColorDrawable(ui.primary),
+            )).apply {
+                setLayerWidth(1, dp(3)); setLayerGravity(1, Gravity.START or Gravity.FILL_VERTICAL)
+            } else null
         }
         val fg = if (isSelected) ui.onPrimaryContainer else ui.onSurface
         val fgVar = if (isSelected) ui.onPrimaryContainer else ui.onSurfaceVariant
+        val indent = dp(30)
         val top = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL }
+        top.addView(ui.monoText("%02d".format(index + 1), 12f, if (isSelected) ui.primary else ui.ink3, Ui.Weight.MEDIUM).apply {
+            importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
+        }, LinearLayout.LayoutParams(indent, WRAP))
         top.addView(ui.text(m.name, 16f, fg, medium = true).apply { maxLines = 2 }, LinearLayout.LayoutParams(0, WRAP, 1f))
-        if (isSelected) top.addView(ui.text(getString(R.string.selected_badge), 11f, ui.onPrimary, medium = true).apply {
-            setPadding(dp(8), dp(2), dp(8), dp(2)); background = ui.rounded(ui.primary, 999)
-        }, LinearLayout.LayoutParams(WRAP, WRAP).apply { marginEnd = dp(8) })
+        if (isSelected) top.addView(ui.badge(getString(R.string.selected_badge), Ui.Tone.ACCENT),
+            LinearLayout.LayoutParams(WRAP, WRAP).apply { marginEnd = dp(8) })
         card.addView(top)
-        card.addView(ui.text(getString(R.string.macro_summary, Texts.steps(this, m.steps.size), Texts.kinds(this, m.steps)), 13f, fgVar).apply { setPadding(0, dp(2), 0, dp(8)) })
-        val chips = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL }
+        card.addView(ui.text(getString(R.string.macro_summary, Texts.steps(this, m.steps.size), Texts.kinds(this, m.steps)), 13f, fgVar).apply {
+            setPadding(indent, dp(3), dp(8), dp(10))
+        })
+        val chips = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL; setPadding(indent, 0, dp(8), 0) }
         val chipTexts = listOf(
             getString(R.string.chip_repeat, Texts.repeat(this, m.repeatCount)),
             getString(R.string.chip_interval, Texts.seconds(this, m.loopIntervalMs)),
@@ -372,16 +426,18 @@ class MainActivity : Activity() {
 
         val actions = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL
-            setPadding(0, dp(10), 0, 0)
+            setPadding(indent - dp(2), dp(10), 0, 0)
         }
-        actions.addView(ui.button(getString(R.string.action_run), Ui.BtnStyle.FILLED, R.drawable.ic_play) { runMacro(m) })
+        actions.addView(ui.button(getString(R.string.action_run), Ui.BtnStyle.FILLED, R.drawable.ic_play) { runMacro(m) }.apply {
+            minHeight = dp(36); textSize = 13f
+        })
         actions.addView(View(this), LinearLayout.LayoutParams(0, 1, 1f))
         fun ib(icon: Int, desc: String, onClick: () -> Unit) = ui.iconButton(icon, desc, 40, onClick).apply {
             setImageDrawable(ui.icon(icon, fgVar))
         }
         actions.addView(ib(if (isSelected) R.drawable.ic_star else R.drawable.ic_star_border, getString(R.string.desc_select)) {
             store.selectedId = m.id; refresh(); toast(getString(R.string.toast_selected))
-        }, LinearLayout.LayoutParams(dp(40), dp(40)))
+        }.apply { if (isSelected) setImageDrawable(ui.icon(R.drawable.ic_star, ui.primary)) }, LinearLayout.LayoutParams(dp(40), dp(40)))
         actions.addView(ib(R.drawable.ic_tune, getString(R.string.desc_settings)) { editSettings(m) }, LinearLayout.LayoutParams(dp(40), dp(40)))
         actions.addView(ib(R.drawable.ic_edit, getString(R.string.desc_rename)) { rename(m) }, LinearLayout.LayoutParams(dp(40), dp(40)))
         actions.addView(ib(R.drawable.ic_delete, getString(R.string.delete)) { confirmDelete(m) }, LinearLayout.LayoutParams(dp(40), dp(40)))

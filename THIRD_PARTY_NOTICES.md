@@ -21,3 +21,26 @@ This app (MIT, see [LICENSE](LICENSE)) bundles or adapts the following third-par
 
 - The v0.6 visual style (neutral palette, rounded cards, pill buttons, bottom-sheet motion) was inspired by <https://designeer.xyz>.
 - That site states its content is for inspiration only and that rights stay with the original creators ("All Rights Reserved"), so **no assets, code, text, logos, or images were copied** from it. Only general visual ideas (color tone, corner radius, spacing, easing feel) were recreated from scratch.
+
+## Geist Mono (font)
+
+- File: `app/src/main/assets/fonts/GeistMono-wght.ttf` (variable font, unmodified)
+- Source: https://github.com/google/fonts/tree/main/ofl/geistmono (upstream: https://github.com/vercel/geist-font)
+- Copyright 2024 The Geist Project Authors (https://github.com/vercel/geist-font.git)
+- License: SIL Open Font License 1.1 — full text in `app/src/main/assets/fonts/GeistMono-OFL.txt`
+
+## Design references for v0.7 (no code or assets reused)
+
+v0.7's design re-creates ideas from these sites natively with Android Views (dot-matrix indicators, faded grid backgrounds,
+mono badges/keycaps, hairline table rows, staggered blur-fade entrance). No source code, markup, CSS, images or pattern
+data were copied from them.
+
+| Site | Repository | License |
+| --- | --- | --- |
+| sv-animations.vercel.app | github.com/SikandarJODD/animations | MIT |
+| sv-table.vercel.app | github.com/SikandarJODD/sv-table | MIT |
+| sv-blocks.vercel.app | github.com/SikandarJODD/cnblocks | MIT |
+| sv-efferd.pages.dev | github.com/SikandarJODD/sv-efferd | MIT |
+| sv-matrix.vercel.app | github.com/SikandarJODD/sv-matrix | MIT |
+| sv-particles.vercel.app | (no license file found) | — inspiration only |
+| sv-agentation.com | github.com/SikandarJODD/sv-agentation | MIT |

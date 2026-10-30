@@ -64,6 +64,9 @@ class SettingsSheet(
         // 見出し
         val head = LinearLayout(activity).apply { orientation = LinearLayout.VERTICAL; setPadding(dp(24), dp(14), dp(24), dp(10)) }
         head.addView(ui.text(s(R.string.settings_title), 22f, ui.onSurface, weight = Ui.Weight.SEMIBOLD))
+        head.addView(ui.badge(Texts.steps(activity, macro.steps.size)).apply {
+            importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
+        }, LinearLayout.LayoutParams(WRAP, WRAP).apply { topMargin = dp(6); bottomMargin = dp(2) })
         head.addView(ui.text(activity.getString(R.string.settings_subtitle, macro.name, Texts.steps(activity, macro.steps.size)),
             14f, ui.onSurfaceVariant).apply { setPadding(0, dp(2), 0, 0); maxLines = 2 })
         root.addView(head)
@@ -98,6 +101,8 @@ class SettingsSheet(
         sheet.attach(root)
         applyRepeat(); applyInterval(fromField = false); applySpeed(fromBar = false)
         sheet.show()
+        // v0.7: シートが上がるのに合わせて、カードを順番に表示
+        for (i in 0 until content.childCount) Motion.enter(content.getChildAt(i), i + 1, 14f)
     }
 
     // ---- カード ----
@@ -112,7 +117,8 @@ class SettingsSheet(
         val row = LinearLayout(activity).apply { orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL }
         row.addView(ImageView(activity).apply {
             setImageDrawable(ui.icon(iconId, ui.onSurfaceVariant)); importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
-        }, LinearLayout.LayoutParams(dp(20), dp(20)).apply { marginEnd = dp(10) })
+            setPadding(dp(6), dp(6), dp(6), dp(6)); background = ui.rounded(ui.secondaryContainer, 9, ui.outlineVariant)
+        }, LinearLayout.LayoutParams(dp(30), dp(30)).apply { marginEnd = dp(12) })
         row.addView(ui.text(title, 15f, ui.onSurface, weight = Ui.Weight.SEMIBOLD).apply { isFocusable = true },
             LinearLayout.LayoutParams(0, WRAP, 1f))
         if (value != null) row.addView(value)
@@ -120,9 +126,8 @@ class SettingsSheet(
         return c
     }
 
-    private fun valueBadge() = ui.text("", 15f, ui.onPrimaryContainer, weight = Ui.Weight.SEMIBOLD).apply {
-        background = ui.rounded(ui.primaryContainer, 999)
-        setPadding(dp(12), dp(4), dp(12), dp(4))
+    /** v0.7: 現在値はキーキャップ風の等幅表示 */
+    private fun valueBadge() = ui.kbd().apply {
         accessibilityLiveRegion = View.ACCESSIBILITY_LIVE_REGION_POLITE
     }
 
@@ -194,8 +199,8 @@ class SettingsSheet(
             }
             addView(speedBar, LinearLayout.LayoutParams(MATCH, dp(40)))
             val ends = LinearLayout(activity).apply { orientation = LinearLayout.HORIZONTAL; setPadding(dp(4), 0, dp(4), dp(10)) }
-            ends.addView(ui.text(Texts.speed(activity, Macro.MIN_SPEED), 12f, ui.ink3), LinearLayout.LayoutParams(0, WRAP, 1f))
-            ends.addView(ui.text(Texts.speed(activity, Macro.MAX_SPEED), 12f, ui.ink3))
+            ends.addView(ui.monoText(Texts.speed(activity, Macro.MIN_SPEED), 11f, ui.ink3), LinearLayout.LayoutParams(0, WRAP, 1f))
+            ends.addView(ui.monoText(Texts.speed(activity, Macro.MAX_SPEED), 11f, ui.ink3))
             addView(ends)
             addView(chipRow(speedPresets.map { v ->
                 ui.FilterChip(Texts.speed(activity, v)) { speed = v; applySpeed(fromBar = false) }.also { speedChips += it }
@@ -206,7 +211,8 @@ class SettingsSheet(
 
     private fun dangerCard() = LinearLayout(activity).apply {
         orientation = LinearLayout.VERTICAL
-        background = ui.card()
+        // v0.7: 「危険な操作」は赤みの細い線で区別
+        background = ui.rounded(ui.surfaceContainer, 20, ui.withAlpha(ui.error, 0.3f))
         setPadding(dp(8), dp(6), dp(8), dp(6))
         layoutParams = LinearLayout.LayoutParams(MATCH, WRAP).apply { topMargin = dp(12) }
         addView(ui.button(s(R.string.delete_macro), Ui.BtnStyle.DANGER_TEXT, R.drawable.ic_delete) { confirmDelete() }.apply {
@@ -226,7 +232,7 @@ class SettingsSheet(
     }
 
     private fun numberField(initial: String, type: Int) = ui.field(initial, null, type).apply {
-        gravity = Gravity.CENTER; textSize = 18f; typeface = ui.font(Ui.Weight.SEMIBOLD)
+        gravity = Gravity.CENTER; textSize = 18f; typeface = ui.mono(Ui.Weight.SEMIBOLD)
         setSelectAllOnFocus(true)
     }
 

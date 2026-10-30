@@ -26,6 +26,10 @@ import android.widget.TextView
  *  - ニュートラルな面（薄いグレーの画面 + 白いカード + 細い線）、角丸 20dp のカード / 24dp のシート / 14dp のトレイ
  *  - ボタン・チップは丸いピル型。主ボタンは墨色（ink）、アクセント色は選択状態やスライダーに使う
  *  - 書体は Funnel Sans（SIL OFL 1.1。assets/fonts に同梱）。漢字・かな・ハングルは端末のフォントで表示
+ * v0.7: sv-table / sv-blocks / sv-agentation などの見た目を参考に洗練（コードや素材は流用せず、ネイティブで作り直し）
+ *  - 数値・ラベル・バッジは等幅の Geist Mono（SIL OFL 1.1）。セクション見出しは小さな大文字＋字間広め＋細い線
+ *  - ボーダーは半透明ではなく実線の細い線（#E4E4E7 / ダーク #232327）、一覧は表のように区切り線で並べる
+ *  - 押したときに少し縮むフィードバック、出てくるときのぼかし＋フェード＋スライド（Motion.kt）
  */
 class Ui(val ctx: Context) {
     fun dp(v: Number): Int = TypedValue.applyDimension(
@@ -54,6 +58,9 @@ class Ui(val ctx: Context) {
     val errorContainer get() = c(R.color.md_error_container)
     val onErrorContainer get() = c(R.color.md_on_error_container)
     val record get() = c(R.color.md_record)
+    val success get() = c(R.color.md_success)
+    val successContainer get() = c(R.color.md_success_container)
+    val grid get() = c(R.color.md_grid)
 
     // ---------- 書体 ----------
     enum class Weight(val w: Int) { REGULAR(400), MEDIUM(500), SEMIBOLD(600) }
@@ -63,8 +70,24 @@ class Ui(val ctx: Context) {
             Typeface.Builder(ctx.assets, "fonts/FunnelSans-wght.ttf")
                 .setFontVariationSettings("'wght' ${weight.w}")
                 .setWeight(weight.w)
+                .setFallback("sans-serif")
                 .build()
         }.getOrNull() ?: Typeface.create(if (weight == Weight.REGULAR) "sans-serif" else "sans-serif-medium", Typeface.NORMAL)
+    }
+
+    /** v0.7: 等幅（Geist Mono）。数字・バッジ・小さな見出し用。CJK は端末のフォントで表示 */
+    fun mono(weight: Weight = Weight.REGULAR): Typeface = monoFonts.getOrPut(weight) {
+        runCatching {
+            Typeface.Builder(ctx.assets, "fonts/GeistMono-wght.ttf")
+                .setFontVariationSettings("'wght' ${weight.w}")
+                .setWeight(weight.w)
+                .setFallback("sans-serif")
+                .build()
+        }.getOrNull() ?: Typeface.MONOSPACE
+    }
+
+    fun monoText(s: CharSequence, sizeSp: Float, color: Int, weight: Weight = Weight.REGULAR): TextView = TextView(ctx).apply {
+        text = s; textSize = sizeSp; setTextColor(color); typeface = mono(weight); includeFontPadding = false
     }
 
     // ---------- 形 ----------
@@ -72,6 +95,13 @@ class Ui(val ctx: Context) {
         GradientDrawable().apply {
             cornerRadius = dp(radiusDp).toFloat(); setColor(color)
             if (strokeColor != null) setStroke(dp(strokeDp).coerceAtLeast(1), strokeColor)
+        }
+
+    /** 点線の枠（空の状態などに使う。sv-agentation の破線ボックスを参考） */
+    fun dashed(color: Int, radiusDp: Number, strokeColor: Int = outline): GradientDrawable =
+        GradientDrawable().apply {
+            cornerRadius = dp(radiusDp).toFloat(); setColor(color)
+            setStroke(dp(1).coerceAtLeast(1), strokeColor, dp(5).toFloat(), dp(4).toFloat())
         }
 
     fun oval(color: Int): GradientDrawable = GradientDrawable().apply { shape = GradientDrawable.OVAL; setColor(color) }
@@ -86,6 +116,7 @@ class Ui(val ctx: Context) {
         val r = dp(24).toFloat()
         cornerRadii = floatArrayOf(r, r, r, r, 0f, 0f, 0f, 0f)
         setColor(surface)
+        setStroke(dp(1).coerceAtLeast(1), outlineVariant)
     }
 
     /** 押したときに波紋が出る背景 */
@@ -107,6 +138,7 @@ class Ui(val ctx: Context) {
             setPadding(pad, pad, pad, pad)
             background = ripple(null, oval(Color.WHITE))
             setOnClickListener { onClick() }
+            Motion.pressable(this)
         }
 
     fun styleIconButton(b: ImageButton, iconId: Int, fg: Int, bg: Int?) {
@@ -141,6 +173,7 @@ class Ui(val ctx: Context) {
                 setCompoundDrawablesRelative(d, null, null, null); compoundDrawablePadding = dp(8)
             }
             setOnClickListener { onClick() }
+            Motion.pressable(this)
         }
 
     fun text(s: CharSequence, sizeSp: Float, color: Int, medium: Boolean = false, weight: Weight? = null): TextView = TextView(ctx).apply {
@@ -151,15 +184,48 @@ class Ui(val ctx: Context) {
         setLineSpacing(0f, 1.2f)
     }
 
-    /** セクション見出し（小さめ・灰色・やや太め） */
-    fun sectionLabel(s: String): TextView = text(s, 13f, onSurfaceVariant, weight = Weight.MEDIUM).apply {
-        setPadding(dp(6), dp(22), 0, dp(8))
+    /** セクション見出し（v0.7: 等幅・大文字・字間広め。sv-agentation の "TRY IT" 風） */
+    fun sectionLabel(s: String): TextView = monoText(s, 11f, ink3, Weight.MEDIUM).apply {
+        isAllCaps = true; letterSpacing = 0.12f
+        setPadding(dp(4), dp(28), 0, dp(10))
     }
 
-    /** 小さなラベル（読み取り専用のチップ） */
-    fun chip(s: String): TextView = text(s, 12f, onSurfaceVariant).apply {
-        setPadding(dp(10), dp(4), dp(10), dp(4))
-        background = rounded(Color.TRANSPARENT, 999, outline)
+    /** 見出し + 件数バッジ + 右へ伸びる細い線（sv-blocks のサイドバーの件数表示を参考） */
+    fun sectionHeader(label: String, count: TextView? = null): LinearLayout = LinearLayout(ctx).apply {
+        orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL
+        setPadding(dp(4), dp(28), 0, dp(10))
+        addView(sectionLabel(label).apply { setPadding(0, 0, 0, 0) })
+        if (count != null) addView(count, LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply { marginStart = dp(8) })
+        addView(divider(), LinearLayout.LayoutParams(0, dp(1).coerceAtLeast(1), 1f).apply { marginStart = dp(10) })
+    }
+
+    /** バッジの色合い */
+    enum class Tone { NEUTRAL, ACCENT, SUCCESS, RECORD }
+
+    /** 小さな等幅バッジ（v0.7: "v0.3.0" や "New" のようなピル） */
+    fun badge(s: String, tone: Tone = Tone.NEUTRAL): TextView {
+        val (bg, fg, line) = when (tone) {
+            Tone.NEUTRAL -> Triple(secondaryContainer, onSurfaceVariant, outlineVariant)
+            Tone.ACCENT -> Triple(primaryContainer, onPrimaryContainer, withAlpha(primary, 0.35f))
+            Tone.SUCCESS -> Triple(successContainer, success, withAlpha(success, 0.35f))
+            Tone.RECORD -> Triple(errorContainer, record, withAlpha(record, 0.35f))
+        }
+        return monoText(s, 11f, fg, Weight.MEDIUM).apply {
+            setPadding(dp(8), dp(3), dp(8), dp(3)); gravity = Gravity.CENTER
+            background = rounded(bg, 999, line)
+        }
+    }
+
+    /** キーキャップ風の値表示（設定シートの現在値など） */
+    fun kbd(s: String = ""): TextView = monoText(s, 14f, onSurface, Weight.SEMIBOLD).apply {
+        setPadding(dp(10), dp(5), dp(10), dp(5)); gravity = Gravity.CENTER
+        background = rounded(secondaryContainer, 8, outlineVariant)
+    }
+
+    /** 小さなラベル（読み取り専用。v0.7: 表のセルのような等幅タグ） */
+    fun chip(s: String): TextView = monoText(s, 11.5f, onSurfaceVariant).apply {
+        setPadding(dp(8), dp(4), dp(8), dp(4))
+        background = rounded(secondaryContainer, 6, outlineVariant)
     }
 
     /** 選べるチップ（ピル型）。選択中は墨色、未選択は淡いグレー */
@@ -168,6 +234,7 @@ class Ui(val ctx: Context) {
             gravity = Gravity.CENTER; minHeight = dp(34); minWidth = dp(48)
             setPadding(dp(14), 0, dp(14), 0); isClickable = true; isFocusable = true
             setOnClickListener { onClick() }
+            Motion.pressable(this)
         }
         var selected = false
             set(v) {
@@ -244,5 +311,6 @@ class Ui(val ctx: Context) {
 
     companion object {
         private val fonts = HashMap<Weight, Typeface>()
+        private val monoFonts = HashMap<Weight, Typeface>()
     }
 }

@@ -55,6 +55,7 @@ class MacroAccessibilityService : AccessibilityService() {
     private var collapsed = false
     private var bubble: BubbleView? = null
     private var statusText: TextView? = null
+    private var statusDots: DotMatrixView? = null
     private var recButton: ImageButton? = null
     private var playButton: ImageButton? = null
     private var stopButton: ImageButton? = null
@@ -206,7 +207,7 @@ class MacroAccessibilityService : AccessibilityService() {
     }
 
     private fun clearPanelRefs() {
-        bubble = null; statusText = null; recButton = null; playButton = null; stopButton = null; pill = null
+        bubble = null; statusText = null; statusDots = null; recButton = null; playButton = null; stopButton = null; pill = null
     }
 
     private fun buildBubble(): BubbleView =
@@ -347,6 +348,7 @@ class MacroAccessibilityService : AccessibilityService() {
         val r = p.row
         recButton = r.findViewWithTag("rec"); playButton = r.findViewWithTag("play")
         stopButton = r.findViewWithTag("stop"); statusText = r.findViewWithTag("status")
+        statusDots = r.findViewWithTag("dots")
     }
 
     private fun buildPill(leftward: Boolean): View {
@@ -372,7 +374,13 @@ class MacroAccessibilityService : AccessibilityService() {
             }
         })
         add(ui.iconButton(R.drawable.ic_stop, getString(R.string.desc_stop), size) { stopAll() }.apply { tag = "stop" })
-        val st = ui.text("", 12f, ui.onSurfaceVariant, medium = true).apply {
+        // v0.7: 状態の横に小さなドットマトリクス（記録=赤の脈動、再生=アクセントの波）
+        row.addView(DotMatrixView(this, 3, 3, dp(3).toFloat(), ui.dp(1.5f).toFloat()).apply {
+            tag = "dots"; visibility = View.GONE
+        }, LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply {
+            marginStart = dp(4)
+        })
+        val st = ui.monoText("", 12f, ui.onSurfaceVariant, Ui.Weight.MEDIUM).apply {
             tag = "status"
             maxWidth = dp(64); maxLines = 1; ellipsize = android.text.TextUtils.TruncateAt.END
             setPadding(dp(4), 0, dp(6), 0)
@@ -444,7 +452,7 @@ class MacroAccessibilityService : AccessibilityService() {
         anim?.cancel(); anim = null; pill = null
         if (state == State.RECORDING) stopRecording()
         removeView(panel); panel = null
-        bubble = null; statusText = null; recButton = null; playButton = null; stopButton = null
+        bubble = null; statusText = null; statusDots = null; recButton = null; playButton = null; stopButton = null
         notifyChanged()
         toast(getString(R.string.toast_panel_hidden))
     }
@@ -510,6 +518,14 @@ class MacroAccessibilityService : AccessibilityService() {
                 } ?: ""
             }
             t.visibility = if (state == State.IDLE) View.GONE else View.VISIBLE
+        }
+        statusDots?.let { d ->
+            when (state) {
+                State.RECORDING -> { d.color = ui.record; d.pattern = DotMatrixView.Pattern.PULSE }
+                State.PLAYING -> { d.color = ui.primary; d.pattern = DotMatrixView.Pattern.WAVE }
+                State.IDLE -> {}
+            }
+            d.visibility = if (state == State.IDLE) View.GONE else View.VISIBLE
         }
         panel?.post { clampPanel() }
     }

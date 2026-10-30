@@ -39,7 +39,9 @@ class DialogCard(val ui: Ui) {
         if (iconId != null) {
             root.addView(ImageView(ctx).apply {
                 setImageDrawable(ui.icon(iconId, if (destructive) ui.error else ui.onSurface))
-                background = ui.oval(if (destructive) ui.errorContainer else ui.secondaryContainer)
+                // v0.7: 丸ではなく角丸のタイル + 細い線
+                background = ui.rounded(if (destructive) ui.errorContainer else ui.secondaryContainer, 12,
+                    if (destructive) ui.withAlpha(ui.error, 0.3f) else ui.outlineVariant)
                 scaleType = ImageView.ScaleType.CENTER
                 importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
             }, LinearLayout.LayoutParams(dp(44), dp(44)).apply { bottomMargin = dp(16) })
@@ -82,14 +84,22 @@ object Dialogs {
         d.setContentView(frame)
         b.cancel?.setOnClickListener { d.dismiss() }
         b.confirm.setOnClickListener { if (onConfirm()) d.dismiss() }
+        val animate = Motion.enabled(activity)
         d.window?.apply {
             setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
             val w = minOf(activity.resources.displayMetrics.widthPixels - ui.dp(32), ui.dp(420))
             setLayout(w, ViewGroup.LayoutParams.WRAP_CONTENT)
             setDimAmount(0.32f)
             if (showKeyboard) setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE)
+            // v0.7: 標準のウィンドウアニメーションの代わりに、少し拡大しながらフェードイン
+            if (animate) setWindowAnimations(0)
         }
         d.show()
+        if (animate) {
+            b.root.alpha = 0f; b.root.scaleX = 0.96f; b.root.scaleY = 0.96f; b.root.translationY = ui.dp(8).toFloat()
+            b.root.animate().alpha(1f).scaleX(1f).scaleY(1f).translationY(0f)
+                .setDuration(280).setInterpolator(Motion.easeOut).start()
+        }
         return d
     }
 

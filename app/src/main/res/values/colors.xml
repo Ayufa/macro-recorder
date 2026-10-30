@@ -1,27 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- v0.6: designeer.xyz の見た目を参考にしたニュートラル（zinc 系）の配色。
-     画面は薄いグレー、カードは白＋細い線、主ボタンは墨色（ink）。
+<!-- v0.7: zinc 系ニュートラルをさらに整理（shadcn 風: 背景 #FAFAFA、カード白、細い実線のボーダー #E4E4E7）。
+     参考: sv-table / sv-blocks / sv-efferd（いずれも見た目だけ参考。コードや素材はコピーしていません）
      アクセント色は Android 12+ では端末のテーマ色（Material You、values-v31）、それ以前は青。 -->
 <resources>
     <color name="md_primary">#0066FA</color>
     <color name="md_on_primary">#FFFFFF</color>
-    <color name="md_primary_container">#E6EFFF</color>
+    <color name="md_primary_container">#EAF1FF</color>
     <color name="md_on_primary_container">#002A6B</color>
-    <color name="md_secondary_container">#EFEFF1</color>
+    <color name="md_secondary_container">#F4F4F5</color>
     <color name="md_on_secondary_container">#18181B</color>
-    <color name="md_surface">#F7F7F8</color>
+    <color name="md_surface">#FAFAFA</color>
     <color name="md_surface_container">#FFFFFF</color>
     <color name="md_surface_container_high">#FFFFFF</color>
-    <color name="md_on_surface">#18181B</color>
-    <color name="md_on_surface_variant">#5D5D66</color>
-    <color name="md_ink_3">#6B6B73</color>
-    <color name="md_outline_variant">#14000000</color>
-    <color name="md_outline">#29000000</color>
+    <color name="md_on_surface">#09090B</color>
+    <color name="md_on_surface_variant">#62626B</color>
+    <color name="md_ink_3">#71717A</color>
+    <color name="md_outline_variant">#E4E4E7</color>
+    <color name="md_outline">#D4D4D8</color>
     <color name="md_inverse_surface">#18181B</color>
     <color name="md_inverse_on_surface">#FAFAFA</color>
-    <color name="md_error">#E40014</color>
+    <color name="md_error">#DC2626</color>
     <color name="md_on_error">#FFFFFF</color>
-    <color name="md_error_container">#FFE6E7</color>
-    <color name="md_on_error_container">#8A000C</color>
+    <color name="md_error_container">#FEF2F2</color>
+    <color name="md_on_error_container">#991B1B</color>
     <color name="md_record">#E5383B</color>
+    <!-- v0.7 追加 -->
+    <color name="md_success">#16A34A</color>
+    <color name="md_success_container">#ECFDF3</color>
+    <color name="md_grid">#E4E4E7</color>
 </resources>

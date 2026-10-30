@@ -1,24 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- v0.7: ほぼ黒の背景 + 一段明るいカード + 細い線（sv-matrix / sv-efferd のダーク面を参考） -->
 <resources>
     <color name="md_primary">#4D94FF</color>
     <color name="md_on_primary">#001A40</color>
-    <color name="md_primary_container">#0B2F66</color>
+    <color name="md_primary_container">#0E2A57</color>
     <color name="md_on_primary_container">#D6E6FF</color>
-    <color name="md_secondary_container">#2A2A2E</color>
+    <color name="md_secondary_container">#1F1F23</color>
     <color name="md_on_secondary_container">#FAFAFA</color>
-    <color name="md_surface">#121212</color>
-    <color name="md_surface_container">#1F1F22</color>
-    <color name="md_surface_container_high">#26262A</color>
+    <color name="md_surface">#09090B</color>
+    <color name="md_surface_container">#111113</color>
+    <color name="md_surface_container_high">#18181B</color>
     <color name="md_on_surface">#FAFAFA</color>
-    <color name="md_on_surface_variant">#A8A8AD</color>
-    <color name="md_ink_3">#8B8B92</color>
-    <color name="md_outline_variant">#14FFFFFF</color>
-    <color name="md_outline">#2EFFFFFF</color>
+    <color name="md_on_surface_variant">#A1A1AA</color>
+    <color name="md_ink_3">#8B8B94</color>
+    <color name="md_outline_variant">#232327</color>
+    <color name="md_outline">#323238</color>
     <color name="md_inverse_surface">#FAFAFA</color>
     <color name="md_inverse_on_surface">#18181B</color>
-    <color name="md_error">#FF6568</color>
+    <color name="md_error">#F87171</color>
     <color name="md_on_error">#3D0006</color>
-    <color name="md_error_container">#3D0A0D</color>
-    <color name="md_on_error_container">#FFD9DA</color>
+    <color name="md_error_container">#2A0E10</color>
+    <color name="md_on_error_container">#FECACA</color>
     <color name="md_record">#FF5A5F</color>
+    <color name="md_success">#22C55E</color>
+    <color name="md_success_container">#0B2A17</color>
+    <color name="md_grid">#1C1C20</color>
 </resources>

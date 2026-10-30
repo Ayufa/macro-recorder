@@ -34,6 +34,7 @@ JDK 17、Android SDK Platform 37（compileSdk / targetSdk 37、minSdk 26）、AG
 
 ## 更新履歴
 
+- v0.7: デザインをさらに洗練。端に向かって消える方眼のヘッダー、等幅フォントのバージョン・件数バッジと見出し、マクロ一覧を罫線で区切った1枚の表に（番号・選択中はアクセントの線）、状態カードを区切り線つきの表形式に、空のとき・再生中・記録中はドットマトリクスのインジケーター（フローティングパネルとバブルにも）、設定シートの値をキーキャップ風に、画面・シート・ダイアログはぼかしながらふわっと表示、ボタンは押すと少し縮む。「アニメーションを削除」の設定では動きを止めます。配色をジンク系のグレーに調整。等幅フォント Geist Mono（SIL OFL 1.1）を同梱。sv-animations / sv-table / sv-blocks / sv-efferd / sv-matrix / sv-particles / sv-agentation の UI を参考に Android のビューで描き直したもので、コードや素材はコピーしていません → [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)
 - v0.6: 多言語対応（英語・日本語・中国語簡体字/繁体字・韓国語・スペイン語、アプリ内の言語切り替え、Android 13+ のアプリ別言語設定に対応）。再生設定をボトムシートに作り直し（繰り返し 1/5/10/∞/指定、間隔のプリセットと±ボタン、速度スライダーとプリセット、削除は確認つき）。ダイアログとメイン画面のデザインを刷新（[designeer.xyz](https://designeer.xyz) を見た目の参考にしただけで、素材やコードは使っていません）。フォント Funnel Sans（SIL OFL 1.1）を同梱 → [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)
 - v0.5: フローティングボタンを自動で表示しないように変更。アプリの「フローティングボタン > 表示」を押したときだけ出ます（更新・再起動・ユーザー補助の再接続のときも出ません）
 - v0.4: 収益化の下準備を追加（既定では無効。配布版 `standard` には広告・課金 SDK もインターネット権限も含まれません）。詳しくは [docs/MONETIZATION_ja.md](docs/MONETIZATION_ja.md)

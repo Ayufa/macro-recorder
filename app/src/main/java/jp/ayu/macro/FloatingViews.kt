@@ -99,12 +99,23 @@ class BubbleView(context: Context, private val ui: Ui) : View(context) {
         iconDrawable = ui.icon(id, ui.onPrimaryContainer)
     }
 
+    /** 再生中のドットマトリクスの位相（0..1） */
+    private var phase = 0.3f
+
     private fun updateAnim() {
-        anim?.cancel(); anim = null; pulse = 0f
+        anim?.cancel(); anim = null; pulse = 0f; phase = 0.3f
+        // 「アニメーションを削除」がオンのときは止まった絵のまま
+        if (!isAttachedToWindow || !Motion.enabled(context)) { if (mode == Mode.RECORDING) pulse = 1f; return }
         if (mode == Mode.RECORDING) {
             anim = ValueAnimator.ofFloat(0f, 1f).apply {
                 duration = 1100; repeatMode = ValueAnimator.REVERSE; repeatCount = ValueAnimator.INFINITE
                 addUpdateListener { pulse = it.animatedValue as Float; invalidate() }
+                start()
+            }
+        } else if (mode == Mode.PLAYING) {
+            anim = ValueAnimator.ofFloat(0f, 1f).apply {
+                duration = 1400; repeatCount = ValueAnimator.INFINITE; interpolator = android.view.animation.LinearInterpolator()
+                addUpdateListener { phase = it.animatedValue as Float; invalidate() }
                 start()
             }
         }
@@ -137,7 +148,18 @@ class BubbleView(context: Context, private val ui: Ui) : View(context) {
             }
             Mode.IDLE -> {}
         }
-        iconDrawable?.let {
+        if (mode == Mode.PLAYING) {
+            // v0.7: 再生中は 3x3 のドットマトリクスが斜めに流れる（sv-matrix のローダーを参考に描き直し）
+            val d = ui.dp(4).toFloat(); val g = ui.dp(2.5f).toFloat(); val span = 3 * d + 2 * g
+            val x0 = cx - span / 2 + d / 2; val y0 = cy - span / 2 + d / 2
+            for (r in 0 until 3) for (c in 0 until 3) {
+                val k = (r + c) / 4f
+                var t = (phase - k) % 1f; if (t < 0) t += 1f
+                val intensity = (Math.cos(t * 2 * Math.PI).toFloat() + 1f) / 2f
+                fill.color = ui.withAlpha(ui.onPrimaryContainer, 0.16f + 0.84f * intensity)
+                canvas.drawCircle(x0 + c * (d + g), y0 + r * (d + g), d / 2, fill)
+            }
+        } else iconDrawable?.let {
             val s = ui.dp(24); val l = (cx - s / 2).toInt(); val t = (cy - s / 2).toInt()
             it.setBounds(l, t, l + s, t + s); it.draw(canvas)
         }
