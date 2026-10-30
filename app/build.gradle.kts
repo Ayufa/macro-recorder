@@ -17,6 +17,8 @@ val admobAppId = monetizationValue("admobAppId", "ca-app-pub-3940256099942544~33
 val admobBannerId = monetizationValue("admobBannerId", "ca-app-pub-3940256099942544/9214589741")
 
 android {
+    // アプリ内で言語を切り替えるので、App Bundle にしても言語ごとに分割しない
+    bundle { language { enableSplit = false } }
     namespace = "jp.ayu.macro"
     compileSdk = 37
 
@@ -24,8 +26,8 @@ android {
         applicationId = "jp.ayu.macro"
         minSdk = 26
         targetSdk = 37
-        versionCode = 5
-        versionName = "0.5"
+        versionCode = 6
+        versionName = "0.6"
     }
 
     buildFeatures {

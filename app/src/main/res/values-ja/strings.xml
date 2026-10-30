@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 自動生成: tools/gen_strings.py（文言は tools/strings_data.py を編集） -->
+<resources>
+    <string name="app_name">操作マクロ</string>
+    <string name="service_label">操作マクロ（記録・再生）</string>
+    <string name="service_summary">画面操作（タップ・長押し・スワイプ）を記録し、あとで自動で再生します。</string>
+    <string name="service_description">このサービスは、あなたが「記録」を押している間だけ、画面上のタップ・長押し・スワイプの座標と時間を記録し、「再生」を押したときにその操作を同じように実行するために使います。\n\n【使う機能】\n・ジェスチャーの実行（記録した操作の再生と、記録中の操作を下のアプリに届けるため）\n・画面の上に重ねて表示するボタン（記録・再生・停止）\n\n【データの取り扱い】\n・記録するのは、指の位置（座標）と時間だけです。他のアプリの画面内容・文字・パスワード・個人情報は読み取りません。\n・記録したマクロはこの端末のアプリ内にのみ保存されます。\n・インターネット権限を持たないため、データを外部に送信することはありません。\n・マクロはアプリ内の一覧からいつでも削除できます。</string>
+    <string name="privacy_note">記録するのは指の位置と時間だけで、他のアプリの画面内容は読み取りません。データはこの端末内にのみ保存され、インターネット権限はありません。</string>
+    <string name="tagline">タップ・スワイプを記録して、自動で再生</string>
+    <string name="section_how_to">使い方</string>
+    <string name="section_macros">保存したマクロ</string>
+    <string name="section_plan">プラン</string>
+    <string name="section_app_settings">アプリの設定</string>
+    <string name="howto_1">フローティングの記録ボタンで記録開始 → ふつうに操作</string>
+    <string name="howto_2">もう一度押すと記録終了。名前を付けて保存</string>
+    <string name="howto_3">再生ボタンで ★ 選択中のマクロを再生、停止で止まります</string>
+    <string name="howto_4">小さくするボタンで丸いアイコンに。タップで元に戻ります</string>
+    <string name="howto_5">設定ボタンでこの画面に戻れます</string>
+    <string name="language">言語</string>
+    <string name="lang_system">端末の言語に従う</string>
+    <string name="plan_unlimited">マクロの保存数: 無制限</string>
+    <string name="plan_owned">%1$s（購入済み）</string>
+    <string name="plan_remove_ads">広告を非表示にする</string>
+    <string name="plan_unlimited_macros">マクロを無制限に保存</string>
+    <string name="plan_ad_privacy">広告のプライバシー設定</string>
+    <string name="toast_battery_already">すでに除外されています</string>
+    <string name="status_service">ユーザー補助サービス</string>
+    <string name="status_service_running">動作中</string>
+    <string name="status_service_stuck">オンですが応答がありません（一度オフ→オンに）</string>
+    <string name="status_service_off">オフ：「%1$s」をオンにしてください</string>
+    <string name="action_open">開く</string>
+    <string name="status_battery">電池の最適化</string>
+    <string name="status_battery_ok">除外済み</string>
+    <string name="status_battery_on">最適化中（停止されることがあります）</string>
+    <string name="action_exclude">除外</string>
+    <string name="status_panel">フローティングボタン</string>
+    <string name="status_panel_shown">表示中</string>
+    <string name="status_panel_hidden">非表示</string>
+    <string name="action_show">表示</string>
+    <string name="action_app_info">アプリ情報を開く（制限付き設定の許可など）</string>
+    <string name="empty_title">まだマクロがありません</string>
+    <string name="empty_body">フローティングの記録ボタンから作成できます</string>
+    <string name="selected_badge">選択中</string>
+    <string name="macro_summary">%1$s（%2$s）</string>
+    <string name="chip_repeat">繰り返し %1$s</string>
+    <string name="chip_interval">間隔 %1$s</string>
+    <string name="chip_speed">%1$s倍速</string>
+    <string name="action_run">実行</string>
+    <string name="desc_select">選択（フローティングの再生で使う）</string>
+    <string name="toast_selected">フローティングの再生ボタンで再生されます</string>
+    <string name="desc_settings">再生設定</string>
+    <string name="desc_rename">名前を変更</string>
+    <string name="delete">削除</string>
+    <string name="toast_enable_service_first">先にユーザー補助で「%1$s」をオンにしてください</string>
+    <string name="toast_play_in_3s">3秒後に再生します。対象のアプリを開いてください</string>
+    <string name="name_hint">マクロの名前</string>
+    <string name="rename_title">名前を変更</string>
+    <string name="save">保存</string>
+    <string name="cancel">キャンセル</string>
+    <string name="close">閉じる</string>
+    <string name="delete_title">削除しますか？</string>
+    <string name="delete_message">「%1$s」を削除します。元に戻せません。</string>
+    <string name="settings_title">再生設定</string>
+    <string name="settings_subtitle">%1$s · %2$s</string>
+    <string name="settings_name">名前</string>
+    <string name="settings_repeat">繰り返し</string>
+    <string name="repeat_custom">指定</string>
+    <string name="repeat_infinite">∞ 無限</string>
+    <string name="unit_times">回</string>
+    <string name="unit_seconds">秒</string>
+    <string name="decrease">減らす</string>
+    <string name="increase">増やす</string>
+    <string name="settings_interval">ループの間隔</string>
+    <string name="interval_hint">1回の再生が終わってから、次を始めるまでの待ち時間です。</string>
+    <string name="settings_speed">再生速度</string>
+    <string name="speed_hint">大きいほど速く再生します。速すぎると反応しないアプリもあります。</string>
+    <string name="delete_macro">このマクロを削除</string>
+    <string name="repeat_hint_infinite">フローティングの停止ボタンを押すまで繰り返します。</string>
+    <string name="value_seconds">%1$s秒</string>
+    <string name="list_separator">・</string>
+    <string name="toast_panel_failed">フローティングボタンを表示できませんでした: %1$s</string>
+    <string name="desc_record">記録</string>
+    <string name="desc_play">再生</string>
+    <string name="desc_stop">停止</string>
+    <string name="desc_open_app">設定（アプリを開く）</string>
+    <string name="desc_collapse">小さくする</string>
+    <string name="desc_hide_panel">フローティングボタンを隠す</string>
+    <string name="desc_stop_recording">記録を終了して保存</string>
+    <string name="desc_bubble_idle">操作マクロ（タップで開く）</string>
+    <string name="desc_bubble_recording">記録中（タップで開く）</string>
+    <string name="desc_bubble_playing">再生中（タップで開く）</string>
+    <string name="toast_play_target">再生するマクロ: %1$s</string>
+    <string name="toast_no_macros_short">マクロがありません</string>
+    <string name="toast_open_failed">アプリを開けませんでした</string>
+    <string name="toast_panel_hidden">アプリの画面から再表示できます</string>
+    <string name="toast_rec_failed">記録を開始できませんでした: %1$s</string>
+    <string name="toast_rec_started">記録を開始しました。ふつうに操作してください（1操作ずつ、ゆっくりめに）</string>
+    <string name="toast_nothing_recorded">操作が記録されていません</string>
+    <string name="default_macro_name">マクロ %1$s</string>
+    <string name="toast_no_macros">マクロがありません。まず記録してください</string>
+    <string name="toast_empty_macro">このマクロには操作がありません</string>
+    <string name="toast_dispatch_failed">操作を実行できませんでした。ユーザー補助の設定を確認してください</string>
+    <string name="toast_finished">再生が終わりました</string>
+    <string name="saved_message">名前を付けてください</string>
+    <string name="keep_name">このまま</string>
+    <plurals name="steps_count">
+        <item quantity="other">%d操作</item>
+    </plurals>
+    <plurals name="repeat_times">
+        <item quantity="other">%d回</item>
+    </plurals>
+    <plurals name="repeat_hint">
+        <item quantity="other">%d回再生します。</item>
+    </plurals>
+    <plurals name="kind_tap">
+        <item quantity="other">タップ%d</item>
+    </plurals>
+    <plurals name="kind_long_press">
+        <item quantity="other">長押し%d</item>
+    </plurals>
+    <plurals name="kind_swipe">
+        <item quantity="other">スワイプ%d</item>
+    </plurals>
+    <plurals name="kind_multi">
+        <item quantity="other">複数指 (%1$d本)%2$d</item>
+    </plurals>
+    <plurals name="kind_empty">
+        <item quantity="other">空%d</item>
+    </plurals>
+    <plurals name="plan_free_limit">
+        <item quantity="other">無料版: マクロは %d 件まで保存できます</item>
+    </plurals>
+    <plurals name="toast_free_limit">
+        <item quantity="other">無料版で保存できるマクロは %d 件までです。不要なマクロを削除するか、アプリの「プラン」から無制限にできます</item>
+    </plurals>
+    <plurals name="toast_finished_cancelled">
+        <item quantity="other">再生が終わりました（中断された操作: %d）</item>
+    </plurals>
+    <plurals name="saved_title">
+        <item quantity="other">保存しました（%d操作）</item>
+    </plurals>
+</resources>

@@ -88,9 +88,9 @@ class BubbleView(context: Context, private val ui: Ui) : View(context) {
 
     private fun contentDescriptionUpdate() {
         contentDescription = when (mode) {
-            Mode.IDLE -> "操作マクロ（タップで開く）"
-            Mode.RECORDING -> "記録中（タップで開く）"
-            Mode.PLAYING -> "再生中（タップで開く）"
+            Mode.IDLE -> context.getString(R.string.desc_bubble_idle)
+            Mode.RECORDING -> context.getString(R.string.desc_bubble_recording)
+            Mode.PLAYING -> context.getString(R.string.desc_bubble_playing)
         }
     }
 

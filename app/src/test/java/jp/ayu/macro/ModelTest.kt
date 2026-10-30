@@ -21,9 +21,9 @@ class ModelTest {
 
     @Test fun kinds() {
         val m = sample()
-        assertEquals("タップ", m.steps[0].kindLabel())
-        assertEquals("スワイプ", m.steps[1].kindLabel())
-        assertEquals("長押し", m.steps[2].kindLabel())
+        assertEquals(Step.Kind.TAP, m.steps[0].kind())
+        assertEquals(Step.Kind.SWIPE, m.steps[1].kind())
+        assertEquals(Step.Kind.LONG_PRESS, m.steps[2].kind())
     }
 
     @Test fun speedScaling() {

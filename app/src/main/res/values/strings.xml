@@ -1,8 +1,162 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- 自動生成: tools/gen_strings.py（文言は tools/strings_data.py を編集） -->
 <resources>
-    <string name="app_name">操作マクロ</string>
-    <string name="service_label">操作マクロ（記録・再生）</string>
-    <string name="service_summary">画面操作（タップ・長押し・スワイプ）を記録し、あとで自動で再生します。</string>
-    <string name="service_description">このサービスは、あなたが「記録」を押している間だけ、画面上のタップ・長押し・スワイプの座標と時間を記録し、「再生」を押したときにその操作を同じように実行するために使います。\n\n【使う機能】\n・ジェスチャーの実行（記録した操作の再生と、記録中の操作を下のアプリに届けるため）\n・画面の上に重ねて表示するボタン（記録・再生・停止）\n\n【データの取り扱い】\n・記録するのは、指の位置（座標）と時間だけです。他のアプリの画面内容・文字・パスワード・個人情報は読み取りません。\n・記録したマクロはこの端末のアプリ内にのみ保存されます。\n・インターネット権限を持たないため、データを外部に送信することはありません。\n・マクロはアプリ内の一覧からいつでも削除できます。</string>
-    <string name="privacy_note">記録するのは指の位置と時間だけで、他のアプリの画面内容は読み取りません。データはこの端末内にのみ保存され、インターネット権限はありません。</string>
+    <string name="version_label" translatable="false">v%1$s</string>
+    <string name="value_speed" translatable="false">%1$s×</string>
+    <string name="lang_en" translatable="false">English</string>
+    <string name="lang_ja" translatable="false">日本語</string>
+    <string name="lang_zh_cn" translatable="false">简体中文</string>
+    <string name="lang_zh_tw" translatable="false">繁體中文</string>
+    <string name="lang_ko" translatable="false">한국어</string>
+    <string name="lang_es" translatable="false">Español</string>
+    <string name="app_name">Macro Recorder</string>
+    <string name="service_label">Macro Recorder (record &amp; play)</string>
+    <string name="service_summary">Records screen actions (taps, long presses, swipes) and plays them back automatically later.</string>
+    <string name="service_description">This service records the coordinates and timing of taps, long presses and swipes on the screen only while you have pressed Record, and performs the same actions again when you press Play.\n\n[Features used]\n• Performing gestures (to replay recorded actions and to pass your touches through to the app underneath while recording)\n• Buttons shown on top of the screen (Record, Play, Stop)\n\n[How your data is handled]\n• Only finger positions (coordinates) and timing are recorded. The content, text, passwords and personal information of other apps are never read.\n• Recorded macros are stored only inside this app on this device.\n• The app has no internet permission, so no data is ever sent off the device.\n• You can delete macros at any time from the list in the app.</string>
+    <string name="privacy_note">Only finger positions and timing are recorded; the screen content of other apps is never read. Data stays on this device only, and the app has no internet permission.</string>
+    <string name="tagline">Record taps and swipes, then play them back automatically</string>
+    <string name="section_how_to">How to use</string>
+    <string name="section_macros">Saved macros</string>
+    <string name="section_plan">Plan</string>
+    <string name="section_app_settings">App settings</string>
+    <string name="howto_1">Tap the floating Record button to start, then use your phone as usual</string>
+    <string name="howto_2">Tap it again to stop recording, then name and save the macro</string>
+    <string name="howto_3">Play runs the ★ selected macro; Stop ends playback</string>
+    <string name="howto_4">Minimize shrinks the buttons to a round icon; tap it to bring them back</string>
+    <string name="howto_5">The settings button brings you back to this screen</string>
+    <string name="language">Language</string>
+    <string name="lang_system">System default</string>
+    <string name="plan_unlimited">Saved macros: unlimited</string>
+    <string name="plan_owned">%1$s (purchased)</string>
+    <string name="plan_remove_ads">Remove ads</string>
+    <string name="plan_unlimited_macros">Save unlimited macros</string>
+    <string name="plan_ad_privacy">Ad privacy settings</string>
+    <string name="toast_battery_already">Already excluded</string>
+    <string name="status_service">Accessibility service</string>
+    <string name="status_service_running">Running</string>
+    <string name="status_service_stuck">On but not responding (turn it off and on again)</string>
+    <string name="status_service_off">Off: turn on \"%1$s\"</string>
+    <string name="action_open">Open</string>
+    <string name="status_battery">Battery optimization</string>
+    <string name="status_battery_ok">Excluded</string>
+    <string name="status_battery_on">Optimized (the app may be stopped)</string>
+    <string name="action_exclude">Exclude</string>
+    <string name="status_panel">Floating buttons</string>
+    <string name="status_panel_shown">Showing</string>
+    <string name="status_panel_hidden">Hidden</string>
+    <string name="action_show">Show</string>
+    <string name="action_app_info">Open app info (e.g. allow restricted settings)</string>
+    <string name="empty_title">No macros yet</string>
+    <string name="empty_body">Create one with the floating Record button</string>
+    <string name="selected_badge">Selected</string>
+    <string name="macro_summary">%1$s (%2$s)</string>
+    <string name="chip_repeat">Repeat %1$s</string>
+    <string name="chip_interval">Interval %1$s</string>
+    <string name="chip_speed">%1$s× speed</string>
+    <string name="action_run">Run</string>
+    <string name="desc_select">Select (used by the floating Play button)</string>
+    <string name="toast_selected">The floating Play button will play this macro</string>
+    <string name="desc_settings">Playback settings</string>
+    <string name="desc_rename">Rename</string>
+    <string name="delete">Delete</string>
+    <string name="toast_enable_service_first">Turn on \"%1$s\" in Accessibility first</string>
+    <string name="toast_play_in_3s">Playing in 3 seconds. Open the target app.</string>
+    <string name="name_hint">Macro name</string>
+    <string name="rename_title">Rename</string>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+    <string name="close">Close</string>
+    <string name="delete_title">Delete this macro?</string>
+    <string name="delete_message">\"%1$s\" will be deleted. This can\'t be undone.</string>
+    <string name="settings_title">Playback settings</string>
+    <string name="settings_subtitle">%1$s · %2$s</string>
+    <string name="settings_name">Name</string>
+    <string name="settings_repeat">Repeat</string>
+    <string name="repeat_custom">Custom</string>
+    <string name="repeat_infinite">∞ Forever</string>
+    <string name="unit_times">times</string>
+    <string name="unit_seconds">sec</string>
+    <string name="decrease">Decrease</string>
+    <string name="increase">Increase</string>
+    <string name="settings_interval">Interval between loops</string>
+    <string name="interval_hint">How long to wait after each loop before the next one starts.</string>
+    <string name="settings_speed">Playback speed</string>
+    <string name="speed_hint">Higher is faster. Some apps may not keep up with very fast gestures.</string>
+    <string name="delete_macro">Delete this macro</string>
+    <string name="repeat_hint_infinite">Repeats until you tap Stop on the floating buttons.</string>
+    <string name="value_seconds">%1$s s</string>
+    <string name="list_separator">", "</string>
+    <string name="toast_panel_failed">Couldn\'t show the floating buttons: %1$s</string>
+    <string name="desc_record">Record</string>
+    <string name="desc_play">Play</string>
+    <string name="desc_stop">Stop</string>
+    <string name="desc_open_app">Settings (open the app)</string>
+    <string name="desc_collapse">Minimize</string>
+    <string name="desc_hide_panel">Hide the floating buttons</string>
+    <string name="desc_stop_recording">Stop recording and save</string>
+    <string name="desc_bubble_idle">Macro Recorder (tap to open)</string>
+    <string name="desc_bubble_recording">Recording (tap to open)</string>
+    <string name="desc_bubble_playing">Playing (tap to open)</string>
+    <string name="toast_play_target">Macro to play: %1$s</string>
+    <string name="toast_no_macros_short">No macros</string>
+    <string name="toast_open_failed">Couldn\'t open the app</string>
+    <string name="toast_panel_hidden">You can show them again from the app</string>
+    <string name="toast_rec_failed">Couldn\'t start recording: %1$s</string>
+    <string name="toast_rec_started">Recording started. Use your phone as usual (one action at a time, a little slowly).</string>
+    <string name="toast_nothing_recorded">Nothing was recorded</string>
+    <string name="default_macro_name">Macro %1$s</string>
+    <string name="toast_no_macros">No macros yet. Record one first.</string>
+    <string name="toast_empty_macro">This macro has no actions</string>
+    <string name="toast_dispatch_failed">Couldn\'t perform the action. Check the accessibility settings.</string>
+    <string name="toast_finished">Playback finished</string>
+    <string name="saved_message">Give it a name</string>
+    <string name="keep_name">Keep as is</string>
+    <plurals name="steps_count">
+        <item quantity="one">%d action</item>
+        <item quantity="other">%d actions</item>
+    </plurals>
+    <plurals name="repeat_times">
+        <item quantity="one">%d time</item>
+        <item quantity="other">%d times</item>
+    </plurals>
+    <plurals name="repeat_hint">
+        <item quantity="one">Plays %d time.</item>
+        <item quantity="other">Plays %d times.</item>
+    </plurals>
+    <plurals name="kind_tap">
+        <item quantity="one">%d tap</item>
+        <item quantity="other">%d taps</item>
+    </plurals>
+    <plurals name="kind_long_press">
+        <item quantity="one">%d long press</item>
+        <item quantity="other">%d long presses</item>
+    </plurals>
+    <plurals name="kind_swipe">
+        <item quantity="one">%d swipe</item>
+        <item quantity="other">%d swipes</item>
+    </plurals>
+    <plurals name="kind_multi">
+        <item quantity="one">%2$d multi-finger (%1$d)</item>
+        <item quantity="other">%2$d multi-finger (%1$d)</item>
+    </plurals>
+    <plurals name="kind_empty">
+        <item quantity="one">%d empty</item>
+        <item quantity="other">%d empty</item>
+    </plurals>
+    <plurals name="plan_free_limit">
+        <item quantity="one">Free version: you can save up to %d macro</item>
+        <item quantity="other">Free version: you can save up to %d macros</item>
+    </plurals>
+    <plurals name="toast_free_limit">
+        <item quantity="one">The free version can save up to %d macro. Delete macros you don\'t need, or go unlimited from \"Plan\" in the app.</item>
+        <item quantity="other">The free version can save up to %d macros. Delete macros you don\'t need, or go unlimited from \"Plan\" in the app.</item>
+    </plurals>
+    <plurals name="toast_finished_cancelled">
+        <item quantity="one">Playback finished (%d action was interrupted)</item>
+        <item quantity="other">Playback finished (%d actions were interrupted)</item>
+    </plurals>
+    <plurals name="saved_title">
+        <item quantity="one">Saved (%d action)</item>
+        <item quantity="other">Saved (%d actions)</item>
+    </plurals>
 </resources>

@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 自動生成: tools/gen_strings.py（文言は tools/strings_data.py を編集） -->
+<resources>
+    <string name="app_name">操作宏</string>
+    <string name="service_label">操作宏（录制与播放）</string>
+    <string name="service_summary">录制屏幕操作（点按、长按、滑动），之后自动重放。</string>
+    <string name="service_description">此服务仅在你按下“录制”期间，记录屏幕上点按、长按和滑动的坐标与时间，并在你按下“播放”时以相同方式执行这些操作。\n\n【使用的功能】\n・执行手势（用于重放录制的操作，以及在录制期间把你的操作传递给下方的应用）\n・显示在屏幕上层的按钮（录制、播放、停止）\n\n【数据处理】\n・只记录手指的位置（坐标）和时间。不会读取其他应用的屏幕内容、文字、密码或个人信息。\n・录制的宏只保存在此设备上的本应用内。\n・本应用没有网络权限，因此不会向外部发送任何数据。\n・你可以随时在应用内的列表中删除宏。</string>
+    <string name="privacy_note">只记录手指的位置和时间，不会读取其他应用的屏幕内容。数据只保存在此设备上，本应用也没有网络权限。</string>
+    <string name="tagline">录制点按和滑动，然后自动重放</string>
+    <string name="section_how_to">使用方法</string>
+    <string name="section_macros">已保存的宏</string>
+    <string name="section_plan">方案</string>
+    <string name="section_app_settings">应用设置</string>
+    <string name="howto_1">点按悬浮的录制按钮开始录制 → 照常操作</string>
+    <string name="howto_2">再按一次即可结束录制，命名后保存</string>
+    <string name="howto_3">播放按钮会播放 ★ 选中的宏，按停止即可停下</string>
+    <string name="howto_4">最小化按钮会把按钮收成圆形图标，点按即可恢复</string>
+    <string name="howto_5">设置按钮可回到此画面</string>
+    <string name="language">语言</string>
+    <string name="lang_system">跟随系统</string>
+    <string name="plan_unlimited">可保存的宏：无限制</string>
+    <string name="plan_owned">%1$s（已购买）</string>
+    <string name="plan_remove_ads">移除广告</string>
+    <string name="plan_unlimited_macros">无限制保存宏</string>
+    <string name="plan_ad_privacy">广告隐私设置</string>
+    <string name="toast_battery_already">已排除</string>
+    <string name="status_service">无障碍服务</string>
+    <string name="status_service_running">运行中</string>
+    <string name="status_service_stuck">已开启但没有响应（请关闭后重新开启）</string>
+    <string name="status_service_off">已关闭：请开启“%1$s”</string>
+    <string name="action_open">打开</string>
+    <string name="status_battery">电池优化</string>
+    <string name="status_battery_ok">已排除</string>
+    <string name="status_battery_on">已优化（应用可能会被停止）</string>
+    <string name="action_exclude">排除</string>
+    <string name="status_panel">悬浮按钮</string>
+    <string name="status_panel_shown">显示中</string>
+    <string name="status_panel_hidden">已隐藏</string>
+    <string name="action_show">显示</string>
+    <string name="action_app_info">打开应用信息（如允许受限设置）</string>
+    <string name="empty_title">还没有宏</string>
+    <string name="empty_body">可通过悬浮的录制按钮创建</string>
+    <string name="selected_badge">已选择</string>
+    <string name="macro_summary">%1$s（%2$s）</string>
+    <string name="chip_repeat">重复 %1$s</string>
+    <string name="chip_interval">间隔 %1$s</string>
+    <string name="chip_speed">%1$s 倍速</string>
+    <string name="action_run">运行</string>
+    <string name="desc_select">选择（供悬浮的播放按钮使用）</string>
+    <string name="toast_selected">悬浮的播放按钮将播放此宏</string>
+    <string name="desc_settings">播放设置</string>
+    <string name="desc_rename">重命名</string>
+    <string name="delete">删除</string>
+    <string name="toast_enable_service_first">请先在无障碍中开启“%1$s”</string>
+    <string name="toast_play_in_3s">3 秒后开始播放，请打开目标应用</string>
+    <string name="name_hint">宏名称</string>
+    <string name="rename_title">重命名</string>
+    <string name="save">保存</string>
+    <string name="cancel">取消</string>
+    <string name="close">关闭</string>
+    <string name="delete_title">要删除吗？</string>
+    <string name="delete_message">将删除“%1$s”，此操作无法撤销。</string>
+    <string name="settings_title">播放设置</string>
+    <string name="settings_subtitle">%1$s · %2$s</string>
+    <string name="settings_name">名称</string>
+    <string name="settings_repeat">重复</string>
+    <string name="repeat_custom">自定义</string>
+    <string name="repeat_infinite">∞ 无限</string>
+    <string name="unit_times">次</string>
+    <string name="unit_seconds">秒</string>
+    <string name="decrease">减少</string>
+    <string name="increase">增加</string>
+    <string name="settings_interval">循环间隔</string>
+    <string name="interval_hint">每轮播放结束后，等待多久再开始下一轮。</string>
+    <string name="settings_speed">播放速度</string>
+    <string name="speed_hint">数值越大播放越快。速度过快时，部分应用可能来不及响应。</string>
+    <string name="delete_macro">删除此宏</string>
+    <string name="repeat_hint_infinite">将一直重复，直到点按悬浮按钮中的“停止”。</string>
+    <string name="value_seconds">%1$s 秒</string>
+    <string name="list_separator">、</string>
+    <string name="toast_panel_failed">无法显示悬浮按钮：%1$s</string>
+    <string name="desc_record">录制</string>
+    <string name="desc_play">播放</string>
+    <string name="desc_stop">停止</string>
+    <string name="desc_open_app">设置（打开应用）</string>
+    <string name="desc_collapse">最小化</string>
+    <string name="desc_hide_panel">隐藏悬浮按钮</string>
+    <string name="desc_stop_recording">结束录制并保存</string>
+    <string name="desc_bubble_idle">操作宏（点按即可展开）</string>
+    <string name="desc_bubble_recording">录制中（点按即可展开）</string>
+    <string name="desc_bubble_playing">播放中（点按即可展开）</string>
+    <string name="toast_play_target">要播放的宏：%1$s</string>
+    <string name="toast_no_macros_short">没有宏</string>
+    <string name="toast_open_failed">无法打开应用</string>
+    <string name="toast_panel_hidden">可在应用画面中重新显示</string>
+    <string name="toast_rec_failed">无法开始录制：%1$s</string>
+    <string name="toast_rec_started">已开始录制。请照常操作（一次一个动作，稍微慢一点）</string>
+    <string name="toast_nothing_recorded">没有录制到任何操作</string>
+    <string name="default_macro_name">宏 %1$s</string>
+    <string name="toast_no_macros">还没有宏，请先录制</string>
+    <string name="toast_empty_macro">此宏中没有操作</string>
+    <string name="toast_dispatch_failed">无法执行操作，请检查无障碍设置</string>
+    <string name="toast_finished">播放已结束</string>
+    <string name="saved_message">请为它命名</string>
+    <string name="keep_name">保持原样</string>
+    <plurals name="steps_count">
+        <item quantity="other">%d 个操作</item>
+    </plurals>
+    <plurals name="repeat_times">
+        <item quantity="other">%d 次</item>
+    </plurals>
+    <plurals name="repeat_hint">
+        <item quantity="other">将播放 %d 次。</item>
+    </plurals>
+    <plurals name="kind_tap">
+        <item quantity="other">点按 %d</item>
+    </plurals>
+    <plurals name="kind_long_press">
+        <item quantity="other">长按 %d</item>
+    </plurals>
+    <plurals name="kind_swipe">
+        <item quantity="other">滑动 %d</item>
+    </plurals>
+    <plurals name="kind_multi">
+        <item quantity="other">多指（%1$d 指）%2$d</item>
+    </plurals>
+    <plurals name="kind_empty">
+        <item quantity="other">空 %d</item>
+    </plurals>
+    <plurals name="plan_free_limit">
+        <item quantity="other">免费版：最多可保存 %d 个宏</item>
+    </plurals>
+    <plurals name="toast_free_limit">
+        <item quantity="other">免费版最多可保存 %d 个宏。请删除不需要的宏，或在应用的“方案”中升级为无限制。</item>
+    </plurals>
+    <plurals name="toast_finished_cancelled">
+        <item quantity="other">播放已结束（被中断的操作：%d）</item>
+    </plurals>
+    <plurals name="saved_title">
+        <item quantity="other">已保存（%d 个操作）</item>
+    </plurals>
+</resources>

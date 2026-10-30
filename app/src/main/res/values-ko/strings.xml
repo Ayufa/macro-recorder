@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 自動生成: tools/gen_strings.py（文言は tools/strings_data.py を編集） -->
+<resources>
+    <string name="app_name">조작 매크로</string>
+    <string name="service_label">조작 매크로 (녹화·재생)</string>
+    <string name="service_summary">화면 조작(탭, 길게 누르기, 스와이프)을 녹화하고 나중에 자동으로 재생합니다.</string>
+    <string name="service_description">이 서비스는 사용자가 \'녹화\'를 누른 동안에만 화면의 탭, 길게 누르기, 스와이프의 좌표와 시간을 기록하고, \'재생\'을 누르면 같은 조작을 그대로 실행하는 데 사용됩니다.\n\n[사용하는 기능]\n• 제스처 실행(녹화한 조작을 재생하고, 녹화 중의 조작을 아래 앱에 전달하기 위해)\n• 화면 위에 겹쳐 표시하는 버튼(녹화, 재생, 정지)\n\n[데이터 처리]\n• 기록하는 것은 손가락의 위치(좌표)와 시간뿐입니다. 다른 앱의 화면 내용, 텍스트, 비밀번호, 개인정보는 읽지 않습니다.\n• 녹화한 매크로는 이 기기의 앱 안에만 저장됩니다.\n• 인터넷 권한이 없으므로 데이터를 외부로 전송하지 않습니다.\n• 매크로는 앱의 목록에서 언제든지 삭제할 수 있습니다.</string>
+    <string name="privacy_note">손가락의 위치와 시간만 기록하며, 다른 앱의 화면 내용은 읽지 않습니다. 데이터는 이 기기에만 저장되며, 인터넷 권한이 없습니다.</string>
+    <string name="tagline">탭과 스와이프를 녹화해 자동으로 재생</string>
+    <string name="section_how_to">사용 방법</string>
+    <string name="section_macros">저장한 매크로</string>
+    <string name="section_plan">플랜</string>
+    <string name="section_app_settings">앱 설정</string>
+    <string name="howto_1">플로팅 녹화 버튼을 눌러 녹화 시작 → 평소처럼 조작</string>
+    <string name="howto_2">한 번 더 누르면 녹화 종료. 이름을 붙여 저장</string>
+    <string name="howto_3">재생 버튼으로 ★ 선택한 매크로를 재생하고, 정지로 멈춥니다</string>
+    <string name="howto_4">최소화 버튼으로 동그란 아이콘이 되며, 탭하면 원래대로 돌아옵니다</string>
+    <string name="howto_5">설정 버튼으로 이 화면에 돌아올 수 있습니다</string>
+    <string name="language">언어</string>
+    <string name="lang_system">시스템 기본값</string>
+    <string name="plan_unlimited">매크로 저장 개수: 무제한</string>
+    <string name="plan_owned">%1$s (구매함)</string>
+    <string name="plan_remove_ads">광고 제거</string>
+    <string name="plan_unlimited_macros">매크로 무제한 저장</string>
+    <string name="plan_ad_privacy">광고 개인정보 설정</string>
+    <string name="toast_battery_already">이미 제외되어 있습니다</string>
+    <string name="status_service">접근성 서비스</string>
+    <string name="status_service_running">실행 중</string>
+    <string name="status_service_stuck">켜져 있지만 응답이 없습니다(껐다가 다시 켜 주세요)</string>
+    <string name="status_service_off">꺼짐: \'%1$s\'을(를) 켜 주세요</string>
+    <string name="action_open">열기</string>
+    <string name="status_battery">배터리 최적화</string>
+    <string name="status_battery_ok">제외됨</string>
+    <string name="status_battery_on">최적화 중(앱이 중지될 수 있음)</string>
+    <string name="action_exclude">제외</string>
+    <string name="status_panel">플로팅 버튼</string>
+    <string name="status_panel_shown">표시 중</string>
+    <string name="status_panel_hidden">숨김</string>
+    <string name="action_show">표시</string>
+    <string name="action_app_info">앱 정보 열기(제한된 설정 허용 등)</string>
+    <string name="empty_title">아직 매크로가 없습니다</string>
+    <string name="empty_body">플로팅 녹화 버튼으로 만들 수 있습니다</string>
+    <string name="selected_badge">선택됨</string>
+    <string name="macro_summary">%1$s (%2$s)</string>
+    <string name="chip_repeat">반복 %1$s</string>
+    <string name="chip_interval">간격 %1$s</string>
+    <string name="chip_speed">%1$s배속</string>
+    <string name="action_run">실행</string>
+    <string name="desc_select">선택(플로팅 재생 버튼에서 사용)</string>
+    <string name="toast_selected">플로팅 재생 버튼으로 이 매크로가 재생됩니다</string>
+    <string name="desc_settings">재생 설정</string>
+    <string name="desc_rename">이름 변경</string>
+    <string name="delete">삭제</string>
+    <string name="toast_enable_service_first">먼저 접근성에서 \'%1$s\'을(를) 켜 주세요</string>
+    <string name="toast_play_in_3s">3초 후 재생합니다. 대상 앱을 열어 주세요</string>
+    <string name="name_hint">매크로 이름</string>
+    <string name="rename_title">이름 변경</string>
+    <string name="save">저장</string>
+    <string name="cancel">취소</string>
+    <string name="close">닫기</string>
+    <string name="delete_title">삭제할까요?</string>
+    <string name="delete_message">\'%1$s\'을(를) 삭제합니다. 되돌릴 수 없습니다.</string>
+    <string name="settings_title">재생 설정</string>
+    <string name="settings_subtitle">%1$s · %2$s</string>
+    <string name="settings_name">이름</string>
+    <string name="settings_repeat">반복</string>
+    <string name="repeat_custom">직접</string>
+    <string name="repeat_infinite">∞ 무한</string>
+    <string name="unit_times">회</string>
+    <string name="unit_seconds">초</string>
+    <string name="decrease">줄이기</string>
+    <string name="increase">늘리기</string>
+    <string name="settings_interval">반복 간격</string>
+    <string name="interval_hint">한 번 재생이 끝난 뒤 다음 재생을 시작하기까지 기다리는 시간입니다.</string>
+    <string name="settings_speed">재생 속도</string>
+    <string name="speed_hint">값이 클수록 빠르게 재생합니다. 너무 빠르면 반응하지 못하는 앱도 있습니다.</string>
+    <string name="delete_macro">이 매크로 삭제</string>
+    <string name="repeat_hint_infinite">플로팅 버튼의 정지를 누를 때까지 반복합니다.</string>
+    <string name="value_seconds">%1$s초</string>
+    <string name="list_separator">", "</string>
+    <string name="toast_panel_failed">플로팅 버튼을 표시하지 못했습니다: %1$s</string>
+    <string name="desc_record">녹화</string>
+    <string name="desc_play">재생</string>
+    <string name="desc_stop">정지</string>
+    <string name="desc_open_app">설정(앱 열기)</string>
+    <string name="desc_collapse">최소화</string>
+    <string name="desc_hide_panel">플로팅 버튼 숨기기</string>
+    <string name="desc_stop_recording">녹화를 끝내고 저장</string>
+    <string name="desc_bubble_idle">조작 매크로(탭하여 열기)</string>
+    <string name="desc_bubble_recording">녹화 중(탭하여 열기)</string>
+    <string name="desc_bubble_playing">재생 중(탭하여 열기)</string>
+    <string name="toast_play_target">재생할 매크로: %1$s</string>
+    <string name="toast_no_macros_short">매크로가 없습니다</string>
+    <string name="toast_open_failed">앱을 열지 못했습니다</string>
+    <string name="toast_panel_hidden">앱 화면에서 다시 표시할 수 있습니다</string>
+    <string name="toast_rec_failed">녹화를 시작하지 못했습니다: %1$s</string>
+    <string name="toast_rec_started">녹화를 시작했습니다. 평소처럼 조작해 주세요(한 번에 하나씩, 조금 천천히).</string>
+    <string name="toast_nothing_recorded">녹화된 조작이 없습니다</string>
+    <string name="default_macro_name">매크로 %1$s</string>
+    <string name="toast_no_macros">매크로가 없습니다. 먼저 녹화해 주세요</string>
+    <string name="toast_empty_macro">이 매크로에는 조작이 없습니다</string>
+    <string name="toast_dispatch_failed">조작을 실행하지 못했습니다. 접근성 설정을 확인해 주세요</string>
+    <string name="toast_finished">재생이 끝났습니다</string>
+    <string name="saved_message">이름을 붙여 주세요</string>
+    <string name="keep_name">그대로 두기</string>
+    <plurals name="steps_count">
+        <item quantity="other">%d개 조작</item>
+    </plurals>
+    <plurals name="repeat_times">
+        <item quantity="other">%d회</item>
+    </plurals>
+    <plurals name="repeat_hint">
+        <item quantity="other">%d회 재생합니다.</item>
+    </plurals>
+    <plurals name="kind_tap">
+        <item quantity="other">탭 %d</item>
+    </plurals>
+    <plurals name="kind_long_press">
+        <item quantity="other">길게 누르기 %d</item>
+    </plurals>
+    <plurals name="kind_swipe">
+        <item quantity="other">스와이프 %d</item>
+    </plurals>
+    <plurals name="kind_multi">
+        <item quantity="other">멀티 터치(%1$d손가락) %2$d</item>
+    </plurals>
+    <plurals name="kind_empty">
+        <item quantity="other">빈 조작 %d</item>
+    </plurals>
+    <plurals name="plan_free_limit">
+        <item quantity="other">무료 버전: 매크로를 최대 %d개까지 저장할 수 있습니다</item>
+    </plurals>
+    <plurals name="toast_free_limit">
+        <item quantity="other">무료 버전은 매크로를 최대 %d개까지 저장할 수 있습니다. 필요 없는 매크로를 삭제하거나 앱의 \'플랜\'에서 무제한으로 바꿀 수 있습니다.</item>
+    </plurals>
+    <plurals name="toast_finished_cancelled">
+        <item quantity="other">재생이 끝났습니다(중단된 조작: %d)</item>
+    </plurals>
+    <plurals name="saved_title">
+        <item quantity="other">저장했습니다(%d개 조작)</item>
+    </plurals>
+</resources>

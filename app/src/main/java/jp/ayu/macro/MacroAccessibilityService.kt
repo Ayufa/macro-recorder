@@ -79,6 +79,17 @@ class MacroAccessibilityService : AccessibilityService() {
     private var cancelledCount = 0
 
     private var nameDialog: View? = null
+    private var lastLocales: android.os.LocaleList? = null
+
+    // Android 12 以下: アプリ内で選んだ言語で文言を出す（13+ はシステムが反映）
+    override fun attachBaseContext(newBase: android.content.Context) {
+        super.attachBaseContext(AppLocales.wrap(newBase))
+    }
+
+    /** Android 12 以下でアプリ内の言語を変えたとき: 次に作るボタンから新しい言語に */
+    fun onAppLocaleChanged() {
+        Handler(Looper.getMainLooper()).post { if (panel != null) buildPanelContent() }
+    }
 
     override fun onServiceConnected() {
         super.onServiceConnected()
@@ -141,6 +152,7 @@ class MacroAccessibilityService : AccessibilityService() {
     fun showPanel() {
         if (panel != null) { bringPanelToFront(); return }
         lastUiMode = resources.configuration.uiMode
+        lastLocales = resources.configuration.locales
         collapsed = prefs.getBoolean("collapsed", false)
         val lp = overlayParams(
             WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT,
@@ -163,7 +175,7 @@ class MacroAccessibilityService : AccessibilityService() {
         // 影（elevation）が切れないよう外側に余白を取る
         frame.setPadding(dp(8), dp(8), dp(8), dp(8)); frame.clipToPadding = false
         runCatching { wm.addView(frame, lp) }.onFailure {
-            toast("フローティングボタンを表示できませんでした: ${it.message}")
+            toast(getString(R.string.toast_panel_failed, it.message ?: ""))
             return
         }
         panel = frame; panelParams = lp
@@ -349,17 +361,17 @@ class MacroAccessibilityService : AccessibilityService() {
         fun add(v: View, w: Int = dp(size), hh: Int = dp(size)) =
             row.addView(v, LinearLayout.LayoutParams(w, hh).apply { marginStart = dp(1); marginEnd = dp(1) })
 
-        add(ui.iconButton(R.drawable.ic_record, "記録", size) {
+        add(ui.iconButton(R.drawable.ic_record, getString(R.string.desc_record), size) {
             if (state == State.RECORDING) stopRecording() else startRecording()
         }.apply { tag = "rec" })
-        add(ui.iconButton(R.drawable.ic_play, "再生", size) { playSelected() }.apply {
+        add(ui.iconButton(R.drawable.ic_play, getString(R.string.desc_play), size) { playSelected() }.apply {
             tag = "play"
             setOnLongClickListener {
                 val n = store.selectedId?.let { store.get(it)?.name } ?: store.list().firstOrNull()?.name
-                toast(n?.let { "再生するマクロ: $it" } ?: "マクロがありません"); true
+                toast(n?.let { getString(R.string.toast_play_target, it) } ?: getString(R.string.toast_no_macros_short)); true
             }
         })
-        add(ui.iconButton(R.drawable.ic_stop, "停止", size) { stopAll() }.apply { tag = "stop" })
+        add(ui.iconButton(R.drawable.ic_stop, getString(R.string.desc_stop), size) { stopAll() }.apply { tag = "stop" })
         val st = ui.text("", 12f, ui.onSurfaceVariant, medium = true).apply {
             tag = "status"
             maxWidth = dp(64); maxLines = 1; ellipsize = android.text.TextUtils.TruncateAt.END
@@ -367,16 +379,16 @@ class MacroAccessibilityService : AccessibilityService() {
         }
         row.addView(st, LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT))
         // 区切り線
-        add(View(this).apply { setBackgroundColor(ui.outlineVariant) }, dp(1), dp(size - 16))
-        add(ui.iconButton(R.drawable.ic_settings, "設定（アプリを開く）", size) { openApp() })
-        add(ui.iconButton(R.drawable.ic_collapse, "小さくする", size) { setCollapsed(true) }.apply {
+        add(View(this).apply { setBackgroundColor(ui.outline) }, dp(1), dp(size - 16))
+        add(ui.iconButton(R.drawable.ic_settings, getString(R.string.desc_open_app), size) { openApp() })
+        add(ui.iconButton(R.drawable.ic_collapse, getString(R.string.desc_collapse), size) { setCollapsed(true) }.apply {
             // 左へ広がったときは、縮む向き（右）に矢印を向ける
             if (leftward) scaleX = -1f
         })
-        add(ui.iconButton(R.drawable.ic_close, "フローティングボタンを隠す", size) { hidePanel() })
+        add(ui.iconButton(R.drawable.ic_close, getString(R.string.desc_hide_panel), size) { hidePanel() })
 
         val box = android.widget.FrameLayout(this).apply {
-            background = ui.rounded(ui.surfaceContainerHigh, 24)
+            background = ui.rounded(ui.surfaceContainerHigh, 24, ui.outlineVariant)
             elevation = dp(6).toFloat()
             minimumHeight = h
         }
@@ -424,7 +436,7 @@ class MacroAccessibilityService : AccessibilityService() {
                     }
                     pi.send(this, 0, null, null, null, null, opts.toBundle())
                 } else pi.send()
-            }.onFailure { toast("アプリを開けませんでした") }
+            }.onFailure { toast(getString(R.string.toast_open_failed)) }
         }
     }
 
@@ -434,7 +446,7 @@ class MacroAccessibilityService : AccessibilityService() {
         removeView(panel); panel = null
         bubble = null; statusText = null; recButton = null; playButton = null; stopButton = null
         notifyChanged()
-        toast("アプリの画面から再表示できます")
+        toast(getString(R.string.toast_panel_hidden))
     }
 
     val isPanelShown: Boolean get() = panel != null
@@ -451,8 +463,9 @@ class MacroAccessibilityService : AccessibilityService() {
         super.onConfigurationChanged(newConfig)
         // ダーク/ライト切替や画面回転に合わせて作り直す
         if (panel != null) {
-            if (newConfig.uiMode != lastUiMode) {
+            if (newConfig.uiMode != lastUiMode || newConfig.locales != lastLocales) {
                 lastUiMode = newConfig.uiMode
+                lastLocales = newConfig.locales
                 buildPanelContent()
             } else panel?.post { clampPanel() }
         }
@@ -472,11 +485,11 @@ class MacroAccessibilityService : AccessibilityService() {
         when (state) {
             State.RECORDING -> {
                 ui.styleIconButton(rec, R.drawable.ic_stop, ui.onErrorContainer, ui.errorContainer)
-                rec.contentDescription = "記録を終了して保存"
+                rec.contentDescription = getString(R.string.desc_stop_recording)
             }
             else -> {
                 ui.styleIconButton(rec, R.drawable.ic_record, ui.record, null)
-                rec.contentDescription = "記録"
+                rec.contentDescription = getString(R.string.desc_record)
             }
         }
         playButton?.let { p ->
@@ -490,7 +503,7 @@ class MacroAccessibilityService : AccessibilityService() {
         statusText?.let { t ->
             t.text = when (state) {
                 State.IDLE -> ""
-                State.RECORDING -> "${recordedSteps.size}操作"
+                State.RECORDING -> Texts.steps(this, recordedSteps.size)
                 State.PLAYING -> playing?.let {
                     val total = if (it.repeatCount == 0) "∞" else it.repeatCount.toString()
                     "${loopIndex + 1}/$total"
@@ -507,7 +520,8 @@ class MacroAccessibilityService : AccessibilityService() {
         // 無料枠（monetized フレーバーのみ。standard は無制限）
         val limit = jp.ayu.macro.monetization.Monetization.entitlements(this).maxSavedMacros
         if (!jp.ayu.macro.monetization.FreeTier.canSaveNew(store.list().size, limit)) {
-            toast("無料版で保存できるマクロは ${limit} 件までです。不要なマクロを削除するか、アプリの「プラン」から無制限にできます")
+            val l = limit ?: 0
+            toast(resources.getQuantityString(R.plurals.toast_free_limit, l, l))
             return
         }
         removeView(nameDialog); nameDialog = null
@@ -523,13 +537,13 @@ class MacroAccessibilityService : AccessibilityService() {
                 WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
         )
         runCatching { wm.addView(cv, lp) }.onFailure {
-            toast("記録を開始できませんでした: ${it.message}"); return
+            toast(getString(R.string.toast_rec_failed, it.message ?: "")); return
         }
         capture = cv; captureParams = lp
         state = State.RECORDING
         if (panel == null) showPanel() else bringPanelToFront()
         updatePanel()
-        toast("記録を開始しました。ふつうに操作してください（1操作ずつ、ゆっくりめに）")
+        toast(getString(R.string.toast_rec_started))
     }
 
     private fun onCaptured(downUptime: Long, upUptime: Long, strokes: List<Stroke>) {
@@ -580,8 +594,10 @@ class MacroAccessibilityService : AccessibilityService() {
         removeView(capture); capture = null; captureParams = null
         state = State.IDLE
         updatePanel()
-        if (recordedSteps.isEmpty()) { toast("操作が記録されていません"); return }
-        val defaultName = "マクロ " + SimpleDateFormat("M/d HH:mm", Locale.JAPAN).format(Date())
+        if (recordedSteps.isEmpty()) { toast(getString(R.string.toast_nothing_recorded)); return }
+        val loc = resources.configuration.locales[0]
+        val defaultName = getString(R.string.default_macro_name,
+            SimpleDateFormat(android.text.format.DateFormat.getBestDateTimePattern(loc, "MdHHmm"), loc).format(Date()))
         val macro = Macro(
             id = MacroStore.newId(), name = defaultName, createdAt = System.currentTimeMillis(),
             screenWidth = recScreen.x, screenHeight = recScreen.y, steps = recordedSteps.toList(),
@@ -594,37 +610,23 @@ class MacroAccessibilityService : AccessibilityService() {
         showNameDialog(macro)
     }
 
-    /** 保存後に名前を付けるための小さなダイアログ（オーバーレイ） */
-    @SuppressLint("SetTextI18n")
+    /** 保存後に名前を付けるための小さなダイアログ（オーバーレイ）。見た目はアプリ内のダイアログと同じ */
     private fun showNameDialog(macro: Macro) {
         removeView(nameDialog)
-        val night = (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES
-        val ctx = ContextThemeWrapper(this, if (night) android.R.style.Theme_Material_Dialog else android.R.style.Theme_Material_Light_Dialog)
-        val root = LinearLayout(ctx).apply {
-            orientation = LinearLayout.VERTICAL
-            setPadding(dp(24), dp(20), dp(24), dp(12))
-            background = ui.rounded(ui.surfaceContainerHigh, 28)
-            elevation = dp(6).toFloat()
-        }
-        root.addView(TextView(ctx).apply {
-            text = "保存しました（${macro.steps.size}操作）\n名前を付けてください"
-            setTextColor(ui.onSurface); textSize = 17f; setLineSpacing(0f, 1.15f)
-        })
-        val edit = EditText(ctx).apply {
-            setText(macro.name); setSelection(text.length)
-            inputType = InputType.TYPE_CLASS_TEXT; setSingleLine(); setTextColor(ui.onSurface)
-        }
-        root.addView(edit)
-        val row = LinearLayout(ctx).apply { orientation = LinearLayout.HORIZONTAL; gravity = Gravity.END }
-        row.setPadding(0, dp(12), 0, 0)
-        row.addView(ui.button("このまま", Ui.BtnStyle.TEXT) { removeView(root); nameDialog = null })
-        row.addView(ui.button("保存", Ui.BtnStyle.FILLED) {
+        val edit = ui.field(macro.name, getString(R.string.name_hint)).apply { setSelection(text.length) }
+        val card = DialogCard(ui).build(
+            title = resources.getQuantityString(R.plurals.saved_title, macro.steps.size, macro.steps.size),
+            message = getString(R.string.saved_message), iconId = R.drawable.ic_check_circle,
+            content = edit, confirmLabel = getString(R.string.save), cancelLabel = getString(R.string.keep_name),
+        )
+        val root = card.root
+        card.cancel?.setOnClickListener { removeView(root); nameDialog = null }
+        card.confirm.setOnClickListener {
             val n = edit.text.toString().trim()
             if (n.isNotEmpty()) store.get(macro.id)?.let { store.save(it.copy(name = n)) }
             removeView(root); nameDialog = null
             updatePanel(); notifyChanged()
-        }, LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply { marginStart = dp(8) })
-        root.addView(row)
+        }
         val lp = overlayParams(
             minOf((screenSize().x * 0.88).toInt(), dp(400)), WindowManager.LayoutParams.WRAP_CONTENT,
             WindowManager.LayoutParams.FLAG_DIM_BEHIND,
@@ -640,14 +642,14 @@ class MacroAccessibilityService : AccessibilityService() {
     fun playSelected() {
         val id = store.selectedId
         val m = id?.let { store.get(it) } ?: store.list().firstOrNull()
-        if (m == null) { toast("マクロがありません。まず記録してください"); return }
+        if (m == null) { toast(getString(R.string.toast_no_macros)); return }
         play(m, 400L)
     }
 
     fun play(macro: Macro, initialDelayMs: Long = 0L) {
         if (state == State.RECORDING) stopRecording()
         if (state == State.PLAYING) stopPlayback()
-        if (macro.steps.isEmpty()) { toast("このマクロには操作がありません"); return }
+        if (macro.steps.isEmpty()) { toast(getString(R.string.toast_empty_macro)); return }
         removeView(nameDialog); nameDialog = null
         playing = macro; loopIndex = 0; stepIndex = 0; cancelledCount = 0
         state = State.PLAYING
@@ -683,14 +685,14 @@ class MacroAccessibilityService : AccessibilityService() {
                     stepIndex++; runStep(token)
                 }
             }, handler)
-            if (!ok) { toast("操作を実行できませんでした。ユーザー補助の設定を確認してください"); stopPlayback() }
+            if (!ok) { toast(getString(R.string.toast_dispatch_failed)); stopPlayback() }
         }, ReplayMath.scaleTime(step.delayMs, m.speed))
     }
 
     private fun finishPlayback() {
         val c = cancelledCount
         stopPlayback()
-        toast(if (c > 0) "再生が終わりました（中断された操作: $c）" else "再生が終わりました")
+        toast(if (c > 0) resources.getQuantityString(R.plurals.toast_finished_cancelled, c, c) else getString(R.string.toast_finished))
     }
 
     fun stopPlayback() {

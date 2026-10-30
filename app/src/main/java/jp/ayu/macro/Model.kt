@@ -22,14 +22,17 @@ data class Step(
 ) {
     val totalDurationMs: Long get() = strokes.maxOfOrNull { it.startOffsetMs + it.durationMs } ?: 1L
 
-    fun kindLabel(): String {
-        if (strokes.size > 1) return "複数指 (${strokes.size}本)"
-        val s = strokes.firstOrNull() ?: return "空"
+    enum class Kind { TAP, LONG_PRESS, SWIPE, MULTI, EMPTY }
+
+    /** 操作の種類（表示名は Texts.kinds で strings.xml から） */
+    fun kind(): Kind {
+        if (strokes.size > 1) return Kind.MULTI
+        val s = strokes.firstOrNull() ?: return Kind.EMPTY
         val dist = pathLength(s.points)
         return when {
-            dist < MOVE_TOLERANCE_PX && s.durationMs >= LONG_PRESS_MS -> "長押し"
-            dist < MOVE_TOLERANCE_PX -> "タップ"
-            else -> "スワイプ"
+            dist < MOVE_TOLERANCE_PX && s.durationMs >= LONG_PRESS_MS -> Kind.LONG_PRESS
+            dist < MOVE_TOLERANCE_PX -> Kind.TAP
+            else -> Kind.SWIPE
         }
     }
 

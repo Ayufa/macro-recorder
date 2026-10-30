@@ -6,13 +6,27 @@ import android.graphics.Color
 import android.graphics.Typeface
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
+import android.graphics.drawable.LayerDrawable
 import android.graphics.drawable.RippleDrawable
+import android.graphics.drawable.StateListDrawable
+import android.os.Build
+import android.text.InputType
 import android.util.TypedValue
 import android.view.Gravity
+import android.view.View
+import android.widget.EditText
 import android.widget.ImageButton
+import android.widget.LinearLayout
+import android.widget.SeekBar
 import android.widget.TextView
 
-/** Material 3 風の見た目を、AndroidX なし（フレームワークのみ）で組み立てるための小さなヘルパー */
+/**
+ * 見た目を AndroidX なし（フレームワークのみ）で組み立てるための小さなヘルパー。
+ * v0.6: designeer.xyz の見た目を参考にしたデザイン
+ *  - ニュートラルな面（薄いグレーの画面 + 白いカード + 細い線）、角丸 20dp のカード / 24dp のシート / 14dp のトレイ
+ *  - ボタン・チップは丸いピル型。主ボタンは墨色（ink）、アクセント色は選択状態やスライダーに使う
+ *  - 書体は Funnel Sans（SIL OFL 1.1。assets/fonts に同梱）。漢字・かな・ハングルは端末のフォントで表示
+ */
 class Ui(val ctx: Context) {
     fun dp(v: Number): Int = TypedValue.applyDimension(
         TypedValue.COMPLEX_UNIT_DIP, v.toFloat(), ctx.resources.displayMetrics).toInt()
@@ -30,29 +44,59 @@ class Ui(val ctx: Context) {
     val surfaceContainerHigh get() = c(R.color.md_surface_container_high)
     val onSurface get() = c(R.color.md_on_surface)
     val onSurfaceVariant get() = c(R.color.md_on_surface_variant)
+    val ink3 get() = c(R.color.md_ink_3)
+    val outline get() = c(R.color.md_outline)
     val outlineVariant get() = c(R.color.md_outline_variant)
+    val inverseSurface get() = c(R.color.md_inverse_surface)
+    val inverseOnSurface get() = c(R.color.md_inverse_on_surface)
     val error get() = c(R.color.md_error)
+    val onError get() = c(R.color.md_on_error)
     val errorContainer get() = c(R.color.md_error_container)
     val onErrorContainer get() = c(R.color.md_on_error_container)
     val record get() = c(R.color.md_record)
 
-    fun rounded(color: Int, radiusDp: Number, strokeColor: Int? = null): GradientDrawable =
+    // ---------- 書体 ----------
+    enum class Weight(val w: Int) { REGULAR(400), MEDIUM(500), SEMIBOLD(600) }
+
+    fun font(weight: Weight): Typeface = fonts.getOrPut(weight) {
+        runCatching {
+            Typeface.Builder(ctx.assets, "fonts/FunnelSans-wght.ttf")
+                .setFontVariationSettings("'wght' ${weight.w}")
+                .setWeight(weight.w)
+                .build()
+        }.getOrNull() ?: Typeface.create(if (weight == Weight.REGULAR) "sans-serif" else "sans-serif-medium", Typeface.NORMAL)
+    }
+
+    // ---------- 形 ----------
+    fun rounded(color: Int, radiusDp: Number, strokeColor: Int? = null, strokeDp: Number = 1): GradientDrawable =
         GradientDrawable().apply {
             cornerRadius = dp(radiusDp).toFloat(); setColor(color)
-            if (strokeColor != null) setStroke(dp(1), strokeColor)
+            if (strokeColor != null) setStroke(dp(strokeDp).coerceAtLeast(1), strokeColor)
         }
 
     fun oval(color: Int): GradientDrawable = GradientDrawable().apply { shape = GradientDrawable.OVAL; setColor(color) }
 
+    /** カード: 白い面 + 細い線（designeer の "raised" に相当）。選択中はアクセントの淡い面 + アクセントの線 */
+    fun card(selected: Boolean = false, radiusDp: Int = 20): GradientDrawable =
+        if (selected) rounded(primaryContainer, radiusDp, withAlpha(primary, 0.55f))
+        else rounded(surfaceContainer, radiusDp, outlineVariant)
+
+    /** 上だけ角丸のシート */
+    fun sheetBackground(): GradientDrawable = GradientDrawable().apply {
+        val r = dp(24).toFloat()
+        cornerRadii = floatArrayOf(r, r, r, r, 0f, 0f, 0f, 0f)
+        setColor(surface)
+    }
+
     /** 押したときに波紋が出る背景 */
     fun ripple(content: Drawable?, mask: Drawable, rippleBase: Int = onSurface): RippleDrawable =
-        RippleDrawable(ColorStateList.valueOf(withAlpha(rippleBase, 0.14f)), content, mask)
+        RippleDrawable(ColorStateList.valueOf(withAlpha(rippleBase, 0.12f)), content, mask)
 
-    fun withAlpha(color: Int, a: Float) = Color.argb((255 * a).toInt(), Color.red(color), Color.green(color), Color.blue(color))
+    fun withAlpha(color: Int, a: Float) = Color.argb((Color.alpha(color) * a).toInt(), Color.red(color), Color.green(color), Color.blue(color))
 
     fun icon(id: Int, tint: Int): Drawable = ctx.getDrawable(id)!!.mutate().apply { setTint(tint) }
 
-    /** 丸いアイコンボタン（M3 Icon button / Filled icon button） */
+    /** 丸いアイコンボタン */
     fun iconButton(iconId: Int, desc: String, sizeDp: Int, onClick: () -> Unit): ImageButton =
         ImageButton(ctx).apply {
             contentDescription = desc
@@ -70,22 +114,28 @@ class Ui(val ctx: Context) {
         b.background = ripple(bg?.let { oval(it) }, oval(Color.WHITE), if (bg != null) fg else onSurface)
     }
 
-    /** M3 のボタン（filled / tonal / text） */
-    enum class BtnStyle { FILLED, TONAL, TEXT }
+    /**
+     * ピル型のボタン。
+     * FILLED = 墨色の主ボタン / TONAL = 淡いグレー / TEXT = 文字だけ / ACCENT = アクセント色 / DANGER = 赤（削除など）/ DANGER_TEXT = 赤文字
+     */
+    enum class BtnStyle { FILLED, TONAL, TEXT, ACCENT, DANGER, DANGER_TEXT }
 
     fun button(label: String, style: BtnStyle, iconId: Int? = null, onClick: () -> Unit): TextView =
         TextView(ctx).apply {
-            text = label; textSize = 14f; typeface = Typeface.create("sans-serif-medium", Typeface.NORMAL)
+            text = label; textSize = 14f; typeface = font(Weight.MEDIUM)
             gravity = Gravity.CENTER; minHeight = dp(40); isClickable = true; isFocusable = true
-            setPadding(dp(if (iconId != null) 16 else 24), 0, dp(24), 0)
+            setPadding(dp(if (iconId != null) 14 else 20), 0, dp(20), 0)
             val (bg, fg) = when (style) {
-                BtnStyle.FILLED -> primary to onPrimary
+                BtnStyle.FILLED -> Pair<Int?, Int>(inverseSurface, inverseOnSurface)
                 BtnStyle.TONAL -> secondaryContainer to onSecondaryContainer
-                BtnStyle.TEXT -> null to primary
+                BtnStyle.TEXT -> Pair<Int?, Int>(null, onSurface)
+                BtnStyle.ACCENT -> primary to onPrimary
+                BtnStyle.DANGER -> this@Ui.error to onError
+                BtnStyle.DANGER_TEXT -> Pair<Int?, Int>(null, this@Ui.error)
             }
-            if (style == BtnStyle.TEXT) setPadding(dp(12), 0, dp(12), 0)
+            if (style == BtnStyle.TEXT || style == BtnStyle.DANGER_TEXT) setPadding(dp(if (iconId != null) 10 else 14), 0, dp(14), 0)
             setTextColor(fg)
-            background = ripple(bg?.let { rounded(it, 20) }, rounded(Color.WHITE, 20), fg)
+            background = ripple(bg?.let { rounded(it, 999) }, rounded(Color.WHITE, 999), fg)
             if (iconId != null) {
                 val d = icon(iconId, fg).apply { setBounds(0, 0, dp(18), dp(18)) }
                 setCompoundDrawablesRelative(d, null, null, null); compoundDrawablePadding = dp(8)
@@ -93,15 +143,106 @@ class Ui(val ctx: Context) {
             setOnClickListener { onClick() }
         }
 
-    fun text(s: CharSequence, sizeSp: Float, color: Int, medium: Boolean = false): TextView = TextView(ctx).apply {
+    fun text(s: CharSequence, sizeSp: Float, color: Int, medium: Boolean = false, weight: Weight? = null): TextView = TextView(ctx).apply {
         text = s; textSize = sizeSp; setTextColor(color)
-        if (medium) typeface = Typeface.create("sans-serif-medium", Typeface.NORMAL)
-        setLineSpacing(0f, 1.15f)
+        typeface = font(weight ?: if (medium) Weight.MEDIUM else Weight.REGULAR)
+        // 大きな見出しは字間を少し詰める（designeer の tracking-tight）
+        if (sizeSp >= 20f) letterSpacing = -0.02f
+        setLineSpacing(0f, 1.2f)
     }
 
-    /** 小さなラベル（チップ風） */
+    /** セクション見出し（小さめ・灰色・やや太め） */
+    fun sectionLabel(s: String): TextView = text(s, 13f, onSurfaceVariant, weight = Weight.MEDIUM).apply {
+        setPadding(dp(6), dp(22), 0, dp(8))
+    }
+
+    /** 小さなラベル（読み取り専用のチップ） */
     fun chip(s: String): TextView = text(s, 12f, onSurfaceVariant).apply {
         setPadding(dp(10), dp(4), dp(10), dp(4))
-        background = rounded(Color.TRANSPARENT, 8, outlineVariant)
+        background = rounded(Color.TRANSPARENT, 999, outline)
+    }
+
+    /** 選べるチップ（ピル型）。選択中は墨色、未選択は淡いグレー */
+    inner class FilterChip(label: String, onClick: () -> Unit) {
+        val view: TextView = text(label, 13f, onSurface, weight = Weight.MEDIUM).apply {
+            gravity = Gravity.CENTER; minHeight = dp(34); minWidth = dp(48)
+            setPadding(dp(14), 0, dp(14), 0); isClickable = true; isFocusable = true
+            setOnClickListener { onClick() }
+        }
+        var selected = false
+            set(v) {
+                field = v
+                view.isSelected = v
+                val bg = if (v) inverseSurface else secondaryContainer
+                val fg = if (v) inverseOnSurface else onSurface
+                view.setTextColor(fg)
+                view.background = ripple(rounded(bg, 999), rounded(Color.WHITE, 999), fg)
+            }
+        init { selected = false }
+    }
+
+    /**
+     * セグメント（トレイの中に並んだ選択肢）。選択中の項目は白く浮いた面になる。
+     * designeer の「トレイ（角丸 14dp）＋ 中の項目（角丸 10dp）」の形を参考にしています。
+     */
+    inner class Segmented(labels: List<String>, descs: List<String>? = null, val onSelect: (Int) -> Unit) {
+        val view = LinearLayout(ctx).apply {
+            orientation = LinearLayout.HORIZONTAL
+            background = rounded(secondaryContainer, 14)
+            setPadding(dp(3), dp(3), dp(3), dp(3))
+        }
+        private val items = labels.mapIndexed { i, l ->
+            text(l, 14f, onSurfaceVariant, weight = Weight.MEDIUM).apply {
+                gravity = Gravity.CENTER; minHeight = dp(38); isClickable = true; isFocusable = true
+                descs?.getOrNull(i)?.let { contentDescription = it }
+                setOnClickListener { select(i); onSelect(i) }
+            }.also { view.addView(it, LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)) }
+        }
+        var index = -1
+            private set
+
+        fun select(i: Int) {
+            index = i
+            items.forEachIndexed { j, t ->
+                val on = j == i
+                t.isSelected = on
+                t.setTextColor(if (on) onSurface else onSurfaceVariant)
+                t.background = if (on) LayerDrawable(arrayOf(rounded(surfaceContainerHigh, 11, outlineVariant)))
+                    else ripple(null, rounded(Color.WHITE, 11))
+                t.elevation = if (on) dp(1).toFloat() else 0f
+            }
+        }
+    }
+
+    /** 枠付きの入力欄（フォーカス時はアクセント色の線） */
+    fun field(initial: String, hintText: String? = null, inputType: Int = InputType.TYPE_CLASS_TEXT): EditText =
+        EditText(ctx).apply {
+            setText(initial); setSingleLine(); this.inputType = inputType
+            hint = hintText; setHintTextColor(ink3)
+            setTextColor(onSurface); textSize = 16f; typeface = font(Weight.REGULAR)
+            setPadding(dp(14), dp(12), dp(14), dp(12)); minHeight = dp(48)
+            background = StateListDrawable().apply {
+                addState(intArrayOf(android.R.attr.state_focused), rounded(surfaceContainer, 12, primary, 2))
+                addState(intArrayOf(), rounded(surfaceContainer, 12, outline))
+            }
+            if (Build.VERSION.SDK_INT >= 29) {
+                textCursorDrawable = GradientDrawable().apply { setColor(primary); setSize(dp(2), dp(20)) }
+            }
+            highlightColor = withAlpha(primary, 0.3f)
+        }
+
+    /** スライダーの色をアクセント色に */
+    fun tintSlider(s: SeekBar) {
+        s.progressTintList = ColorStateList.valueOf(primary)
+        s.progressBackgroundTintList = ColorStateList.valueOf(outline)
+        s.thumbTintList = ColorStateList.valueOf(primary)
+        s.splitTrack = false
+    }
+
+    /** 区切り線 */
+    fun divider(): View = View(ctx).apply { setBackgroundColor(outlineVariant) }
+
+    companion object {
+        private val fonts = HashMap<Weight, Typeface>()
     }
 }

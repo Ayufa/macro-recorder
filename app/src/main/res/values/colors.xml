@@ -1,20 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Material 3 カラー（ライト）。Android 12+ では values-v31 の Material You（壁紙連動）色が使われます。 -->
+<!-- v0.6: designeer.xyz の見た目を参考にしたニュートラル（zinc 系）の配色。
+     画面は薄いグレー、カードは白＋細い線、主ボタンは墨色（ink）。
+     アクセント色は Android 12+ では端末のテーマ色（Material You、values-v31）、それ以前は青。 -->
 <resources>
-    <color name="md_primary">#5B4BDB</color>
+    <color name="md_primary">#0066FA</color>
     <color name="md_on_primary">#FFFFFF</color>
-    <color name="md_primary_container">#E4DFFF</color>
-    <color name="md_on_primary_container">#170065</color>
-    <color name="md_secondary_container">#E3E0F9</color>
-    <color name="md_on_secondary_container">#1B1A2C</color>
-    <color name="md_surface">#FCF8FF</color>
-    <color name="md_surface_container">#F2EEFA</color>
-    <color name="md_surface_container_high">#ECE8F4</color>
-    <color name="md_on_surface">#1C1B22</color>
-    <color name="md_on_surface_variant">#47464F</color>
-    <color name="md_outline_variant">#C8C5D0</color>
-    <color name="md_error">#BA1A1A</color>
-    <color name="md_error_container">#FFDAD6</color>
-    <color name="md_on_error_container">#410002</color>
+    <color name="md_primary_container">#E6EFFF</color>
+    <color name="md_on_primary_container">#002A6B</color>
+    <color name="md_secondary_container">#EFEFF1</color>
+    <color name="md_on_secondary_container">#18181B</color>
+    <color name="md_surface">#F7F7F8</color>
+    <color name="md_surface_container">#FFFFFF</color>
+    <color name="md_surface_container_high">#FFFFFF</color>
+    <color name="md_on_surface">#18181B</color>
+    <color name="md_on_surface_variant">#5D5D66</color>
+    <color name="md_ink_3">#6B6B73</color>
+    <color name="md_outline_variant">#14000000</color>
+    <color name="md_outline">#29000000</color>
+    <color name="md_inverse_surface">#18181B</color>
+    <color name="md_inverse_on_surface">#FAFAFA</color>
+    <color name="md_error">#E40014</color>
+    <color name="md_on_error">#FFFFFF</color>
+    <color name="md_error_container">#FFE6E7</color>
+    <color name="md_on_error_container">#8A000C</color>
     <color name="md_record">#E5383B</color>
 </resources>

@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 自動生成: tools/gen_strings.py（文言は tools/strings_data.py を編集） -->
+<resources>
+    <string name="app_name">操作巨集</string>
+    <string name="service_label">操作巨集（錄製與播放）</string>
+    <string name="service_summary">錄製螢幕操作（輕觸、長按、滑動），之後自動重播。</string>
+    <string name="service_description">此服務僅在你按下「錄製」期間，記錄螢幕上輕觸、長按和滑動的座標與時間，並在你按下「播放」時以相同方式執行這些操作。\n\n【使用的功能】\n・執行手勢（用於重播錄製的操作，以及在錄製期間將你的操作傳遞給下方的應用程式）\n・顯示在螢幕上層的按鈕（錄製、播放、停止）\n\n【資料處理】\n・只記錄手指的位置（座標）和時間。不會讀取其他應用程式的畫面內容、文字、密碼或個人資料。\n・錄製的巨集只會儲存在此裝置上的本應用程式內。\n・本應用程式沒有網路權限，因此不會向外部傳送任何資料。\n・你可以隨時在應用程式內的清單中刪除巨集。</string>
+    <string name="privacy_note">只記錄手指的位置和時間，不會讀取其他應用程式的畫面內容。資料只儲存在此裝置上，本應用程式也沒有網路權限。</string>
+    <string name="tagline">錄製輕觸和滑動，然後自動重播</string>
+    <string name="section_how_to">使用方式</string>
+    <string name="section_macros">已儲存的巨集</string>
+    <string name="section_plan">方案</string>
+    <string name="section_app_settings">應用程式設定</string>
+    <string name="howto_1">輕觸浮動的錄製按鈕開始錄製 → 照常操作</string>
+    <string name="howto_2">再按一次即可結束錄製，命名後儲存</string>
+    <string name="howto_3">播放按鈕會播放 ★ 選取的巨集，按停止即可停下</string>
+    <string name="howto_4">最小化按鈕會把按鈕收成圓形圖示，輕觸即可還原</string>
+    <string name="howto_5">設定按鈕可回到此畫面</string>
+    <string name="language">語言</string>
+    <string name="lang_system">跟隨系統</string>
+    <string name="plan_unlimited">可儲存的巨集：無限制</string>
+    <string name="plan_owned">%1$s（已購買）</string>
+    <string name="plan_remove_ads">移除廣告</string>
+    <string name="plan_unlimited_macros">無限制儲存巨集</string>
+    <string name="plan_ad_privacy">廣告隱私設定</string>
+    <string name="toast_battery_already">已排除</string>
+    <string name="status_service">無障礙服務</string>
+    <string name="status_service_running">執行中</string>
+    <string name="status_service_stuck">已開啟但沒有回應（請關閉後重新開啟）</string>
+    <string name="status_service_off">已關閉：請開啟「%1$s」</string>
+    <string name="action_open">開啟</string>
+    <string name="status_battery">電池最佳化</string>
+    <string name="status_battery_ok">已排除</string>
+    <string name="status_battery_on">已最佳化（應用程式可能會被停止）</string>
+    <string name="action_exclude">排除</string>
+    <string name="status_panel">浮動按鈕</string>
+    <string name="status_panel_shown">顯示中</string>
+    <string name="status_panel_hidden">已隱藏</string>
+    <string name="action_show">顯示</string>
+    <string name="action_app_info">開啟應用程式資訊（如允許受限制的設定）</string>
+    <string name="empty_title">還沒有巨集</string>
+    <string name="empty_body">可透過浮動的錄製按鈕建立</string>
+    <string name="selected_badge">已選取</string>
+    <string name="macro_summary">%1$s（%2$s）</string>
+    <string name="chip_repeat">重複 %1$s</string>
+    <string name="chip_interval">間隔 %1$s</string>
+    <string name="chip_speed">%1$s 倍速</string>
+    <string name="action_run">執行</string>
+    <string name="desc_select">選取（供浮動的播放按鈕使用）</string>
+    <string name="toast_selected">浮動的播放按鈕將播放此巨集</string>
+    <string name="desc_settings">播放設定</string>
+    <string name="desc_rename">重新命名</string>
+    <string name="delete">刪除</string>
+    <string name="toast_enable_service_first">請先在無障礙中開啟「%1$s」</string>
+    <string name="toast_play_in_3s">3 秒後開始播放，請開啟目標應用程式</string>
+    <string name="name_hint">巨集名稱</string>
+    <string name="rename_title">重新命名</string>
+    <string name="save">儲存</string>
+    <string name="cancel">取消</string>
+    <string name="close">關閉</string>
+    <string name="delete_title">要刪除嗎？</string>
+    <string name="delete_message">將刪除「%1$s」，此操作無法復原。</string>
+    <string name="settings_title">播放設定</string>
+    <string name="settings_subtitle">%1$s · %2$s</string>
+    <string name="settings_name">名稱</string>
+    <string name="settings_repeat">重複</string>
+    <string name="repeat_custom">自訂</string>
+    <string name="repeat_infinite">∞ 無限</string>
+    <string name="unit_times">次</string>
+    <string name="unit_seconds">秒</string>
+    <string name="decrease">減少</string>
+    <string name="increase">增加</string>
+    <string name="settings_interval">循環間隔</string>
+    <string name="interval_hint">每輪播放結束後，等待多久再開始下一輪。</string>
+    <string name="settings_speed">播放速度</string>
+    <string name="speed_hint">數值越大播放越快。速度過快時，部分應用程式可能來不及回應。</string>
+    <string name="delete_macro">刪除此巨集</string>
+    <string name="repeat_hint_infinite">會一直重複，直到輕觸浮動按鈕中的「停止」。</string>
+    <string name="value_seconds">%1$s 秒</string>
+    <string name="list_separator">、</string>
+    <string name="toast_panel_failed">無法顯示浮動按鈕：%1$s</string>
+    <string name="desc_record">錄製</string>
+    <string name="desc_play">播放</string>
+    <string name="desc_stop">停止</string>
+    <string name="desc_open_app">設定（開啟應用程式）</string>
+    <string name="desc_collapse">最小化</string>
+    <string name="desc_hide_panel">隱藏浮動按鈕</string>
+    <string name="desc_stop_recording">結束錄製並儲存</string>
+    <string name="desc_bubble_idle">操作巨集（輕觸即可展開）</string>
+    <string name="desc_bubble_recording">錄製中（輕觸即可展開）</string>
+    <string name="desc_bubble_playing">播放中（輕觸即可展開）</string>
+    <string name="toast_play_target">要播放的巨集：%1$s</string>
+    <string name="toast_no_macros_short">沒有巨集</string>
+    <string name="toast_open_failed">無法開啟應用程式</string>
+    <string name="toast_panel_hidden">可在應用程式畫面中重新顯示</string>
+    <string name="toast_rec_failed">無法開始錄製：%1$s</string>
+    <string name="toast_rec_started">已開始錄製。請照常操作（一次一個動作，稍微慢一點）</string>
+    <string name="toast_nothing_recorded">沒有錄製到任何操作</string>
+    <string name="default_macro_name">巨集 %1$s</string>
+    <string name="toast_no_macros">還沒有巨集，請先錄製</string>
+    <string name="toast_empty_macro">此巨集中沒有操作</string>
+    <string name="toast_dispatch_failed">無法執行操作，請檢查無障礙設定</string>
+    <string name="toast_finished">播放已結束</string>
+    <string name="saved_message">請為它命名</string>
+    <string name="keep_name">保持原樣</string>
+    <plurals name="steps_count">
+        <item quantity="other">%d 個操作</item>
+    </plurals>
+    <plurals name="repeat_times">
+        <item quantity="other">%d 次</item>
+    </plurals>
+    <plurals name="repeat_hint">
+        <item quantity="other">將播放 %d 次。</item>
+    </plurals>
+    <plurals name="kind_tap">
+        <item quantity="other">輕觸 %d</item>
+    </plurals>
+    <plurals name="kind_long_press">
+        <item quantity="other">長按 %d</item>
+    </plurals>
+    <plurals name="kind_swipe">
+        <item quantity="other">滑動 %d</item>
+    </plurals>
+    <plurals name="kind_multi">
+        <item quantity="other">多指（%1$d 指）%2$d</item>
+    </plurals>
+    <plurals name="kind_empty">
+        <item quantity="other">空 %d</item>
+    </plurals>
+    <plurals name="plan_free_limit">
+        <item quantity="other">免費版：最多可儲存 %d 個巨集</item>
+    </plurals>
+    <plurals name="toast_free_limit">
+        <item quantity="other">免費版最多可儲存 %d 個巨集。請刪除不需要的巨集，或在應用程式的「方案」中升級為無限制。</item>
+    </plurals>
+    <plurals name="toast_finished_cancelled">
+        <item quantity="other">播放已結束（被中斷的操作：%d）</item>
+    </plurals>
+    <plurals name="saved_title">
+        <item quantity="other">已儲存（%d 個操作）</item>
+    </plurals>
+</resources>

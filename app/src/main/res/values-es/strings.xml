@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 自動生成: tools/gen_strings.py（文言は tools/strings_data.py を編集） -->
+<resources>
+    <string name="app_name">Grabador de macros</string>
+    <string name="service_label">Grabador de macros (grabar y reproducir)</string>
+    <string name="service_summary">Graba acciones en pantalla (toques, pulsaciones largas y deslizamientos) y las reproduce automáticamente más tarde.</string>
+    <string name="service_description">Este servicio registra las coordenadas y la duración de los toques, pulsaciones largas y deslizamientos en la pantalla solo mientras tienes pulsado Grabar, y repite esas mismas acciones cuando pulsas Reproducir.\n\n[Funciones que usa]\n• Realizar gestos (para reproducir las acciones grabadas y para pasar tus toques a la app que hay debajo mientras grabas)\n• Botones superpuestos en la pantalla (Grabar, Reproducir, Detener)\n\n[Tratamiento de los datos]\n• Solo se registran la posición de los dedos (coordenadas) y los tiempos. Nunca se lee el contenido, el texto, las contraseñas ni los datos personales de otras apps.\n• Las macros grabadas se guardan únicamente dentro de esta app en este dispositivo.\n• La app no tiene permiso de acceso a internet, así que nunca envía datos fuera del dispositivo.\n• Puedes eliminar las macros en cualquier momento desde la lista de la app.</string>
+    <string name="privacy_note">Solo se registran la posición de los dedos y los tiempos; nunca se lee el contenido de la pantalla de otras apps. Los datos se quedan en este dispositivo y la app no tiene permiso de acceso a internet.</string>
+    <string name="tagline">Graba toques y deslizamientos y reprodúcelos automáticamente</string>
+    <string name="section_how_to">Cómo se usa</string>
+    <string name="section_macros">Macros guardadas</string>
+    <string name="section_plan">Plan</string>
+    <string name="section_app_settings">Ajustes de la app</string>
+    <string name="howto_1">Pulsa el botón flotante de grabar para empezar y usa el móvil con normalidad</string>
+    <string name="howto_2">Vuelve a pulsarlo para terminar y guarda la macro con un nombre</string>
+    <string name="howto_3">Reproducir ejecuta la macro ★ seleccionada; Detener la para</string>
+    <string name="howto_4">Minimizar reduce los botones a un icono redondo; tócalo para volver a abrirlos</string>
+    <string name="howto_5">El botón de ajustes te trae de vuelta a esta pantalla</string>
+    <string name="language">Idioma</string>
+    <string name="lang_system">Idioma del sistema</string>
+    <string name="plan_unlimited">Macros guardadas: ilimitadas</string>
+    <string name="plan_owned">%1$s (comprado)</string>
+    <string name="plan_remove_ads">Quitar anuncios</string>
+    <string name="plan_unlimited_macros">Guardar macros sin límite</string>
+    <string name="plan_ad_privacy">Privacidad de los anuncios</string>
+    <string name="toast_battery_already">Ya está excluida</string>
+    <string name="status_service">Servicio de accesibilidad</string>
+    <string name="status_service_running">En funcionamiento</string>
+    <string name="status_service_stuck">Activado pero no responde (desactívalo y vuelve a activarlo)</string>
+    <string name="status_service_off">Desactivado: activa «%1$s»</string>
+    <string name="action_open">Abrir</string>
+    <string name="status_battery">Optimización de batería</string>
+    <string name="status_battery_ok">Excluida</string>
+    <string name="status_battery_on">Optimizada (la app puede detenerse)</string>
+    <string name="action_exclude">Excluir</string>
+    <string name="status_panel">Botones flotantes</string>
+    <string name="status_panel_shown">Visibles</string>
+    <string name="status_panel_hidden">Ocultos</string>
+    <string name="action_show">Mostrar</string>
+    <string name="action_app_info">Abrir información de la app (p. ej., permitir ajustes restringidos)</string>
+    <string name="empty_title">Aún no hay macros</string>
+    <string name="empty_body">Crea una con el botón flotante de grabar</string>
+    <string name="selected_badge">Seleccionada</string>
+    <string name="macro_summary">%1$s (%2$s)</string>
+    <string name="chip_repeat">Repetir %1$s</string>
+    <string name="chip_interval">Intervalo %1$s</string>
+    <string name="chip_speed">Velocidad %1$s×</string>
+    <string name="action_run">Ejecutar</string>
+    <string name="desc_select">Seleccionar (la usa el botón flotante de reproducir)</string>
+    <string name="toast_selected">El botón flotante de reproducir usará esta macro</string>
+    <string name="desc_settings">Ajustes de reproducción</string>
+    <string name="desc_rename">Cambiar nombre</string>
+    <string name="delete">Eliminar</string>
+    <string name="toast_enable_service_first">Primero activa «%1$s» en Accesibilidad</string>
+    <string name="toast_play_in_3s">Se reproducirá en 3 segundos. Abre la app de destino.</string>
+    <string name="name_hint">Nombre de la macro</string>
+    <string name="rename_title">Cambiar nombre</string>
+    <string name="save">Guardar</string>
+    <string name="cancel">Cancelar</string>
+    <string name="close">Cerrar</string>
+    <string name="delete_title">¿Eliminar esta macro?</string>
+    <string name="delete_message">Se eliminará «%1$s». No se puede deshacer.</string>
+    <string name="settings_title">Ajustes de reproducción</string>
+    <string name="settings_subtitle">%1$s · %2$s</string>
+    <string name="settings_name">Nombre</string>
+    <string name="settings_repeat">Repetir</string>
+    <string name="repeat_custom">Otro</string>
+    <string name="repeat_infinite">∞ Sin fin</string>
+    <string name="unit_times">veces</string>
+    <string name="unit_seconds">s</string>
+    <string name="decrease">Disminuir</string>
+    <string name="increase">Aumentar</string>
+    <string name="settings_interval">Pausa entre repeticiones</string>
+    <string name="interval_hint">Tiempo de espera al terminar cada repetición antes de empezar la siguiente.</string>
+    <string name="settings_speed">Velocidad de reproducción</string>
+    <string name="speed_hint">Cuanto más alto, más rápido. Algunas apps no responden bien a gestos muy rápidos.</string>
+    <string name="delete_macro">Eliminar esta macro</string>
+    <string name="repeat_hint_infinite">Se repite hasta que pulses Detener en los botones flotantes.</string>
+    <string name="value_seconds">%1$s s</string>
+    <string name="list_separator">", "</string>
+    <string name="toast_panel_failed">No se pudieron mostrar los botones flotantes: %1$s</string>
+    <string name="desc_record">Grabar</string>
+    <string name="desc_play">Reproducir</string>
+    <string name="desc_stop">Detener</string>
+    <string name="desc_open_app">Ajustes (abrir la app)</string>
+    <string name="desc_collapse">Minimizar</string>
+    <string name="desc_hide_panel">Ocultar los botones flotantes</string>
+    <string name="desc_stop_recording">Terminar de grabar y guardar</string>
+    <string name="desc_bubble_idle">Grabador de macros (toca para abrir)</string>
+    <string name="desc_bubble_recording">Grabando (toca para abrir)</string>
+    <string name="desc_bubble_playing">Reproduciendo (toca para abrir)</string>
+    <string name="toast_play_target">Macro que se reproducirá: %1$s</string>
+    <string name="toast_no_macros_short">No hay macros</string>
+    <string name="toast_open_failed">No se pudo abrir la app</string>
+    <string name="toast_panel_hidden">Puedes volver a mostrarlos desde la app</string>
+    <string name="toast_rec_failed">No se pudo empezar a grabar: %1$s</string>
+    <string name="toast_rec_started">Grabación iniciada. Usa el móvil con normalidad (una acción cada vez y sin prisa).</string>
+    <string name="toast_nothing_recorded">No se grabó ninguna acción</string>
+    <string name="default_macro_name">Macro %1$s</string>
+    <string name="toast_no_macros">No hay macros. Graba una primero.</string>
+    <string name="toast_empty_macro">Esta macro no tiene acciones</string>
+    <string name="toast_dispatch_failed">No se pudo realizar la acción. Revisa los ajustes de accesibilidad.</string>
+    <string name="toast_finished">Reproducción terminada</string>
+    <string name="saved_message">Ponle un nombre</string>
+    <string name="keep_name">Dejar así</string>
+    <plurals name="steps_count">
+        <item quantity="one">%d acción</item>
+        <item quantity="many">%d acciones</item>
+        <item quantity="other">%d acciones</item>
+    </plurals>
+    <plurals name="repeat_times">
+        <item quantity="one">%d vez</item>
+        <item quantity="many">%d veces</item>
+        <item quantity="other">%d veces</item>
+    </plurals>
+    <plurals name="repeat_hint">
+        <item quantity="one">Se reproduce %d vez.</item>
+        <item quantity="many">Se reproduce %d veces.</item>
+        <item quantity="other">Se reproduce %d veces.</item>
+    </plurals>
+    <plurals name="kind_tap">
+        <item quantity="one">%d toque</item>
+        <item quantity="many">%d toques</item>
+        <item quantity="other">%d toques</item>
+    </plurals>
+    <plurals name="kind_long_press">
+        <item quantity="one">%d pulsación larga</item>
+        <item quantity="many">%d pulsaciones largas</item>
+        <item quantity="other">%d pulsaciones largas</item>
+    </plurals>
+    <plurals name="kind_swipe">
+        <item quantity="one">%d deslizamiento</item>
+        <item quantity="many">%d deslizamientos</item>
+        <item quantity="other">%d deslizamientos</item>
+    </plurals>
+    <plurals name="kind_multi">
+        <item quantity="one">%2$d multitáctil (%1$d dedos)</item>
+        <item quantity="many">%2$d multitáctiles (%1$d dedos)</item>
+        <item quantity="other">%2$d multitáctiles (%1$d dedos)</item>
+    </plurals>
+    <plurals name="kind_empty">
+        <item quantity="one">%d vacía</item>
+        <item quantity="many">%d vacías</item>
+        <item quantity="other">%d vacías</item>
+    </plurals>
+    <plurals name="plan_free_limit">
+        <item quantity="one">Versión gratuita: puedes guardar hasta %d macro</item>
+        <item quantity="many">Versión gratuita: puedes guardar hasta %d macros</item>
+        <item quantity="other">Versión gratuita: puedes guardar hasta %d macros</item>
+    </plurals>
+    <plurals name="toast_free_limit">
+        <item quantity="one">La versión gratuita puede guardar hasta %d macro. Elimina las que no necesites o pasa a ilimitado desde «Plan» en la app.</item>
+        <item quantity="many">La versión gratuita puede guardar hasta %d macros. Elimina las que no necesites o pasa a ilimitado desde «Plan» en la app.</item>
+        <item quantity="other">La versión gratuita puede guardar hasta %d macros. Elimina las que no necesites o pasa a ilimitado desde «Plan» en la app.</item>
+    </plurals>
+    <plurals name="toast_finished_cancelled">
+        <item quantity="one">Reproducción terminada (%d acción interrumpida)</item>
+        <item quantity="many">Reproducción terminada (%d acciones interrumpidas)</item>
+        <item quantity="other">Reproducción terminada (%d acciones interrumpidas)</item>
+    </plurals>
+    <plurals name="saved_title">
+        <item quantity="one">Guardada (%d acción)</item>
+        <item quantity="many">Guardada (%d acciones)</item>
+        <item quantity="other">Guardada (%d acciones)</item>
+    </plurals>
+</resources>
