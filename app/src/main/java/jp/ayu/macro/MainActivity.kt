@@ -56,7 +56,6 @@ class MainActivity : Activity() {
         store = MacroStore(this)
         ui = Ui(this)
         if (Build.VERSION.SDK_INT >= 29) window.isNavigationBarContrastEnforced = false
-        applySystemBarAppearance()
         scroll = ScrollView(this).apply { isFillViewport = true; setBackgroundColor(ui.surface); clipToPadding = false }
         // 画面全体: 上にスクロール、下に広告枠（standard では常に非表示）。その上にスナックバーを重ねる
         val outer = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL; setBackgroundColor(ui.surface) }
@@ -82,6 +81,8 @@ class MainActivity : Activity() {
         // v0.9: 大きい画面では本文の幅を 840dp までにして中央へ（R3.4）
         scroll.addOnLayoutChangeListener { _, l, _, r, _, ol, _, or_, _ -> if (r - l != or_ - ol) scroll.post { applyContentPadding() } }
         setContentView(snackHost)
+        // v0.9.1: setContentView の後で呼ぶ（前に呼ぶと DecorView がまだ無く、Android 16+ で起動直後に落ちていた）
+        applySystemBarAppearance()
 
         // ヘッダー（v0.7: 端に向かって消える方眼の背景 + バージョンの等幅バッジ）
         header = LinearLayout(this).apply {
@@ -110,6 +111,10 @@ class MainActivity : Activity() {
         // 方眼を画面の端まで広げる（root の余白を打ち消す。値は applyContentPadding で設定）
         root.addView(header, LinearLayout.LayoutParams(MATCH, WRAP).apply { bottomMargin = dp(4) })
         applyContentPadding()
+
+        // v0.9.1: 前回異常終了していたら、端末内に残したログをコピーできるカードを出す（送信はしない）
+        CrashLog.install(this)
+        CrashLog.read(this)?.let { log -> crashCard(log)?.let { root.addView(it, LinearLayout.LayoutParams(MATCH, WRAP).apply { bottomMargin = dp(12) }) } }
 
         statusContainer = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
@@ -229,6 +234,33 @@ class MainActivity : Activity() {
         }
     }
 
+    /** v0.9.1: 前回のクラッシュログのカード（「ログをコピー」「消去」）。作れなければ出さない */
+    private fun crashCard(log: String): View? = runCatching {
+        val card = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            background = ui.rounded(ui.errorContainer, 20, ui.withAlpha(ui.error, 0.25f))
+            setPadding(dp(16), dp(14), dp(16), dp(8))
+        }
+        card.addView(ui.text(getString(R.string.crash_title), Ui.Type.TITLE_MEDIUM, ui.onSurface, medium = true).apply {
+            if (Build.VERSION.SDK_INT >= 28) isAccessibilityHeading = true
+        })
+        card.addView(ui.text(getString(R.string.crash_body), Ui.Type.BODY_SMALL, ui.onSurfaceVariant).apply { setPadding(0, dp(4), 0, dp(4)) })
+        val buttons = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL; gravity = Gravity.END }
+        buttons.addView(ui.button(getString(R.string.crash_clear), Ui.BtnStyle.TEXT) {
+            CrashLog.clear(this); card.visibility = View.GONE
+        })
+        buttons.addView(ui.button(getString(R.string.crash_copy), Ui.BtnStyle.TONAL) {
+            runCatching {
+                getSystemService(android.content.ClipboardManager::class.java)
+                    ?.setPrimaryClip(android.content.ClipData.newPlainText(getString(R.string.crash_clip_label), log))
+            }
+            // Android 13+ はシステムがコピーを知らせるので、それより前だけ自分で知らせる
+            if (Build.VERSION.SDK_INT < 33) snack(getString(R.string.crash_copied))
+        }, LinearLayout.LayoutParams(WRAP, WRAP).apply { marginStart = dp(8) })
+        card.addView(buttons, LinearLayout.LayoutParams(MATCH, WRAP))
+        card
+    }.getOrNull()
+
     /** v0.9: ライトテーマではナビゲーションバーのアイコンも濃い色に（R1.7） */
     private fun applySystemBarAppearance() {
         val night = (resources.configuration.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK) ==
@@ -236,11 +268,14 @@ class MainActivity : Activity() {
         if (Build.VERSION.SDK_INT >= 30) {
             val mask = android.view.WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS or
                 android.view.WindowInsetsController.APPEARANCE_LIGHT_NAVIGATION_BARS
-            window.insetsController?.setSystemBarsAppearance(if (night) 0 else mask, mask)
+            // window.insetsController は DecorView が無いと NPE になる機種があるので、decorView から取る
+            runCatching { window.decorView.windowInsetsController?.setSystemBarsAppearance(if (night) 0 else mask, mask) }
         } else {
             @Suppress("DEPRECATION")
-            window.decorView.systemUiVisibility = if (night) 0 else
-                (View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR)
+            runCatching {
+                window.decorView.systemUiVisibility = if (night) 0 else
+                    (View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR)
+            }
         }
     }
 

@@ -176,4 +176,11 @@
     <string name="shortcut_play_short">播放</string>
     <string name="shortcut_play_long">播放所選巨集</string>
     <string name="shortcut_disabled">無法使用</string>
+    <!-- v0.9.1 -->
+    <string name="crash_title">上次應用程式意外關閉</string>
+    <string name="crash_body">錯誤記錄僅保存在這部裝置上。你可以複製它來回報問題。不會自動傳送。</string>
+    <string name="crash_copy">複製記錄</string>
+    <string name="crash_clear">清除</string>
+    <string name="crash_copied">已複製當機記錄</string>
+    <string name="crash_clip_label">操作巨集當機記錄</string>
 </resources>

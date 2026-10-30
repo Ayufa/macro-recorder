@@ -200,4 +200,11 @@
     <string name="shortcut_play_short">Reproducir</string>
     <string name="shortcut_play_long">Reproducir la macro seleccionada</string>
     <string name="shortcut_disabled">No disponible</string>
+    <!-- v0.9.1 -->
+    <string name="crash_title">La app se cerró inesperadamente la última vez</string>
+    <string name="crash_body">Se guardó un registro del error solo en este dispositivo. Puedes copiarlo para informar del problema. No se envía nada automáticamente.</string>
+    <string name="crash_copy">Copiar registro</string>
+    <string name="crash_clear">Borrar</string>
+    <string name="crash_copied">Registro de fallo copiado</string>
+    <string name="crash_clip_label">Registro de fallos (Grabador de macros)</string>
 </resources>

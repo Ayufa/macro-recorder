@@ -26,8 +26,8 @@ android {
         applicationId = "jp.ayu.macro"
         minSdk = 26
         targetSdk = 37
-        versionCode = 9
-        versionName = "0.9"
+        versionCode = 10
+        versionName = "0.9.1"
     }
 
     buildFeatures {
@@ -63,6 +63,14 @@ android {
     lint {
         abortOnError = false
     }
+    // v0.9.1: Robolectric で MainActivity を実際に起動するテスト（起動時のクラッシュを CI 前に捕まえる）
+    testOptions {
+        unitTests.isIncludeAndroidResources = true
+        unitTests.all {
+            it.maxHeapSize = "2g"
+            it.jvmArgs("--add-exports=java.base/jdk.internal.access=ALL-UNNAMED", "--add-opens=java.base/jdk.internal.access=ALL-UNNAMED", "--add-opens=java.base/java.io=ALL-UNNAMED")
+        }
+    }
 }
 
 dependencies {
@@ -72,4 +80,5 @@ dependencies {
     "monetizedImplementation"("com.android.billingclient:billing:9.1.0")
     testImplementation("junit:junit:4.13.2")
     testImplementation("org.json:json:20240303")
+    testImplementation("org.robolectric:robolectric:4.17")
 }

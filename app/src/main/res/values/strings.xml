@@ -196,4 +196,11 @@
     <string name="shortcut_play_short">Play</string>
     <string name="shortcut_play_long">Play selected macro</string>
     <string name="shortcut_disabled">Unavailable</string>
+    <!-- v0.9.1 -->
+    <string name="crash_title">The app closed unexpectedly last time</string>
+    <string name="crash_body">An error log was saved on this device only. You can copy it to report the problem. Nothing is sent automatically.</string>
+    <string name="crash_copy">Copy log</string>
+    <string name="crash_clear">Clear</string>
+    <string name="crash_copied">Crash log copied</string>
+    <string name="crash_clip_label">Macro Recorder crash log</string>
 </resources>

@@ -176,4 +176,11 @@
     <string name="shortcut_play_short">再生</string>
     <string name="shortcut_play_long">選択中のマクロを再生</string>
     <string name="shortcut_disabled">利用できません</string>
+    <!-- v0.9.1 -->
+    <string name="crash_title">前回、アプリが予期せず終了しました</string>
+    <string name="crash_body">エラーの記録をこの端末の中だけに残しました。不具合の報告用にコピーできます。自動で送信されることはありません。</string>
+    <string name="crash_copy">ログをコピー</string>
+    <string name="crash_clear">消去</string>
+    <string name="crash_copied">クラッシュログをコピーしました</string>
+    <string name="crash_clip_label">操作マクロのクラッシュログ</string>
 </resources>

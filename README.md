@@ -26,7 +26,7 @@ Android 用の画面操作マクロアプリです。タップ・長押し・ス
 # 収益化版（既定は無効・配布しない）: ./gradlew assembleMonetizedDebug  → docs/MONETIZATION_ja.md
 ```
 
-JDK 17、Android SDK Platform 37（compileSdk / targetSdk 37、minSdk 26）、AGP 9.5、Gradle 9.8。
+ビルドは JDK 17 以上、テスト（Robolectric で Android 17 / API 37 の起動テスト）は JDK 21 が必要。Android SDK Platform 37（compileSdk / targetSdk 37、minSdk 26）、AGP 9.5、Gradle 9.8。
 
 ### 文言（翻訳）
 
@@ -34,6 +34,7 @@ JDK 17、Android SDK Platform 37（compileSdk / targetSdk 37、minSdk 26）、AG
 
 ## 更新履歴
 
+- v0.9.1: **v0.9 が起動直後に落ちる不具合を修正**（Android 11 以上の全端末。Galaxy S26 Ultra で報告）。原因は画面を作る前（setContentView より前）にシステムバーの色を設定していたこと（DecorView がまだ無く NullPointerException）。あわせて、保存した言語・テーマの値が壊れていても起動するように。前回異常終了したときは、端末内だけに残したクラッシュログを次の起動で「ログをコピー」できるように（自動送信なし・INTERNET 権限なし）。Robolectric で実際にアプリを起動するテスト（Android 8〜17・ライト/ダーク・6言語、全ダイアログ/シート/スナックバー、ショートカット、壊れた保存値、太字テキスト設定）を追加。
 - v0.9: Android のデザインガイドライン（ehmo/platform-design-skills の android-design-guidelines、MIT）に沿って全画面を見直し（35 件、詳細は [docs/DESIGN_AUDIT_v0.9.md](docs/DESIGN_AUDIT_v0.9.md)）。押せる範囲をすべて 48dp 以上に、文字は M3 の型スケールに、色のコントラストを 4.5:1 以上に、ダイナミックカラーを全部の色に、テーマ（端末の設定 / ライト / ダーク）を選べるように。削除は確認ダイアログをやめて「元に戻す」付きのスナックバーに。一覧の行は「選択・設定・︙」にまとめ、TalkBack のカスタムアクション（実行・設定・名前を変更・削除）を追加。ユーザー補助の設定を開く前に説明を表示。edge-to-edge・タブレットでの最大幅・予測型「戻る」・アイコン長押しのショートカット（ボタンを表示 / 選んだマクロを再生）に対応。
 - v0.8: 使い勝手（UX）を改善。状態カードを「セットアップ」の手順表示に（進み具合のバー、番号つきのステップ、いまやるべきステップだけ説明とボタンを表示、Galaxy 向けの設定場所と「制限付き設定を許可」の案内つき）。ぜんぶ済むと「準備ができました」の1行に。マクロがないときは「記録を始める」ボタン（ユーザー補助がオフなら「セットアップを完了」）。一覧の行はタップで選択、長押しで操作メニュー（実行・選択・再生設定・名前変更・削除）、押したときのリップルと触覚フィードバック、選んだ星がポンと弾む。再生設定シートは「基本／再生／管理」のグループ見出しで整理、つまみを下へドラッグして閉じられるように（長押しメニューも同じ）、チップ・切り替え・速度スライダーに軽い触覚。文字サイズの段階をそろえました。表示アニメーションは SikandarJODD/animations の BlurFade（MIT）の値（0.4秒・6px・easeOut）、空の状態のドットは sv-matrix（MIT）の path-wave（1.5秒周期・蛇行順）を移植。「アニメーションを削除」の設定では動きを止めます（触覚は端末の設定に従います）。Mobbin / Refero / Appshots / 60fps / UI Sources / Chamjo / Page Flows / Appllama / ASO Inspo / Collect UI / Spotted in Prod / Pttrns の公開ページでパターンを見て Android のビューで作り直したもので、画像や素材は使っていません → [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)
 - v0.7: デザインをさらに洗練。端に向かって消える方眼のヘッダー、等幅フォントのバージョン・件数バッジと見出し、マクロ一覧を罫線で区切った1枚の表に（番号・選択中はアクセントの線）、状態カードを区切り線つきの表形式に、空のとき・再生中・記録中はドットマトリクスのインジケーター（フローティングパネルとバブルにも）、設定シートの値をキーキャップ風に、画面・シート・ダイアログはぼかしながらふわっと表示、ボタンは押すと少し縮む。「アニメーションを削除」の設定では動きを止めます。配色をジンク系のグレーに調整。等幅フォント Geist Mono（SIL OFL 1.1）を同梱。sv-animations / sv-table / sv-blocks / sv-efferd / sv-matrix / sv-particles / sv-agentation の UI を参考に Android のビューで描き直したもので、コードや素材はコピーしていません → [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)

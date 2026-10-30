@@ -176,4 +176,11 @@
     <string name="shortcut_play_short">播放</string>
     <string name="shortcut_play_long">播放所选宏</string>
     <string name="shortcut_disabled">无法使用</string>
+    <!-- v0.9.1 -->
+    <string name="crash_title">上次应用意外关闭</string>
+    <string name="crash_body">错误记录仅保存在此设备上。你可以复制它来报告问题。不会自动发送。</string>
+    <string name="crash_copy">复制日志</string>
+    <string name="crash_clear">清除</string>
+    <string name="crash_copied">已复制崩溃日志</string>
+    <string name="crash_clip_label">操作宏崩溃日志</string>
 </resources>

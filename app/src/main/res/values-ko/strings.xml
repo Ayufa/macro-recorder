@@ -176,4 +176,11 @@
     <string name="shortcut_play_short">재생</string>
     <string name="shortcut_play_long">선택한 매크로 재생</string>
     <string name="shortcut_disabled">사용할 수 없음</string>
+    <!-- v0.9.1 -->
+    <string name="crash_title">지난번에 앱이 예기치 않게 종료되었습니다</string>
+    <string name="crash_body">오류 기록은 이 기기에만 저장되었습니다. 문제를 알릴 때 복사해서 사용할 수 있습니다. 자동으로 전송되지 않습니다.</string>
+    <string name="crash_copy">로그 복사</string>
+    <string name="crash_clear">지우기</string>
+    <string name="crash_copied">충돌 로그를 복사했습니다</string>
+    <string name="crash_clip_label">조작 매크로 충돌 로그</string>
 </resources>
