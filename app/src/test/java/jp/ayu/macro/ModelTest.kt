@@ -44,3 +44,16 @@ class ModelTest {
         assert(s.size < pts.size)
     }
 }
+
+class PanelMathTest {
+    @org.junit.Test fun buttonSizeShrinksOnNarrowScreens() {
+        org.junit.Assert.assertEquals(40, PanelMath.buttonSizeDp(412))
+        org.junit.Assert.assertEquals(36, PanelMath.buttonSizeDp(340))
+        org.junit.Assert.assertEquals(32, PanelMath.buttonSizeDp(280))
+    }
+    @org.junit.Test fun clampKeepsPanelOnScreen() {
+        org.junit.Assert.assertEquals(780, PanelMath.clamp(1000, 300, 1080))
+        org.junit.Assert.assertEquals(0, PanelMath.clamp(-50, 300, 1080))
+        org.junit.Assert.assertEquals(0, PanelMath.clamp(10, 1200, 1080))
+    }
+}

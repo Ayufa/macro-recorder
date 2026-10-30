@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Material 3 カラー（ライト）。Android 12+ では values-v31 の Material You（壁紙連動）色が使われます。 -->
+<resources>
+    <color name="md_primary">#5B4BDB</color>
+    <color name="md_on_primary">#FFFFFF</color>
+    <color name="md_primary_container">#E4DFFF</color>
+    <color name="md_on_primary_container">#170065</color>
+    <color name="md_secondary_container">#E3E0F9</color>
+    <color name="md_on_secondary_container">#1B1A2C</color>
+    <color name="md_surface">#FCF8FF</color>
+    <color name="md_surface_container">#F2EEFA</color>
+    <color name="md_surface_container_high">#ECE8F4</color>
+    <color name="md_on_surface">#1C1B22</color>
+    <color name="md_on_surface_variant">#47464F</color>
+    <color name="md_outline_variant">#C8C5D0</color>
+    <color name="md_error">#BA1A1A</color>
+    <color name="md_error_container">#FFDAD6</color>
+    <color name="md_on_error_container">#410002</color>
+    <color name="md_record">#E5383B</color>
+</resources>

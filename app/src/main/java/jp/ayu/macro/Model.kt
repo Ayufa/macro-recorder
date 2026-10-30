@@ -164,3 +164,16 @@ object ReplayMath {
         return out
     }
 }
+
+/** フローティングパネルの寸法計算（テスト可能な純粋関数） */
+object PanelMath {
+    /** 画面幅 (dp) に応じたボタンサイズ (dp)。狭い画面ではボタンを小さくしてはみ出しを防ぐ */
+    fun buttonSizeDp(screenWidthDp: Int): Int = when {
+        screenWidthDp >= 360 -> 40
+        screenWidthDp >= 320 -> 36
+        else -> 32
+    }
+
+    /** パネルが画面内に収まるように位置を補正する */
+    fun clamp(pos: Int, size: Int, screen: Int): Int = pos.coerceIn(0, (screen - size).coerceAtLeast(0))
+}

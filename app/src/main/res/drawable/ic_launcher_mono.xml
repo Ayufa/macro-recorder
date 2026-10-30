@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp" android:height="108dp" android:viewportWidth="108" android:viewportHeight="108">
+    <!-- 記録の軌跡を表すリング（薄い下地） -->
+    <path android:pathData="M30,54a24,24 0 1,0 48,0a24,24 0 1,0 -48,0" android:strokeColor="#66000000" android:strokeWidth="3.5"/>
+    <!-- 進行リング（上から時計回りに 3/4） -->
+    <path android:pathData="M54,30A24,24 0 1,1 30,54" android:strokeColor="#FF000000" android:strokeWidth="4.5" android:strokeLineCap="round"/>
+    <!-- 再生（角丸の三角） -->
+    <path android:pathData="M49,44.5L49,63.5L64.5,54Z" android:fillColor="#FF000000" android:strokeColor="#FF000000" android:strokeWidth="4" android:strokeLineJoin="round"/>
+    <!-- 記録ヘッド（点） -->
+    <path android:pathData="M30,54m-5.5,0a5.5,5.5 0,1 1,11 0a5.5,5.5 0,1 1,-11 0" android:fillColor="#FF000000"/>
+</vector>
