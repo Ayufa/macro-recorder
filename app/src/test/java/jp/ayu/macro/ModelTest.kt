@@ -56,4 +56,14 @@ class PanelMathTest {
         org.junit.Assert.assertEquals(0, PanelMath.clamp(-50, 300, 1080))
         org.junit.Assert.assertEquals(0, PanelMath.clamp(10, 1200, 1080))
     }
+    @org.junit.Test fun expandDirectionAndPositions() {
+        // 画面左寄り: 右へ広がり、位置はそのまま
+        org.junit.Assert.assertFalse(PanelMath.expandLeftward(40, 64, 500, 1080))
+        org.junit.Assert.assertEquals(40, PanelMath.expandedX(40, 64, 500, false))
+        // 画面右端: 左へ広がり、バブルの右端をそろえる。閉じると元の位置に戻る
+        org.junit.Assert.assertTrue(PanelMath.expandLeftward(1000, 64, 500, 1080))
+        val ex = PanelMath.expandedX(1000, 64, 500, true)
+        org.junit.Assert.assertEquals(564, ex)
+        org.junit.Assert.assertEquals(1000, PanelMath.collapsedX(ex, 64, 500, true))
+    }
 }

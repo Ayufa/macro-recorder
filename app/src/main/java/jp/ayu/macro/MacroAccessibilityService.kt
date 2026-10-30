@@ -3,6 +3,7 @@ package jp.ayu.macro
 import android.accessibilityservice.AccessibilityService
 import android.accessibilityservice.GestureDescription
 import android.annotation.SuppressLint
+import android.animation.ValueAnimator
 import android.app.ActivityOptions
 import android.app.PendingIntent
 import android.content.Intent
@@ -19,6 +20,8 @@ import android.view.ContextThemeWrapper
 import android.view.Gravity
 import android.view.View
 import android.view.WindowManager
+import android.view.animation.PathInterpolator
+import android.provider.Settings
 import android.view.accessibility.AccessibilityEvent
 import android.widget.ImageButton
 import android.widget.EditText
@@ -56,6 +59,8 @@ class MacroAccessibilityService : AccessibilityService() {
     private var playButton: ImageButton? = null
     private var stopButton: ImageButton? = null
     private var lastUiMode = 0
+    private var pill: PillViews? = null
+    private var anim: ValueAnimator? = null
 
     // 記録
     private var capture: CaptureView? = null
@@ -145,7 +150,8 @@ class MacroAccessibilityService : AccessibilityService() {
         var startX = 0; var startY = 0
         lateinit var frame: DragFrame
         frame = DragFrame(this, onMove = { dx, dy, start ->
-            if (start) { startX = lp.x; startY = lp.y } else {
+            if (anim != null) Unit  // 開閉アニメーション中はドラッグしない
+            else if (start) { startX = lp.x; startY = lp.y } else {
                 val s = screenSize()
                 lp.x = PanelMath.clamp(startX + dx, frame.width, s.x)
                 lp.y = PanelMath.clamp(startY + dy, frame.height, s.y)
@@ -167,68 +173,228 @@ class MacroAccessibilityService : AccessibilityService() {
         prefs.edit().putInt("x", lp.x).putInt("y", lp.y).putBoolean("collapsed", collapsed).apply()
     }
 
-    /** 展開/折りたたみに合わせて中身を作り直す */
+    /** 展開/折りたたみに合わせて中身を作り直す（アニメーションなし） */
     private fun buildPanelContent() {
         val frame = panel ?: return
+        anim?.cancel(); anim = null
         frame.removeAllViews()
-        bubble = null; statusText = null; recButton = null; playButton = null; stopButton = null
+        clearPanelRefs()
         if (collapsed) {
-            val b = BubbleView(this, ui).apply { setOnClickListener { setCollapsed(false) } }
-            frame.addView(b); bubble = b
+            frame.addView(buildBubble())
         } else {
-            frame.addView(buildPill())
+            val box = buildPill(leftward = false)
+            frame.addView(box)
+            pill?.let { it.reveal.full = true }
         }
         updatePanel()
         // サイズが変わったら画面内に収める
         frame.post { clampPanel() }
     }
 
+    private fun clearPanelRefs() {
+        bubble = null; statusText = null; recButton = null; playButton = null; stopButton = null; pill = null
+    }
+
+    private fun buildBubble(): BubbleView =
+        BubbleView(this, ui).apply { setOnClickListener { setCollapsed(false) } }.also { bubble = it }
+
     private fun clampPanel() {
+        if (anim != null) return
         val frame = panel ?: return; val lp = panelParams ?: return
         val s = screenSize()
         val nx = PanelMath.clamp(lp.x, frame.width, s.x); val ny = PanelMath.clamp(lp.y, frame.height, s.y)
         if (nx != lp.x || ny != lp.y) { lp.x = nx; lp.y = ny; runCatching { wm.updateViewLayout(frame, lp) } }
     }
 
+    private fun animationsEnabled(): Boolean =
+        ValueAnimator.areAnimatorsEnabled() &&
+            Settings.Global.getFloat(contentResolver, Settings.Global.ANIMATOR_DURATION_SCALE, 1f) > 0f
+
+    /**
+     * 開閉アニメーション。
+     * ウィンドウは展開後の大きさに1回だけ合わせ、アニメーション中は WindowManager を再レイアウトしない。
+     * ピルの輪郭（outline）を毎フレーム変えて、48dp の円 ⇄ ピル型 に切り抜く（影も輪郭に追従）。
+     * 開く: バブルの左端を基準に右へ広がる。画面の右端に近くて収まらないときは、バブルの右端を基準に左へ広がる。
+     * 閉じる: 広がった向きと逆に縮み、元のバブルの位置に戻る。
+     */
     fun setCollapsed(c: Boolean) {
-        collapsed = c
-        savePanelPos()
-        buildPanelContent()
+        if (anim != null || c == collapsed) return
+        val frame = panel ?: return; val lp = panelParams ?: return
+        val pad = frame.paddingLeft + frame.paddingRight
+        val bubbleW = dp(48)
+        if (!c) {
+            // ---- 開く ----
+            val sw = screenSize().x
+            val probe = buildPill(leftward = false)
+            probe.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.makeMeasureSpec(dp(48), View.MeasureSpec.EXACTLY))
+            val pillW = probe.measuredWidth
+            val leftward = PanelMath.expandLeftward(lp.x, bubbleW + pad, pillW + pad, sw)
+            collapsed = false
+            frame.removeAllViews(); clearPanelRefs()
+            val box = if (leftward) buildPill(leftward = true) else probe.also { rebindPill(it) }
+            val p = pill ?: return
+            lp.x = PanelMath.expandedX(lp.x, bubbleW + pad, pillW + pad, leftward)
+            frame.addView(box)
+            updatePanel()
+            runCatching { wm.updateViewLayout(frame, lp) }
+            savePanelPos()
+            if (!animationsEnabled()) { p.reveal.full = true; p.box.invalidateOutline(); p.applyChildren(1f); return }
+            runPillAnim(p, from = 0f, to = 1f, durationMs = 250, interp = PathInterpolator(0.05f, 0.7f, 0.1f, 1f)) {}
+        } else {
+            // ---- 閉じる ----
+            val p = pill
+            collapsed = true
+            savePanelPos()
+            if (p == null || !animationsEnabled()) { finishCollapse(p); return }
+            runPillAnim(p, from = 1f, to = 0f, durationMs = 200, interp = PathInterpolator(0.3f, 0f, 0.8f, 0.15f)) {
+                finishCollapse(p)
+            }
+        }
     }
 
-    private fun buildPill(): View {
+    private fun finishCollapse(p: PillViews?) {
+        val frame = panel ?: return; val lp = panelParams ?: return
+        if (p != null) lp.x = PanelMath.collapsedX(lp.x, dp(48), p.box.width, p.leftward)
+        frame.removeAllViews(); clearPanelRefs()
+        frame.addView(buildBubble())
+        updatePanel()
+        runCatching { wm.updateViewLayout(frame, lp) }
+        savePanelPos()
+        frame.post { clampPanel() }
+    }
+
+    private fun runPillAnim(p: PillViews, from: Float, to: Float, durationMs: Long, interp: android.view.animation.Interpolator, end: () -> Unit) {
+        p.reveal.full = false
+        p.setFraction(from)
+        anim = ValueAnimator.ofFloat(from, to).apply {
+            duration = durationMs; interpolator = interp
+            addUpdateListener { p.setFraction(it.animatedValue as Float) }
+            addListener(object : android.animation.AnimatorListenerAdapter() {
+                private var cancelled = false
+                override fun onAnimationCancel(animation: android.animation.Animator) { cancelled = true }
+                override fun onAnimationEnd(animation: android.animation.Animator) {
+                    anim = null
+                    if (to >= 1f) { p.reveal.full = true; p.box.invalidateOutline(); p.applyChildren(1f) }
+                    if (!cancelled) end()
+                }
+            })
+            start()
+        }
+    }
+
+    /** 展開パネルを構成するビューと、開閉の見た目を作る処理 */
+    private inner class PillViews(
+        val box: android.widget.FrameLayout,
+        val row: LinearLayout,
+        val ghost: android.widget.ImageView,
+        val leftward: Boolean,
+    ) {
+        val reveal = RevealOutline(leftward)
+
+        /** f: 0 = 48dp の円（バブル）, 1 = 全部開いた状態 */
+        fun setFraction(f: Float) {
+            reveal.fraction = f
+            box.invalidateOutline(); box.invalidate()
+            // バブルのアイコンは前半で消える / 閉じるときは後半で現れる
+            ghost.alpha = (1f - f / 0.35f).coerceIn(0f, 1f)
+            applyChildren(f)
+        }
+
+        /** ボタンを順番にフェード＋スライドで出す（広がる方向に合わせて） */
+        fun applyChildren(f: Float) {
+            val n = row.childCount
+            for (i in 0 until n) {
+                val idx = if (leftward) n - 1 - i else i
+                val start = 0.15f + 0.4f * idx / n.coerceAtLeast(1)
+                val t = ((f - start) / 0.45f).coerceIn(0f, 1f)
+                val v = row.getChildAt(i)
+                v.alpha = t
+                v.translationX = (1f - t) * dp(12) * (if (leftward) 1 else -1)
+            }
+        }
+    }
+
+    /** 輪郭: 左（または右）端を固定し、幅を 48dp〜全幅で変える角丸四角形 */
+    private inner class RevealOutline(val leftward: Boolean) : android.view.ViewOutlineProvider() {
+        var fraction = 1f
+        var full = true
+        override fun getOutline(view: View, outline: android.graphics.Outline) {
+            val w = view.width; val h = view.height
+            val f = if (full) 1f else fraction
+            val rw = (h + (w - h) * f).toInt().coerceIn(h.coerceAtMost(w), w)
+            if (leftward) outline.setRoundRect(w - rw, 0, w, h, h / 2f)
+            else outline.setRoundRect(0, 0, rw, h, h / 2f)
+        }
+    }
+
+    private fun rebindPill(box: View) { pill = box.tag as? PillViews; pill?.let { bindRefs(it) } }
+
+    private fun bindRefs(p: PillViews) {
+        val r = p.row
+        recButton = r.findViewWithTag("rec"); playButton = r.findViewWithTag("play")
+        stopButton = r.findViewWithTag("stop"); statusText = r.findViewWithTag("status")
+    }
+
+    private fun buildPill(leftward: Boolean): View {
         val widthDp = (screenSize().x / resources.displayMetrics.density).toInt()
         val size = PanelMath.buttonSizeDp(widthDp)
-        val pill = LinearLayout(this).apply {
+        val h = dp(48)
+        val row = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.CENTER_VERTICAL
-            setPadding(dp(6), dp(4), dp(6), dp(4))
-            background = ui.rounded(ui.surfaceContainerHigh, (size + 8) / 2f)
-            elevation = dp(6).toFloat()
+            setPadding(dp(4), 0, dp(4), 0)
         }
-        fun add(v: View, w: Int = dp(size), h: Int = dp(size)) =
-            pill.addView(v, LinearLayout.LayoutParams(w, h).apply { marginStart = dp(1); marginEnd = dp(1) })
+        fun add(v: View, w: Int = dp(size), hh: Int = dp(size)) =
+            row.addView(v, LinearLayout.LayoutParams(w, hh).apply { marginStart = dp(1); marginEnd = dp(1) })
 
-        recButton = ui.iconButton(R.drawable.ic_record, "記録", size) {
+        add(ui.iconButton(R.drawable.ic_record, "記録", size) {
             if (state == State.RECORDING) stopRecording() else startRecording()
-        }.also { add(it) }
-        playButton = ui.iconButton(R.drawable.ic_play, "再生", size) { playSelected() }.also { add(it) }
-        playButton?.setOnLongClickListener {
-            val n = store.selectedId?.let { store.get(it)?.name } ?: store.list().firstOrNull()?.name
-            toast(n?.let { "再生するマクロ: $it" } ?: "マクロがありません"); true
-        }
-        stopButton = ui.iconButton(R.drawable.ic_stop, "停止", size) { stopAll() }.also { add(it) }
-        statusText = ui.text("", 12f, ui.onSurfaceVariant, medium = true).apply {
+        }.apply { tag = "rec" })
+        add(ui.iconButton(R.drawable.ic_play, "再生", size) { playSelected() }.apply {
+            tag = "play"
+            setOnLongClickListener {
+                val n = store.selectedId?.let { store.get(it)?.name } ?: store.list().firstOrNull()?.name
+                toast(n?.let { "再生するマクロ: $it" } ?: "マクロがありません"); true
+            }
+        })
+        add(ui.iconButton(R.drawable.ic_stop, "停止", size) { stopAll() }.apply { tag = "stop" })
+        val st = ui.text("", 12f, ui.onSurfaceVariant, medium = true).apply {
+            tag = "status"
             maxWidth = dp(64); maxLines = 1; ellipsize = android.text.TextUtils.TruncateAt.END
             setPadding(dp(4), 0, dp(6), 0)
         }
-        pill.addView(statusText, LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT))
+        row.addView(st, LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT))
         // 区切り線
         add(View(this).apply { setBackgroundColor(ui.outlineVariant) }, dp(1), dp(size - 16))
         add(ui.iconButton(R.drawable.ic_settings, "設定（アプリを開く）", size) { openApp() })
-        add(ui.iconButton(R.drawable.ic_collapse, "小さくする", size) { setCollapsed(true) })
+        add(ui.iconButton(R.drawable.ic_collapse, "小さくする", size) { setCollapsed(true) }.apply {
+            // 左へ広がったときは、縮む向き（右）に矢印を向ける
+            if (leftward) scaleX = -1f
+        })
         add(ui.iconButton(R.drawable.ic_close, "フローティングボタンを隠す", size) { hidePanel() })
-        return pill
+
+        val box = android.widget.FrameLayout(this).apply {
+            background = ui.rounded(ui.surfaceContainerHigh, 24)
+            elevation = dp(6).toFloat()
+            minimumHeight = h
+        }
+        box.addView(row, android.widget.FrameLayout.LayoutParams(
+            android.widget.FrameLayout.LayoutParams.WRAP_CONTENT, h))
+        // 開閉中だけ見える「バブル」の顔（48dp の円とアイコン）
+        val ghost = android.widget.ImageView(this).apply {
+            setImageDrawable(ui.icon(R.drawable.ic_touch, ui.onPrimaryContainer))
+            scaleType = android.widget.ImageView.ScaleType.CENTER
+            background = ui.oval(ui.primaryContainer)
+            alpha = 0f; isClickable = false; importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
+        }
+        box.addView(ghost, android.widget.FrameLayout.LayoutParams(h, h,
+            (if (leftward) Gravity.END else Gravity.START) or Gravity.CENTER_VERTICAL))
+        val p = PillViews(box, row, ghost, leftward)
+        box.outlineProvider = p.reveal
+        box.clipToOutline = true
+        box.tag = p
+        pill = p; bindRefs(p)
+        return box
     }
 
     /** 「設定」: アプリのメイン画面に戻る。
@@ -261,6 +427,7 @@ class MacroAccessibilityService : AccessibilityService() {
     }
 
     fun hidePanel() {
+        anim?.cancel(); anim = null; pill = null
         if (state == State.RECORDING) stopRecording()
         removeView(panel); panel = null
         bubble = null; statusText = null; recButton = null; playButton = null; stopButton = null

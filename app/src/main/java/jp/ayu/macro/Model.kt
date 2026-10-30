@@ -176,4 +176,19 @@ object PanelMath {
 
     /** パネルが画面内に収まるように位置を補正する */
     fun clamp(pos: Int, size: Int, screen: Int): Int = pos.coerceIn(0, (screen - size).coerceAtLeast(0))
+
+    /**
+     * バブル (x, 幅 bubbleW) をピル (幅 pillW) に広げる向き。
+     * 右に収まるなら右へ。収まらず、左側のほうが広いときだけ左へ（バブルの右端を基準にする）。
+     */
+    fun expandLeftward(x: Int, bubbleW: Int, pillW: Int, screen: Int): Boolean =
+        x + pillW > screen && (x + bubbleW) > (screen - x)
+
+    /** 展開後のウィンドウの x。左へ広げるときはバブルの右端をそろえる */
+    fun expandedX(x: Int, bubbleW: Int, pillW: Int, leftward: Boolean): Int =
+        if (leftward) (x + bubbleW - pillW).coerceAtLeast(0) else x
+
+    /** 閉じたあとのバブルの x。左へ広げていたときは右端（元のバブルの位置）に戻す */
+    fun collapsedX(x: Int, bubbleW: Int, pillW: Int, leftward: Boolean): Int =
+        if (leftward) x + (pillW - bubbleW) else x
 }
