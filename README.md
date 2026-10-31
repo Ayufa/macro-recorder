@@ -14,6 +14,8 @@ Android 用の画面操作マクロアプリです。タップ・長押し・ス
 - 多言語対応: English（既定）・日本語・简体中文・繁體中文・한국어・Español。アプリの「アプリの設定 > 言語」か、Android 13 以降は端末の「設定 > アプリ > 操作マクロ > 言語」で切り替え
 - **プライバシー**: 他のアプリの画面内容は読み取りません（`canRetrieveWindowContent=false`、イベント購読なし）。データは端末内のアプリ専用領域にのみ保存。`INTERNET` 権限なし。
 
+> 開発を引き継ぐエージェントは [AGENTS.md](AGENTS.md) と [HANDOFF.md](HANDOFF.md) を先に読んでください。
+
 ## インストール
 
 [INSTALL_ja.md](INSTALL_ja.md) を参照してください（Galaxy 向けの手順）。APK は Releases にあります。
