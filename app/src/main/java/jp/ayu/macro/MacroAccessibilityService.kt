@@ -403,7 +403,7 @@ class MacroAccessibilityService : AccessibilityService() {
         add(btn(R.drawable.ic_close, R.string.desc_hide_panel) { hidePanel() })
 
         val box = android.widget.FrameLayout(this).apply {
-            background = ui.rounded(ui.surfaceContainerHigh, 24, ui.outlineVariant)
+            background = ui.rounded(ui.surfaceContainerHigh, 20, ui.outlineVariant)
             elevation = dp(6).toFloat()
             minimumHeight = h
         }

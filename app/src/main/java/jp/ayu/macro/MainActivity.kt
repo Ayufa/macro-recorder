@@ -87,24 +87,24 @@ class MainActivity : Activity() {
         // ヘッダー（v0.7: 端に向かって消える方眼の背景 + バージョンの等幅バッジ）
         header = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL
-            setPadding(dp(20), dp(32), dp(20), dp(28))
-            background = GridDrawable(ui.grid, dp(22).toFloat(), dp(1).coerceAtLeast(1).toFloat())
+            setPadding(dp(20), dp(32), dp(20), dp(24))
+            // v0.10: 方眼の装飾は廃止。ヘッダーは静かな面のままにする
         }
         header.addView(ImageView(this).apply {
             setImageResource(R.mipmap.ic_launcher)
             importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
-        }, LinearLayout.LayoutParams(dp(48), dp(48)).apply { marginEnd = dp(14) })
+        }, LinearLayout.LayoutParams(dp(48), dp(48)).apply { marginEnd = dp(16) })
         header.addView(LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             val titleRow = LinearLayout(this@MainActivity).apply { orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL }
-            titleRow.addView(ui.text(getString(R.string.app_name), Ui.Type.HEADLINE_SMALL, ui.onSurface, weight = Ui.Weight.SEMIBOLD).apply {
+            titleRow.addView(ui.text(getString(R.string.app_name), Ui.Type.HEADLINE_SMALL, ui.onSurface, weight = Ui.Weight.MEDIUM).apply {
                 maxLines = 2
                 if (Build.VERSION.SDK_INT >= 28) isAccessibilityHeading = true
             },
                 LinearLayout.LayoutParams(WRAP, WRAP))
             titleRow.addView(ui.badge("v" + appVersion(), Ui.Tone.NEUTRAL).apply {
                 importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
-            }, LinearLayout.LayoutParams(WRAP, WRAP).apply { marginStart = dp(10) })
+            }, LinearLayout.LayoutParams(WRAP, WRAP).apply { marginStart = dp(8) })
             addView(titleRow)
             addView(ui.text(getString(R.string.tagline), Ui.Type.BODY_MEDIUM, ui.onSurfaceVariant).apply { setPadding(0, dp(4), 0, 0) })
         }, LinearLayout.LayoutParams(0, WRAP, 1f))
@@ -119,7 +119,7 @@ class MainActivity : Activity() {
         statusContainer = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             background = ui.card()
-            setPadding(dp(4), dp(4), dp(4), dp(6))
+            setPadding(dp(4), dp(4), dp(4), dp(4))
         }
         root.addView(statusContainer, LinearLayout.LayoutParams(MATCH, WRAP))
 
@@ -238,8 +238,8 @@ class MainActivity : Activity() {
     private fun crashCard(log: String): View? = runCatching {
         val card = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
-            background = ui.rounded(ui.errorContainer, 20, ui.withAlpha(ui.error, 0.25f))
-            setPadding(dp(16), dp(14), dp(16), dp(8))
+            background = ui.rounded(ui.errorContainer, 16, ui.withAlpha(ui.error, 0.25f))
+            setPadding(dp(16), dp(16), dp(16), dp(12))
         }
         card.addView(ui.text(getString(R.string.crash_title), Ui.Type.TITLE_MEDIUM, ui.onSurface, medium = true).apply {
             if (Build.VERSION.SDK_INT >= 28) isAccessibilityHeading = true
@@ -307,7 +307,7 @@ class MainActivity : Activity() {
             setImageDrawable(ui.icon(icon, ui.onSecondaryContainer)); setPadding(dp(7), dp(7), dp(7), dp(7))
             background = ui.oval(ui.secondaryContainer)
             importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
-        }, LinearLayout.LayoutParams(dp(34), dp(34)).apply { marginEnd = dp(14) })
+        }, LinearLayout.LayoutParams(dp(34), dp(34)).apply { marginEnd = dp(16) })
         row.addView(LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             addView(ui.text(title, Ui.Type.BODY_LARGE, ui.onSurface, medium = true))
@@ -357,7 +357,7 @@ class MainActivity : Activity() {
         val box = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             background = ui.card()
-            setPadding(dp(16), dp(14), dp(16), dp(14))
+            setPadding(dp(16), dp(16), dp(16), dp(16))
         }
         val steps = listOf(
             R.drawable.ic_record to R.string.howto_1,
@@ -369,14 +369,14 @@ class MainActivity : Activity() {
         for ((i, pair) in steps.withIndex()) {
             val row = LinearLayout(this).apply {
                 orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL
-                setPadding(0, if (i == 0) 0 else dp(10), 0, 0)
+                setPadding(0, if (i == 0) 0 else dp(12), 0, 0)
             }
             row.addView(ui.monoText("%02d".format(i + 1), Ui.Type.LABEL_SMALL, ui.ink3, Ui.Weight.MEDIUM).apply {
                 importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
             }, LinearLayout.LayoutParams(dp(24), WRAP))
             row.addView(ImageView(this).apply {
                 setImageDrawable(ui.icon(pair.first, ui.onSecondaryContainer)); setPadding(dp(6), dp(6), dp(6), dp(6))
-                background = ui.rounded(ui.secondaryContainer, 9, ui.outlineVariant)
+                background = ui.rounded(ui.secondaryContainer, 8, ui.outlineVariant)
                 importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
             }, LinearLayout.LayoutParams(dp(30), dp(30)).apply { marginEnd = dp(12) })
             row.addView(ui.text(getString(pair.second), Ui.Type.BODY_MEDIUM, ui.onSurface), LinearLayout.LayoutParams(0, WRAP, 1f))
@@ -464,9 +464,9 @@ class MainActivity : Activity() {
         }
         // 状態は文字（タイトル + 説明）で伝えるので、アイコンは飾り（R6.8: 色だけに頼らない）
         lead.importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
-        lead.background = ui.rounded(if (ok) ui.successContainer else ui.errorContainer, 9,
+        lead.background = ui.rounded(if (ok) ui.successContainer else ui.errorContainer, 8,
             ui.withAlpha(if (ok) ui.success else ui.error, 0.25f))
-        row.addView(lead, LinearLayout.LayoutParams(dp(30), dp(30)).apply { marginEnd = dp(14) })
+        row.addView(lead, LinearLayout.LayoutParams(dp(30), dp(30)).apply { marginEnd = dp(16) })
         row.addView(LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             addView(ui.text(title, Ui.Type.TITLE_MEDIUM, ui.onSurface, medium = true))
@@ -497,7 +497,7 @@ class MainActivity : Activity() {
                 orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL
                 setPadding(dp(16), dp(16), dp(16), dp(4))
             }
-            head.addView(ui.text(getString(R.string.setup_title), Ui.Type.TITLE_LARGE, ui.onSurface, weight = Ui.Weight.SEMIBOLD).apply {
+            head.addView(ui.text(getString(R.string.setup_title), Ui.Type.TITLE_LARGE, ui.onSurface, weight = Ui.Weight.MEDIUM).apply {
                 if (Build.VERSION.SDK_INT >= 28) isAccessibilityHeading = true
             },
                 LinearLayout.LayoutParams(0, WRAP, 1f))
@@ -578,7 +578,7 @@ class MainActivity : Activity() {
     ): View {
         val row = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
-            setPadding(dp(16), dp(8), dp(16), if (last) dp(14) else 0)
+            setPadding(dp(16), dp(8), dp(16), if (last) dp(16) else 0)
         }
         // 左: ノードと線
         val rail = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL; gravity = Gravity.CENTER_HORIZONTAL }
@@ -596,7 +596,7 @@ class MainActivity : Activity() {
         rail.addView(node, LinearLayout.LayoutParams(dp(26), dp(26)))
         if (!last) rail.addView(View(this).apply { setBackgroundColor(if (done) ui.withAlpha(ui.success, 0.5f) else ui.outlineVariant) },
             LinearLayout.LayoutParams(dp(2), 0, 1f).apply { topMargin = dp(4) })
-        row.addView(rail, LinearLayout.LayoutParams(dp(26), MATCH).apply { marginEnd = dp(14) })
+        row.addView(rail, LinearLayout.LayoutParams(dp(26), MATCH).apply { marginEnd = dp(16) })
 
         // 右: 内容
         val col = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL; setPadding(0, dp(2), 0, dp(12)) }
@@ -611,7 +611,7 @@ class MainActivity : Activity() {
             col.addView(ui.text(body, Ui.Type.BODY_MEDIUM, ui.onSurfaceVariant).apply { setPadding(0, dp(4), 0, 0) })
             if (current) for (h in hints) {
                 col.addView(ui.text(h, Ui.Type.BODY_SMALL, ui.onSurfaceVariant).apply {
-                    background = ui.rounded(ui.surfaceContainerHigh, 10); setPadding(dp(10), dp(8), dp(10), dp(8))
+                    background = ui.rounded(ui.surfaceContainerHigh, 10); setPadding(dp(8), dp(8), dp(8), dp(8))
                 }, LinearLayout.LayoutParams(MATCH, WRAP).apply { topMargin = dp(8) })
             }
             val actions = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL }
@@ -642,7 +642,7 @@ class MainActivity : Activity() {
         refreshMonetization()
         if (macros.isEmpty()) {
             // v0.7: 空のときは枠を点線にして、ドットマトリクスを表示
-            listContainer.background = ui.dashed(ui.surfaceContainer, 20)
+            listContainer.background = ui.dashed(ui.surfaceContainer, 16)
             listContainer.addView(LinearLayout(this).apply {
                 orientation = LinearLayout.VERTICAL; gravity = Gravity.CENTER_HORIZONTAL
                 setPadding(dp(16), dp(32), dp(16), dp(32))
@@ -705,7 +705,7 @@ class MainActivity : Activity() {
         val handle = sheet.handle()
         root.addView(handle, LinearLayout.LayoutParams(dp(96), dp(48)).apply { gravity = Gravity.CENTER_HORIZONTAL })
         val head = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL; setPadding(dp(24), 0, dp(24), dp(8)) }
-        head.addView(ui.text(m.name, Ui.Type.TITLE_LARGE, ui.onSurface, weight = Ui.Weight.SEMIBOLD).apply {
+        head.addView(ui.text(m.name, Ui.Type.TITLE_LARGE, ui.onSurface, weight = Ui.Weight.MEDIUM).apply {
             maxLines = 2
             if (Build.VERSION.SDK_INT >= 28) isAccessibilityHeading = true
         })

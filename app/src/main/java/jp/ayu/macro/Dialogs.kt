@@ -33,7 +33,7 @@ class DialogCard(val ui: Ui) {
         val root = LinearLayout(ctx).apply {
             orientation = LinearLayout.VERTICAL
             setPadding(dp(24), dp(24), dp(24), dp(16))
-            background = ui.rounded(ui.surfaceContainerHigh, 24, ui.outlineVariant)
+            background = ui.rounded(ui.surfaceContainerHigh, 20, ui.outlineVariant)
             elevation = dp(8).toFloat()
         }
         if (iconId != null) {
@@ -47,7 +47,7 @@ class DialogCard(val ui: Ui) {
             }, LinearLayout.LayoutParams(dp(44), dp(44)).apply { bottomMargin = dp(16) })
         }
         // v0.9: M3 のダイアログの見出しは headline small（24sp）、本文は body medium（R4.1 / R5.12）
-        root.addView(ui.text(title, Ui.Type.HEADLINE_SMALL, ui.onSurface, weight = Ui.Weight.SEMIBOLD).apply {
+        root.addView(ui.text(title, Ui.Type.HEADLINE_SMALL, ui.onSurface, weight = Ui.Weight.MEDIUM).apply {
             if (android.os.Build.VERSION.SDK_INT >= 28) isAccessibilityHeading = true
         })
         if (message != null) root.addView(ui.text(message, Ui.Type.BODY_MEDIUM, ui.onSurfaceVariant).apply { setPadding(0, dp(16), 0, 0) })

@@ -1,37 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- v0.7: zinc 系ニュートラルをさらに整理（shadcn 風: 背景 #FAFAFA、カード白、細い実線のボーダー #E4E4E7）。
-     参考: sv-table / sv-blocks / sv-efferd（いずれも見た目だけ参考。コードや素材はコピーしていません）
-     アクセント色は Android 12+ では端末のテーマ色（Material You、values-v31）、それ以前は青。 -->
-<!-- v0.9: android-design-guidelines (R1.x / R6.7) に合わせて調整
-     - 文字に使う色はすべて背景とのコントラスト 4.5:1 以上（success / record / ink_3）
-     - md_outline は入力欄の枠など「境界を示す線」なので 3:1 以上、飾りの線は md_outline_variant
-     - Android 12+ は values-v31 / values-v34 で面の色も端末のテーマ色（Material You）に従う -->
+<!-- v0.10: unslop の考え方で色を組み直し（出典は THIRD_PARTY_NOTICES.md）。
+     - 面・線・文字は「ink（青みのあるインク色）」寄りのニュートラルランプだけで作る。端末のテーマ色
+       （Material You）には連動しない。全 API レベルで同じ固定パレット（values-v31 / v34 は廃止）。
+     - アクセントはコバルト #1D4ED8 を 1 色だけ。使うのは主操作・選択中・スライダー・リンクなど意味のある場所だけ。
+     - 色が生きるのは記録／再生の「状態」だけ（record の赤、success の緑は意味色として固定）。
+     - 文字色は背景とのコントラスト 4.5:1 以上、境界線（md_outline）は 3:1 以上を計算で確認済み。 -->
 <resources>
-    <color name="md_primary">#0066FA</color>
+    <color name="md_primary">#1D4ED8</color>
     <color name="md_on_primary">#FFFFFF</color>
-    <color name="md_primary_container">#EAF1FF</color>
-    <color name="md_on_primary_container">#002A6B</color>
-    <color name="md_secondary_container">#F4F4F5</color>
-    <color name="md_on_secondary_container">#18181B</color>
-    <color name="md_surface">#FAFAFA</color>
+    <color name="md_primary_container">#E3EBFC</color>
+    <color name="md_on_primary_container">#1E3A6E</color>
+    <color name="md_secondary_container">#ECEFF4</color>
+    <color name="md_on_secondary_container">#111827</color>
+    <color name="md_surface">#F5F7FA</color>
     <color name="md_surface_container">#FFFFFF</color>
     <color name="md_surface_container_high">#FFFFFF</color>
-    <color name="md_on_surface">#09090B</color>
-    <color name="md_on_surface_variant">#62626B</color>
-    <color name="md_ink_3">#6B6B74</color>
-    <color name="md_outline_variant">#E4E4E7</color>
-    <color name="md_outline">#8A8A93</color>
-    <color name="md_inverse_surface">#18181B</color>
-    <color name="md_inverse_on_surface">#FAFAFA</color>
+    <color name="md_on_surface">#111827</color>
+    <color name="md_on_surface_variant">#4B5565</color>
+    <color name="md_ink_3">#5A6376</color>
+    <color name="md_outline_variant">#DFE3EA</color>
+    <color name="md_outline">#8A93A5</color>
+    <color name="md_inverse_surface">#171B26</color>
+    <color name="md_inverse_on_surface">#F5F7FA</color>
     <color name="md_error">#DC2626</color>
     <color name="md_on_error">#FFFFFF</color>
     <color name="md_error_container">#FEF2F2</color>
     <color name="md_on_error_container">#991B1B</color>
     <color name="md_record">#C62828</color>
-    <!-- v0.7 追加 -->
     <color name="md_success">#15803D</color>
     <color name="md_success_container">#ECFDF3</color>
-    <color name="md_grid">#E4E4E7</color>
-    <!-- v0.9: スナックバーの操作ボタン（inverseSurface 上の色） -->
-    <color name="md_inverse_primary">#A8C7FF</color>
+    <!-- v0.10: スナックバーの操作ボタン（inverseSurface 上の色） -->
+    <color name="md_inverse_primary">#A9C2F8</color>
 </resources>

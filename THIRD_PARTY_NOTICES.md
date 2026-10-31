@@ -117,3 +117,19 @@ patterns were re-created natively with Android Views.
   `ic_more_vert.xml` (more_vert), `ic_contrast.xml` (contrast), and the launcher-shortcut icons `shortcut_play.xml` /
   `shortcut_show.xml`, which draw the existing Material `ic_play` / `ic_touch` glyph paths on a circle.
 
+## v0.10: design method — unslop (CC BY 4.0)
+
+- **unslop** by Damir Sokolovsky ([@heydamir](https://x.com/heydamir)), <https://github.com/heydamir/unslop>,
+  licensed under **Creative Commons Attribution 4.0 International (CC BY 4.0)**.
+  v0.10's redesign follows its method (audit the signs of "AI-looking" UI, set a direction from the product,
+  then fix spacing, color, icons, copy, type, layout, details, visuals and motion in that order) and adopts
+  several of its starting values: the ink-tinted neutral ramp, one cobalt accent, the radius scale
+  (controls 8–10, cards 12–16, panels 14–20, nested radius = outer − padding), quiet mono meta text instead of
+  pill badges, sentence-case labels, tabular mono figures, and the single easing curve
+  cubic-bezier(0.22, 1, 0.36, 1). No code or assets were copied; the method and values were re-implemented
+  natively with Android Views. The audit and the passes are recorded in
+  [docs/DESIGN_AUDIT_v0.10.md](docs/DESIGN_AUDIT_v0.10.md). Attribution as required by CC BY 4.0:
+  "unslop by Damir Sokolovsky (@heydamir), https://github.com/heydamir/unslop, CC BY 4.0."
+  Note: v0.10 intentionally supersedes two v0.9 choices — Material You dynamic color (R1.1/R1.11) is replaced
+  by a fixed palette on all API levels, and the uppercase tracked section labels are replaced by sentence case.
+

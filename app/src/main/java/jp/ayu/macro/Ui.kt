@@ -24,13 +24,17 @@ import android.widget.TextView
 /**
  * 見た目を AndroidX なし（フレームワークのみ）で組み立てるための小さなヘルパー。
  * v0.6: designeer.xyz の見た目を参考にしたデザイン
- *  - ニュートラルな面（薄いグレーの画面 + 白いカード + 細い線）、角丸 20dp のカード / 24dp のシート / 14dp のトレイ
- *  - ボタン・チップは丸いピル型。主ボタンは墨色（ink）、アクセント色は選択状態やスライダーに使う
+ *  - ニュートラルな面（薄いグレーの画面 + 白いカード + 細い線）、主ボタンは墨色（ink）
  *  - 書体は Funnel Sans（SIL OFL 1.1。assets/fonts に同梱）。漢字・かな・ハングルは端末のフォントで表示
  * v0.7: sv-table / sv-blocks / sv-agentation などの見た目を参考に洗練（コードや素材は流用せず、ネイティブで作り直し）
- *  - 数値・ラベル・バッジは等幅の Geist Mono（SIL OFL 1.1）。セクション見出しは小さな大文字＋字間広め＋細い線
- *  - ボーダーは半透明ではなく実線の細い線（#E4E4E7 / ダーク #232327）、一覧は表のように区切り線で並べる
+ *  - 数値・ラベルは等幅の Geist Mono（SIL OFL 1.1）
+ *  - ボーダーは半透明ではなく実線の細い線、一覧は表のように区切り線で並べる
  *  - 押したときに少し縮むフィードバック、出てくるときのぼかし＋フェード＋スライド（Motion.kt）
+ * v0.10: unslop（Damir Sokolovsky、CC BY 4.0）の考え方で組み直し。方向は「精密・計器・静か」。
+ *  - 色は ink 寄りニュートラルの固定パレット＋コバルトのアクセント 1 色（colors.xml）。色が生きるのは記録／再生の状態だけ
+ *  - 角丸は役割で決める: 操作部品 10dp / カード 16dp / パネル・シート 20dp。入れ子は「外 − 余白」
+ *  - 件数・バージョンなどのメタはピルのバッジではなく、静かな等幅テキスト（タイムコード風）
+ *  - セクション見出しは大文字化せず文頭ケース。余白は 4dp グリッド
  */
 class Ui(val ctx: Context) {
     fun dp(v: Number): Int = TypedValue.applyDimension(
@@ -66,7 +70,6 @@ class Ui(val ctx: Context) {
     val record get() = c(R.color.md_record)
     val success get() = c(R.color.md_success)
     val successContainer get() = c(R.color.md_success_container)
-    val grid get() = c(R.color.md_grid)
 
     // ---------- 書体 ----------
     enum class Weight(val w: Int) { REGULAR(400), MEDIUM(500), SEMIBOLD(600) }
@@ -144,14 +147,14 @@ class Ui(val ctx: Context) {
      */
     fun insetV(d: Drawable, insetDp: Number): Drawable = if (dp(insetDp) <= 0) d else InsetDrawable(d, 0, dp(insetDp), 0, dp(insetDp))
 
-    /** カード: 白い面 + 細い線（designeer の "raised" に相当）。選択中はアクセントの淡い面 + アクセントの線 */
-    fun card(selected: Boolean = false, radiusDp: Int = 20): GradientDrawable =
+    /** カード: 白い面 + 細い線。選択中はアクセントの淡い面 + アクセントの線。v0.10: 角丸はカードの役割として 16dp */
+    fun card(selected: Boolean = false, radiusDp: Int = 16): GradientDrawable =
         if (selected) rounded(primaryContainer, radiusDp, withAlpha(primary, 0.55f))
         else rounded(surfaceContainer, radiusDp, outlineVariant)
 
-    /** 上だけ角丸のシート */
+    /** 上だけ角丸のシート。v0.10: パネルの角丸は 20dp */
     fun sheetBackground(): GradientDrawable = GradientDrawable().apply {
-        val r = dp(24).toFloat()
+        val r = dp(20).toFloat()
         cornerRadii = floatArrayOf(r, r, r, r, 0f, 0f, 0f, 0f)
         setColor(surface)
         setStroke(dp(1).coerceAtLeast(1), outlineVariant)
@@ -190,7 +193,7 @@ class Ui(val ctx: Context) {
     }
 
     /**
-     * ピル型のボタン。
+     * ボタン。v0.10: ピル型をやめ、操作部品の角丸 10dp に統一。
      * FILLED = 墨色の主ボタン / TONAL = 淡いグレー / TEXT = 文字だけ / ACCENT = アクセント色 / DANGER = 赤（削除など）/ DANGER_TEXT = 赤文字
      * PRIMARY_TEXT = アクセント色の文字だけ（v0.9: ダイアログの確定ボタン。R5.12）
      * v0.9: 見た目の高さは 40dp のまま、押せる範囲は 48dp（上下 4dp の透明な余白。R6.5）
@@ -201,7 +204,7 @@ class Ui(val ctx: Context) {
         TextView(ctx).apply {
             text = label; textSize = Type.LABEL_LARGE; typeface = font(Weight.MEDIUM)
             gravity = Gravity.CENTER; minHeight = dp(48); isClickable = true; isFocusable = true
-            setPadding(dp(if (iconId != null) 14 else 20), 0, dp(20), 0)
+            setPadding(dp(if (iconId != null) 16 else 20), 0, dp(20), 0)
             val (bg, fg) = when (style) {
                 BtnStyle.FILLED -> Pair<Int?, Int>(inverseSurface, inverseOnSurface)
                 BtnStyle.TONAL -> secondaryContainer to onSecondaryContainer
@@ -211,9 +214,9 @@ class Ui(val ctx: Context) {
                 BtnStyle.DANGER_TEXT -> Pair<Int?, Int>(null, this@Ui.error)
                 BtnStyle.PRIMARY_TEXT -> Pair<Int?, Int>(null, primary)
             }
-            if (style == BtnStyle.TEXT || style == BtnStyle.DANGER_TEXT || style == BtnStyle.PRIMARY_TEXT) setPadding(dp(if (iconId != null) 10 else 14), 0, dp(14), 0)
+            if (style == BtnStyle.TEXT || style == BtnStyle.DANGER_TEXT || style == BtnStyle.PRIMARY_TEXT) setPadding(dp(if (iconId != null) 12 else 16), 0, dp(16), 0)
             setTextColor(fg)
-            background = ripple(bg?.let { insetV(rounded(it, 999), 4) }, insetV(rounded(Color.WHITE, 999), 4), fg)
+            background = ripple(bg?.let { insetV(rounded(it, 10), 4) }, insetV(rounded(Color.WHITE, 10), 4), fg)
             if (iconId != null) {
                 val d = icon(iconId, fg).apply { setBounds(0, 0, dp(18), dp(18)) }
                 setCompoundDrawablesRelative(d, null, null, null); compoundDrawablePadding = dp(8)
@@ -225,21 +228,19 @@ class Ui(val ctx: Context) {
     fun text(s: CharSequence, sizeSp: Float, color: Int, medium: Boolean = false, weight: Weight? = null): TextView = TextView(ctx).apply {
         text = s; textSize = sizeSp; setTextColor(color)
         typeface = font(weight ?: if (medium) Weight.MEDIUM else Weight.REGULAR)
-        // 大きな見出しは字間を少し詰める（designeer の tracking-tight）
-        if (sizeSp >= 20f) letterSpacing = -0.02f
+        // v0.10: 字間は詰めない（小さい文字の負の字間は読みにくさのサイン）
         setLineSpacing(0f, 1.2f)
     }
 
-    /** セクション見出し（v0.7: 等幅・大文字・字間広め。sv-agentation の "TRY IT" 風） */
-    fun sectionLabel(s: String): TextView = monoText(s, Type.LABEL_SMALL, ink3, Weight.MEDIUM).apply {
-        isAllCaps = true; letterSpacing = 0.12f
-        setPadding(dp(4), dp(28), 0, dp(10))
+    /** セクション見出し（v0.10: 大文字化と広い字間をやめ、文頭ケースの等幅ラベルに。数字と同じ等幅が「計器」の署名） */
+    fun sectionLabel(s: String): TextView = monoText(s, Type.LABEL_MEDIUM, ink3, Weight.MEDIUM).apply {
+        setPadding(dp(4), dp(28), 0, dp(12))
     }
 
     /** 見出し + 件数バッジ + 右へ伸びる細い線（sv-blocks のサイドバーの件数表示を参考） */
     fun sectionHeader(label: String, count: TextView? = null): LinearLayout = LinearLayout(ctx).apply {
         orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL
-        setPadding(dp(4), dp(28), 0, dp(10))
+        setPadding(dp(4), dp(28), 0, dp(12))
         addView(sectionLabel(label).apply {
             setPadding(0, 0, 0, 0)
             // v0.9: TalkBack の見出し移動で飛べるように
@@ -252,23 +253,25 @@ class Ui(val ctx: Context) {
     /** バッジの色合い */
     enum class Tone { NEUTRAL, ACCENT, SUCCESS, RECORD }
 
-    /** 小さな等幅バッジ（v0.7: "v0.3.0" や "New" のようなピル） */
+    /**
+     * メタ表示（v0.10: ピルのバッジをやめ、背景も枠もない静かな等幅テキストに）。
+     * バージョン・件数・手順数・「選択中」など、数字と短い状態だけに使う。色は役割（tone）だけを表す。
+     */
     fun badge(s: String, tone: Tone = Tone.NEUTRAL): TextView {
-        val (bg, fg, line) = when (tone) {
-            Tone.NEUTRAL -> Triple(secondaryContainer, onSurfaceVariant, outlineVariant)
-            Tone.ACCENT -> Triple(primaryContainer, onPrimaryContainer, withAlpha(primary, 0.35f))
-            Tone.SUCCESS -> Triple(successContainer, success, withAlpha(success, 0.35f))
-            Tone.RECORD -> Triple(errorContainer, onErrorContainer, withAlpha(record, 0.35f))
+        val fg = when (tone) {
+            Tone.NEUTRAL -> ink3
+            Tone.ACCENT -> primary
+            Tone.SUCCESS -> success
+            Tone.RECORD -> record
         }
-        return monoText(s, Type.LABEL_SMALL, fg, Weight.MEDIUM).apply {
-            setPadding(dp(8), dp(3), dp(8), dp(3)); gravity = Gravity.CENTER
-            background = rounded(bg, 999, line)
+        return monoText(s, Type.LABEL_MEDIUM, fg, Weight.MEDIUM).apply {
+            gravity = Gravity.CENTER_VERTICAL
         }
     }
 
     /** キーキャップ風の値表示（設定シートの現在値など） */
-    fun kbd(s: String = ""): TextView = monoText(s, Type.LABEL_LARGE, onSurface, Weight.SEMIBOLD).apply {
-        setPadding(dp(10), dp(5), dp(10), dp(5)); gravity = Gravity.CENTER
+    fun kbd(s: String = ""): TextView = monoText(s, Type.LABEL_LARGE, onSurface, Weight.MEDIUM).apply {
+        setPadding(dp(8), dp(4), dp(8), dp(4)); gravity = Gravity.CENTER
         background = rounded(secondaryContainer, 8, outlineVariant)
     }
 
@@ -279,13 +282,13 @@ class Ui(val ctx: Context) {
     }
 
     /**
-     * 選べるチップ（ピル型）。選択中は墨色、未選択は淡いグレー。
+     * 選べるチップ。選択中は墨色、未選択は淡いグレー。v0.10: ピル型をやめ角丸 10dp。
      * v0.9: 見た目は M3 のチップと同じ 32dp、押せる範囲は 48dp（R6.5）。選択中はチェックの印も付ける（色だけに頼らない: R6.8）
      */
     inner class FilterChip(private val label: String, onClick: () -> Unit) {
         val view: TextView = text(label, Type.LABEL_LARGE, onSurface, weight = Weight.MEDIUM).apply {
             gravity = Gravity.CENTER; minHeight = dp(48); minWidth = dp(48)
-            setPadding(dp(14), 0, dp(14), 0); isClickable = true; isFocusable = true
+            setPadding(dp(12), 0, dp(12), 0); isClickable = true; isFocusable = true
             setOnClickListener { Motion.haptic(this, Motion.Haptic.TICK); onClick() }
             Motion.pressable(this)
         }
@@ -296,24 +299,24 @@ class Ui(val ctx: Context) {
                 val bg = if (v) inverseSurface else secondaryContainer
                 val fg = if (v) inverseOnSurface else onSurface
                 view.setTextColor(fg)
-                view.background = ripple(insetV(rounded(bg, 999), 8), insetV(rounded(Color.WHITE, 999), 8), fg)
+                view.background = ripple(insetV(rounded(bg, 10), 8), insetV(rounded(Color.WHITE, 10), 8), fg)
                 val check = if (v) icon(R.drawable.ic_check, fg).apply { setBounds(0, 0, dp(16), dp(16)) } else null
                 view.setCompoundDrawablesRelative(check, null, null, null)
                 view.compoundDrawablePadding = dp(4)
-                view.setPadding(dp(if (v) 10 else 14), 0, dp(14), 0)
+                view.setPadding(dp(if (v) 8 else 12), 0, dp(12), 0)
             }
         init { selected = false }
     }
 
     /**
      * セグメント（トレイの中に並んだ選択肢）。選択中の項目は白く浮いた面になる。
-     * designeer の「トレイ（角丸 14dp）＋ 中の項目（角丸 10dp）」の形を参考にしています。
+     * v0.10: 入れ子の角丸をそろえた（トレイ 16dp − 余白 4dp = 中の項目 12dp）。
      */
     inner class Segmented(labels: List<String>, descs: List<String>? = null, val onSelect: (Int) -> Unit) {
         val view = LinearLayout(ctx).apply {
             orientation = LinearLayout.HORIZONTAL
-            background = rounded(secondaryContainer, 14)
-            setPadding(dp(3), dp(3), dp(3), dp(3))
+            background = rounded(secondaryContainer, 16)
+            setPadding(dp(4), dp(4), dp(4), dp(4))
         }
         private val items = labels.mapIndexed { i, l ->
             text(l, Type.LABEL_LARGE, onSurfaceVariant, weight = Weight.MEDIUM).apply {
@@ -333,8 +336,8 @@ class Ui(val ctx: Context) {
                 t.isSelected = on
                 t.setTextColor(if (on) onSurface else onSurfaceVariant)
                 // v0.9: 選択中の項目にも波紋（R7.5）
-                t.background = if (on) ripple(rounded(surfaceContainerHigh, 11, outlineVariant), rounded(Color.WHITE, 11))
-                    else ripple(null, rounded(Color.WHITE, 11))
+                t.background = if (on) ripple(rounded(surfaceContainerHigh, 12, outlineVariant), rounded(Color.WHITE, 12))
+                    else ripple(null, rounded(Color.WHITE, 12))
                 t.elevation = if (on) dp(1).toFloat() else 0f
             }
         }
@@ -346,10 +349,10 @@ class Ui(val ctx: Context) {
             setText(initial); setSingleLine(); this.inputType = inputType
             hint = hintText; setHintTextColor(ink3)
             setTextColor(onSurface); textSize = Type.BODY_LARGE; typeface = font(Weight.REGULAR)
-            setPadding(dp(14), dp(12), dp(14), dp(12)); minHeight = dp(48)
+            setPadding(dp(16), dp(12), dp(16), dp(12)); minHeight = dp(48)
             background = StateListDrawable().apply {
-                addState(intArrayOf(android.R.attr.state_focused), rounded(surfaceContainer, 12, primary, 2))
-                addState(intArrayOf(), rounded(surfaceContainer, 12, outline))
+                addState(intArrayOf(android.R.attr.state_focused), rounded(surfaceContainer, 10, primary, 2))
+                addState(intArrayOf(), rounded(surfaceContainer, 10, outline))
             }
             if (Build.VERSION.SDK_INT >= 29) {
                 textCursorDrawable = GradientDrawable().apply { setColor(primary); setSize(dp(2), dp(20)) }

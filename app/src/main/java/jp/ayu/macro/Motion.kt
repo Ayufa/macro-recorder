@@ -16,9 +16,9 @@ import android.view.animation.PathInterpolator
  * すべて端末の「アニメーションを削除」/ アニメーション スケール 0 のときは何もしない。
  */
 object Motion {
-    /** 速く出て、ゆっくり止まる */
-    val easeOut = PathInterpolator(0.16f, 1f, 0.3f, 1f)
-    private val pressEase = PathInterpolator(0.2f, 0f, 0f, 1f)
+    /** v0.10: イージングは画面全体でこの 1 本だけ（unslop のトークン cubic-bezier(0.22, 1, 0.36, 1)） */
+    val easeOut = PathInterpolator(0.22f, 1f, 0.36f, 1f)
+    private val pressEase = easeOut
 
     fun enabled(ctx: Context): Boolean =
         ValueAnimator.areAnimatorsEnabled() &&
@@ -35,7 +35,8 @@ object Motion {
         v.alpha = 0f; v.translationY = d
         ValueAnimator.ofFloat(0f, 1f).apply {
             duration = BLUR_FADE_DURATION_MS
-            startDelay = BLUR_FADE_BASE_DELAY_MS + STAGGER_MS * index.coerceIn(0, 10)
+            // v0.10: 登場は控えめに。ずらすのは先頭の 5 つまで
+            startDelay = BLUR_FADE_BASE_DELAY_MS + STAGGER_MS * index.coerceIn(0, 5)
             interpolator = blurFadeEase
             addUpdateListener {
                 val t = it.animatedValue as Float
@@ -55,21 +56,22 @@ object Motion {
         }
     }
 
-    // v0.8: BlurFade（SikandarJODD/animations, MIT）の既定値をそのまま移植
-    //   duration 0.4s / delay 0.04s + n / offset 6px / blur 6px / ease "easeOut" = cubic-bezier(0, 0, 0.58, 1)
+    // v0.8: BlurFade（SikandarJODD/animations, MIT）の既定値を移植
+    //   duration 0.4s / delay 0.04s + n / offset 6px / blur 6px
+    // v0.10: ease は画面全体で 1 本に統一したため、BlurFade 専用の ease は使わない
     private const val BLUR_FADE_DURATION_MS = 400L
     private const val BLUR_FADE_BASE_DELAY_MS = 40L
     private const val BLUR_FADE_OFFSET_DP = 6f
     private const val BLUR_FADE_BLUR_DP = 6f
     private const val STAGGER_MS = 45L
-    private val blurFadeEase = PathInterpolator(0f, 0f, 0.58f, 1f)
+    private val blurFadeEase = easeOut
 
-    /** v0.8: 選んだ・切り替えたときの小さな「ポン」（60fps.design で見たマイクロインタラクションの再現） */
-    fun pop(v: View, peak: Float = 1.22f) {
+    /** v0.10: 選んだときの合図。バウンス（オーバーシュート）はやめ、小さく沈んで easeOut で戻るだけにした */
+    fun pop(v: View) {
         if (!enabled(v.context)) return
-        v.scaleX = 0.82f; v.scaleY = 0.82f
-        v.animate().scaleX(1f).scaleY(1f).setDuration(420)
-            .setInterpolator(android.view.animation.OvershootInterpolator(peak * 3f)).start()
+        v.scaleX = 0.96f; v.scaleY = 0.96f
+        v.animate().scaleX(1f).scaleY(1f).setDuration(200)
+            .setInterpolator(easeOut).start()
     }
 
     /**
@@ -91,18 +93,18 @@ object Motion {
         v.performHapticFeedback(c)
     }
 
-    /** 押している間だけ少し縮む（クリック処理には触れない） */
+    /** 押している間だけ少し縮む（クリック処理には触れない）。v0.10: 縮みは 0.97、時間は 120 / 200ms に統一 */
     @SuppressLint("ClickableViewAccessibility")
-    fun pressable(v: View, scale: Float = 0.95f) {
+    fun pressable(v: View, scale: Float = 0.97f) {
         v.setOnTouchListener { view, e ->
             if (!enabled(view.context)) return@setOnTouchListener false
             // 向きを反転しているボタン（scaleX = -1）でも反転を保つ
             val sx = if (view.scaleX < 0f) -1f else 1f
             when (e.actionMasked) {
                 MotionEvent.ACTION_DOWN -> view.animate().scaleX(sx * scale).scaleY(scale)
-                    .setDuration(110).setInterpolator(pressEase).start()
+                    .setDuration(120).setInterpolator(pressEase).start()
                 MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> view.animate().scaleX(sx).scaleY(1f)
-                    .setDuration(260).setInterpolator(easeOut).start()
+                    .setDuration(200).setInterpolator(easeOut).start()
             }
             false
         }

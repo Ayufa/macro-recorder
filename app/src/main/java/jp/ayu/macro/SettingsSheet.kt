@@ -64,7 +64,7 @@ class SettingsSheet(
         root.addView(handle, LinearLayout.LayoutParams(dp(96), dp(48)).apply { gravity = Gravity.CENTER_HORIZONTAL })
         // 見出し
         val head = LinearLayout(activity).apply { orientation = LinearLayout.VERTICAL; setPadding(dp(24), 0, dp(24), dp(10)) }
-        head.addView(ui.text(s(R.string.settings_title), Ui.Type.TITLE_LARGE, ui.onSurface, weight = Ui.Weight.SEMIBOLD).apply {
+        head.addView(ui.text(s(R.string.settings_title), Ui.Type.TITLE_LARGE, ui.onSurface, weight = Ui.Weight.MEDIUM).apply {
             if (android.os.Build.VERSION.SDK_INT >= 28) isAccessibilityHeading = true
         })
         head.addView(ui.badge(Texts.steps(activity, macro.steps.size)).apply {
@@ -123,15 +123,15 @@ class SettingsSheet(
         val c = LinearLayout(activity).apply {
             orientation = LinearLayout.VERTICAL
             background = ui.card()
-            setPadding(dp(16), dp(14), dp(16), dp(16))
+            setPadding(dp(16), dp(16), dp(16), dp(16))
             layoutParams = LinearLayout.LayoutParams(MATCH, WRAP).apply { topMargin = dp(8) }
         }
         val row = LinearLayout(activity).apply { orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL }
         row.addView(ImageView(activity).apply {
             setImageDrawable(ui.icon(iconId, ui.onSurfaceVariant)); importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
-            setPadding(dp(6), dp(6), dp(6), dp(6)); background = ui.rounded(ui.secondaryContainer, 9, ui.outlineVariant)
+            setPadding(dp(4), dp(4), dp(4), dp(4)); background = ui.rounded(ui.secondaryContainer, 8, ui.outlineVariant)
         }, LinearLayout.LayoutParams(dp(30), dp(30)).apply { marginEnd = dp(12) })
-        row.addView(ui.text(title, Ui.Type.TITLE_MEDIUM, ui.onSurface, weight = Ui.Weight.SEMIBOLD).apply {
+        row.addView(ui.text(title, Ui.Type.TITLE_MEDIUM, ui.onSurface, weight = Ui.Weight.MEDIUM).apply {
             isFocusable = true
             if (android.os.Build.VERSION.SDK_INT >= 28) isAccessibilityHeading = true
         },
@@ -230,7 +230,7 @@ class SettingsSheet(
     private fun dangerCard() = LinearLayout(activity).apply {
         orientation = LinearLayout.VERTICAL
         // v0.7: 「危険な操作」は赤みの細い線で区別
-        background = ui.rounded(ui.surfaceContainer, 20, ui.withAlpha(ui.error, 0.3f))
+        background = ui.rounded(ui.surfaceContainer, 16, ui.withAlpha(ui.error, 0.3f))
         setPadding(dp(8), dp(6), dp(8), dp(6))
         layoutParams = LinearLayout.LayoutParams(MATCH, WRAP).apply { topMargin = dp(8) }
         addView(ui.button(s(R.string.delete_macro), Ui.BtnStyle.DANGER_TEXT, R.drawable.ic_delete) { deleteNow() }.apply {
