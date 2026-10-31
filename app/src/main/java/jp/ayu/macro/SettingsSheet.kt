@@ -129,7 +129,7 @@ class SettingsSheet(
         val row = LinearLayout(activity).apply { orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL }
         row.addView(ImageView(activity).apply {
             setImageDrawable(ui.icon(iconId, ui.onSurfaceVariant)); importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
-            setPadding(dp(4), dp(4), dp(4), dp(4)); background = ui.rounded(ui.secondaryContainer, 8, ui.outlineVariant)
+            background = ui.rounded(ui.secondaryContainer, 8, ui.outlineVariant); setPadding(dp(4), dp(4), dp(4), dp(4))
         }, LinearLayout.LayoutParams(dp(30), dp(30)).apply { marginEnd = dp(12) })
         row.addView(ui.text(title, Ui.Type.TITLE_MEDIUM, ui.onSurface, weight = Ui.Weight.MEDIUM).apply {
             isFocusable = true

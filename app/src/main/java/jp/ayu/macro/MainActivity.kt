@@ -460,12 +460,13 @@ class MainActivity : Activity() {
             color = ui.success; pattern = DotMatrixView.Pattern.WAVE
         } else ImageView(this).apply {
             setImageDrawable(ui.icon(if (ok) R.drawable.ic_check_circle else R.drawable.ic_error, if (ok) ui.success else ui.error))
-            setPadding(dp(5), dp(5), dp(5), dp(5))
         }
         // 状態は文字（タイトル + 説明）で伝えるので、アイコンは飾り（R6.8: 色だけに頼らない）
         lead.importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
         lead.background = ui.rounded(if (ok) ui.successContainer else ui.errorContainer, 8,
             ui.withAlpha(if (ok) ui.success else ui.error, 0.25f))
+        // v0.10.1: padding は background の後に設定する（先だと背景に上書きされる）
+        if (lead is ImageView) lead.setPadding(dp(5), dp(5), dp(5), dp(5))
         row.addView(lead, LinearLayout.LayoutParams(dp(30), dp(30)).apply { marginEnd = dp(16) })
         row.addView(LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
@@ -583,8 +584,9 @@ class MainActivity : Activity() {
         // 左: ノードと線
         val rail = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL; gravity = Gravity.CENTER_HORIZONTAL }
         val node: View = if (done) ImageView(this).apply {
-            setImageDrawable(ui.icon(R.drawable.ic_check, ui.success)); setPadding(dp(5), dp(5), dp(5), dp(5))
             background = ui.rounded(ui.successContainer, 999, ui.withAlpha(ui.success, 0.3f))
+            // v0.10.1: padding は background の後に設定する
+            setImageDrawable(ui.icon(R.drawable.ic_check, ui.success)); setPadding(dp(5), dp(5), dp(5), dp(5))
         } else ui.monoText(number.toString(), Ui.Type.LABEL_MEDIUM, if (current) ui.onPrimary else ui.onSurfaceVariant, Ui.Weight.SEMIBOLD).apply {
             gravity = Gravity.CENTER
             // v0.9: 文字を大きくしても丸からはみ出さないように縮める（R4.4 / R6.9）

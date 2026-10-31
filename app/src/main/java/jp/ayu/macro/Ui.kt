@@ -197,6 +197,7 @@ class Ui(val ctx: Context) {
      * FILLED = 墨色の主ボタン / TONAL = 淡いグレー / TEXT = 文字だけ / ACCENT = アクセント色 / DANGER = 赤（削除など）/ DANGER_TEXT = 赤文字
      * PRIMARY_TEXT = アクセント色の文字だけ（v0.9: ダイアログの確定ボタン。R5.12）
      * v0.9: 見た目の高さは 40dp のまま、押せる範囲は 48dp（上下 4dp の透明な余白。R6.5）
+     * v0.10.1: 見た目の高さ 44dp（上下 2dp の透明な余白）、左右の padding を拡大
      */
     enum class BtnStyle { FILLED, TONAL, TEXT, ACCENT, DANGER, DANGER_TEXT, PRIMARY_TEXT }
 
@@ -204,7 +205,6 @@ class Ui(val ctx: Context) {
         TextView(ctx).apply {
             text = label; textSize = Type.LABEL_LARGE; typeface = font(Weight.MEDIUM)
             gravity = Gravity.CENTER; minHeight = dp(48); isClickable = true; isFocusable = true
-            setPadding(dp(if (iconId != null) 16 else 20), 0, dp(20), 0)
             val (bg, fg) = when (style) {
                 BtnStyle.FILLED -> Pair<Int?, Int>(inverseSurface, inverseOnSurface)
                 BtnStyle.TONAL -> secondaryContainer to onSecondaryContainer
@@ -214,9 +214,15 @@ class Ui(val ctx: Context) {
                 BtnStyle.DANGER_TEXT -> Pair<Int?, Int>(null, this@Ui.error)
                 BtnStyle.PRIMARY_TEXT -> Pair<Int?, Int>(null, primary)
             }
-            if (style == BtnStyle.TEXT || style == BtnStyle.DANGER_TEXT || style == BtnStyle.PRIMARY_TEXT) setPadding(dp(if (iconId != null) 12 else 16), 0, dp(16), 0)
             setTextColor(fg)
-            background = ripple(bg?.let { insetV(rounded(it, 10), 4) }, insetV(rounded(Color.WHITE, 10), 4), fg)
+            background = ripple(bg?.let { insetV(rounded(it, 10), 2) }, insetV(rounded(Color.WHITE, 10), 2), fg)
+            // v0.10.1: padding は background の後に設定する。先に設定すると背景 Drawable の
+            // padding に上書きされて 0 になり、文字が縁に張り付く（実機で確認した不具合）。
+            // あわせて左右の余白を広げた（見た目の高さも 40dp → 44dp）。
+            if (style == BtnStyle.TEXT || style == BtnStyle.DANGER_TEXT || style == BtnStyle.PRIMARY_TEXT)
+                setPadding(dp(if (iconId != null) 16 else 20), 0, dp(20), 0)
+            else
+                setPadding(dp(if (iconId != null) 20 else 24), 0, dp(24), 0)
             if (iconId != null) {
                 val d = icon(iconId, fg).apply { setBounds(0, 0, dp(18), dp(18)) }
                 setCompoundDrawablesRelative(d, null, null, null); compoundDrawablePadding = dp(8)
@@ -269,16 +275,16 @@ class Ui(val ctx: Context) {
         }
     }
 
-    /** キーキャップ風の値表示（設定シートの現在値など） */
+    /** キーキャップ風の値表示（設定シートの現在値など）。v0.10.1: padding は background の後（button と同じ理由） */
     fun kbd(s: String = ""): TextView = monoText(s, Type.LABEL_LARGE, onSurface, Weight.MEDIUM).apply {
-        setPadding(dp(8), dp(4), dp(8), dp(4)); gravity = Gravity.CENTER
         background = rounded(secondaryContainer, 8, outlineVariant)
+        setPadding(dp(12), dp(6), dp(12), dp(6)); gravity = Gravity.CENTER
     }
 
-    /** 小さなラベル（読み取り専用。v0.7: 表のセルのような等幅タグ） */
+    /** 小さなラベル（読み取り専用。v0.7: 表のセルのような等幅タグ）。v0.10.1: padding は background の後、余白も拡大 */
     fun chip(s: String): TextView = monoText(s, Type.LABEL_MEDIUM, onSurfaceVariant).apply {
-        setPadding(dp(8), dp(4), dp(8), dp(4))
         background = rounded(secondaryContainer, 6, outlineVariant)
+        setPadding(dp(12), dp(6), dp(12), dp(6))
     }
 
     /**
@@ -303,7 +309,8 @@ class Ui(val ctx: Context) {
                 val check = if (v) icon(R.drawable.ic_check, fg).apply { setBounds(0, 0, dp(16), dp(16)) } else null
                 view.setCompoundDrawablesRelative(check, null, null, null)
                 view.compoundDrawablePadding = dp(4)
-                view.setPadding(dp(if (v) 8 else 12), 0, dp(12), 0)
+                // v0.10.1: 余白を拡大（padding は background の後なのでここで効く）
+                view.setPadding(dp(if (v) 12 else 16), 0, dp(16), 0)
             }
         init { selected = false }
     }
@@ -349,11 +356,13 @@ class Ui(val ctx: Context) {
             setText(initial); setSingleLine(); this.inputType = inputType
             hint = hintText; setHintTextColor(ink3)
             setTextColor(onSurface); textSize = Type.BODY_LARGE; typeface = font(Weight.REGULAR)
-            setPadding(dp(16), dp(12), dp(16), dp(12)); minHeight = dp(48)
+            minHeight = dp(48)
             background = StateListDrawable().apply {
                 addState(intArrayOf(android.R.attr.state_focused), rounded(surfaceContainer, 10, primary, 2))
                 addState(intArrayOf(), rounded(surfaceContainer, 10, outline))
             }
+            // v0.10.1: padding は background の後に設定する（button と同じ理由）
+            setPadding(dp(16), dp(12), dp(16), dp(12))
             if (Build.VERSION.SDK_INT >= 29) {
                 textCursorDrawable = GradientDrawable().apply { setColor(primary); setSize(dp(2), dp(20)) }
             }

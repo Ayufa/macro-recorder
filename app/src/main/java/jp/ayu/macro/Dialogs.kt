@@ -32,8 +32,9 @@ class DialogCard(val ui: Ui) {
         val ctx = ui.ctx
         val root = LinearLayout(ctx).apply {
             orientation = LinearLayout.VERTICAL
-            setPadding(dp(24), dp(24), dp(24), dp(16))
             background = ui.rounded(ui.surfaceContainerHigh, 20, ui.outlineVariant)
+            // v0.10.1: padding は background の後に設定する（先だと背景に上書きされる）
+            setPadding(dp(24), dp(24), dp(24), dp(16))
             elevation = dp(8).toFloat()
         }
         if (iconId != null) {
@@ -117,8 +118,10 @@ object Dialogs {
             val on = i == selected
             val row = LinearLayout(activity).apply {
                 orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL
-                minimumHeight = ui.dp(48); setPadding(ui.dp(14), 0, ui.dp(10), 0)
+                minimumHeight = ui.dp(48)
                 background = ui.ripple(if (on) ui.rounded(ui.secondaryContainer, 12) else null, ui.rounded(Color.WHITE, 12))
+                // v0.10.1: padding は background の後に設定する
+                setPadding(ui.dp(16), 0, ui.dp(12), 0)
                 isClickable = true; isFocusable = true
                 setOnClickListener { dlg.dismiss(); if (i != selected) onPick(i) }
             }
